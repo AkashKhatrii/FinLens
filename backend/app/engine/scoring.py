@@ -7,6 +7,7 @@ long you intend to hold. A stock can be a great business at a bad chart
 mistake this tries to avoid.
 
 Weights are declarative and live here so they are easy to argue with and tune.
+Within-pillar metric overlap is handled separately in metric_weights.py.
 """
 from __future__ import annotations
 

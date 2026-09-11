@@ -17,6 +17,7 @@ from ..config import MARKETS
 from ..providers.base import StockBundle, latest, pick_row
 from .common import Metric, Pillar, band, cagr, safe_div
 from .fundamentals import FundamentalFacts
+from .metric_weights import VALUATION
 
 
 @dataclass
@@ -143,7 +144,7 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
     p.metrics.append(Metric(
         "pe", "P/E (trailing)", v.pe, "x",
         band(v.pe, [(5, 92), (12, 80), (20, 62), (30, 42), (45, 22), (70, 6)]),
-        _pe_note(v.pe, v.pe_median_5y), weight=1.5, higher_is_better=False,
+        _pe_note(v.pe, v.pe_median_5y), weight=VALUATION["pe"], higher_is_better=False,
         peer=v.pe_median_5y,
     ))
     if v.pe and v.pe_median_5y:
@@ -153,24 +154,24 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
             band(rel, [(-45, 94), (-20, 80), (0, 60), (20, 38), (50, 16), (100, 4)]),
             (f"Trading {abs(rel):.0f}% {'below' if rel < 0 else 'above'} its own "
              f"5-year median P/E of {v.pe_median_5y:.1f}x."),
-            weight=1.8, higher_is_better=False,
+            weight=VALUATION["pe_vs_history"], higher_is_better=False,
         ))
     p.metrics.append(Metric(
         "pb", "Price / Book", v.pb, "x",
         band(v.pb, [(0.6, 92), (1.5, 76), (3, 56), (6, 34), (10, 14), (18, 4)]),
-        "", weight=1.0, higher_is_better=False,
+        "", weight=VALUATION["pb"], higher_is_better=False,
     ))
     p.metrics.append(Metric(
         "ev_ebitda", "EV / EBITDA", v.ev_ebitda, "x",
         band(v.ev_ebitda, [(4, 92), (8, 76), (13, 56), (20, 32), (30, 12)]),
-        "", weight=1.2, higher_is_better=False,
+        "", weight=VALUATION["ev_ebitda"], higher_is_better=False,
     ))
     p.metrics.append(Metric(
         "peg", "PEG Ratio", v.peg, "x",
         band(v.peg, [(0.4, 94), (1.0, 74), (1.5, 54), (2.5, 30), (4, 10)]),
         ("Growth is cheap relative to the multiple." if (v.peg or 9) < 1
          else "Paying up for growth." if (v.peg or 0) > 2 else ""),
-        weight=1.3, higher_is_better=False,
+        weight=VALUATION["peg"], higher_is_better=False,
     ))
     if v.earnings_yield is not None and v.bond_yield:
         spread = v.earnings_yield - v.bond_yield
@@ -179,12 +180,12 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
             band(spread, [(-6, 8), (-3, 28), (0, 50), (3, 74), (7, 92)]),
             (f"Earnings yield {v.earnings_yield:.1f}% vs {v.bond_yield:.1f}% on the 10-year "
              f"— {'equity is being paid for the risk' if spread > 0 else 'the bond pays more than the earnings'}."),
-            weight=1.2,
+            weight=VALUATION["earnings_yield_spread"],
         ))
     p.metrics.append(Metric(
         "dividend_yield", "Dividend Yield", v.dividend_yield, "%",
         band(v.dividend_yield, [(0, 40), (0.5, 50), (1.5, 65), (3, 80), (6, 85)]),
-        "", weight=0.6,
+        "", weight=VALUATION["dividend_yield"],
     ))
     if v.dcf_upside_pct is not None:
         p.metrics.append(Metric(
@@ -192,7 +193,7 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
             band(v.dcf_upside_pct, [(-50, 5), (-20, 25), (0, 50), (25, 76), (60, 92)]),
             (f"Two-stage DCF fair value ≈ ₹{v.dcf_value:,.0f} vs ₹{price:,.0f} spot."
              if v.dcf_value else ""),
-            weight=1.4,
+            weight=VALUATION["dcf_upside"],
         ))
     if v.analyst_upside_pct is not None:
         p.notes.append(

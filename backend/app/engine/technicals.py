@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 
 from .common import Metric, Pillar, band
+from .metric_weights import TECH_SHORT, TECH_TREND
 
 
 # --- indicator primitives ----------------------------------------------------
@@ -217,7 +218,7 @@ def _build_short(s: TechnicalSnapshot, p: Pillar) -> None:
     p.metrics.append(Metric(
         "rsi14", "RSI (14)", s.rsi14, "",
         band(s.rsi14, [(15, 55), (30, 75), (45, 80), (55, 75), (70, 40), (80, 15), (90, 5)]),
-        _rsi_note(s.rsi14), weight=1.4,
+        _rsi_note(s.rsi14), weight=TECH_SHORT["rsi14"],
     ))
     p.metrics.append(Metric(
         "pct_b", "Bollinger %B", s.pct_b, "",
@@ -225,25 +226,26 @@ def _build_short(s: TechnicalSnapshot, p: Pillar) -> None:
         "Near the upper band — extended." if (s.pct_b or 0) > 0.9
         else "Near the lower band — stretched to the downside." if (s.pct_b is not None and s.pct_b < 0.1)
         else "Mid-channel.",
+        weight=TECH_SHORT["pct_b"],
     ))
     above20 = ((s.price / s.sma20 - 1) * 100) if (s.price and s.sma20) else None
     p.metrics.append(Metric(
         "vs_sma20", "Price vs 20-DMA", above20, "%",
         band(above20, [(-12, 15), (-5, 40), (0, 65), (4, 80), (10, 60), (18, 30)]),
         f"Trading {above20:+.1f}% vs its 20-day average." if above20 is not None else "",
-        weight=1.2,
+        weight=TECH_SHORT["vs_sma20"],
     ))
     p.metrics.append(Metric(
         "ret_1w", "1-Week Return", s.returns.get("1w"), "%",
         band(s.returns.get("1w"), [(-10, 25), (-3, 45), (0, 60), (4, 75), (12, 55)]),
-        "", weight=0.8,
+        "", weight=TECH_SHORT["ret_1w"],
     ))
     p.metrics.append(Metric(
         "volume_ratio", "Volume Trend (20d/50d)", s.volume_ratio, "x",
         band(s.volume_ratio, [(0.5, 35), (0.8, 50), (1.0, 60), (1.4, 78), (2.5, 70)]),
         "Volume expanding — participation confirming the move." if (s.volume_ratio or 0) > 1.2
         else "Volume thinning out." if (s.volume_ratio or 1) < 0.8 else "",
-        weight=0.9,
+        weight=TECH_SHORT["volume_ratio"],
     ))
     if s.macd_cross == "bullish":
         p.notes.append("MACD crossed above signal within the last week — fresh momentum trigger.")
@@ -263,20 +265,20 @@ def _build_trend(s: TechnicalSnapshot, p: Pillar) -> None:
         band(above200, [(-30, 5), (-12, 25), (0, 55), (10, 78), (30, 88), (60, 75)]),
         ("Above the 200-DMA — long-term trend is up." if (above200 or 0) > 0
          else "Below the 200-DMA — long-term trend is down."),
-        weight=1.6,
+        weight=TECH_TREND["vs_sma200"],
     ))
     above50 = ((s.price / s.sma50 - 1) * 100) if (s.price and s.sma50) else None
     p.metrics.append(Metric(
         "vs_sma50", "Price vs 50-DMA", above50, "%",
         band(above50, [(-20, 10), (-8, 32), (0, 58), (8, 80), (20, 72)]),
-        "", weight=1.2,
+        "", weight=TECH_TREND["vs_sma50"],
     ))
     p.metrics.append(Metric(
         "adx14", "Trend Strength (ADX)", s.adx14, "",
         band(s.adx14, [(10, 35), (20, 55), (25, 70), (40, 85), (60, 70)]),
         ("Strong, well-defined trend." if (s.adx14 or 0) >= 25
          else "Choppy / rangebound — trend-following setups are unreliable here."),
-        weight=1.0,
+        weight=TECH_TREND["adx14"],
     ))
     rs3 = s.relative_strength.get("3m")
     p.metrics.append(Metric(
@@ -284,20 +286,20 @@ def _build_trend(s: TechnicalSnapshot, p: Pillar) -> None:
         band(rs3, [(-25, 10), (-10, 30), (0, 55), (8, 78), (25, 92)]),
         (f"Outperforming the index by {rs3:.1f}pp over 3 months." if (rs3 or 0) > 0
          else f"Lagging the index by {abs(rs3):.1f}pp over 3 months." if rs3 is not None else ""),
-        weight=1.5,
+        weight=TECH_TREND["rs_3m"],
     ))
     rs12 = s.relative_strength.get("1y")
     p.metrics.append(Metric(
         "rs_1y", "1Y vs Benchmark", rs12, "%",
         band(rs12, [(-40, 10), (-15, 32), (0, 55), (15, 80), (45, 92)]),
-        "", weight=1.2,
+        "", weight=TECH_TREND["rs_1y"],
     ))
     p.metrics.append(Metric(
         "week52_position", "Position in 52W Range", s.week52_position, "%",
         band(s.week52_position, [(0, 20), (25, 42), (50, 62), (75, 80), (95, 68)]),
         (f"{s.week52_position:.0f}% of the way up its 52-week range."
          if s.week52_position is not None else ""),
-        weight=1.0,
+        weight=TECH_TREND["week52_position"],
     ))
     if s.golden_cross is True:
         p.notes.append("50-DMA is above the 200-DMA (golden-cross structure intact).")

@@ -15,6 +15,7 @@ import pandas as pd
 from ..providers.base import StockBundle
 from .common import Metric, Pillar, band, safe_div
 from .fundamentals import FundamentalFacts
+from .metric_weights import EARNINGS, RISK, SENTIMENT
 
 TRADING_DAYS = 252
 
@@ -79,26 +80,26 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
         band(r.beta, [(0.4, 85), (0.7, 78), (1.0, 62), (1.3, 42), (1.8, 20), (2.5, 6)]),
         ("Moves less than the index — defensive." if (r.beta or 1) < 0.85
          else "Amplifies index moves in both directions." if (r.beta or 1) > 1.2 else ""),
-        weight=1.0, higher_is_better=False,
+        weight=RISK["beta"], higher_is_better=False,
     ))
     p.metrics.append(Metric(
         "volatility", "Annualised Volatility", r.volatility_pct, "%",
         band(r.volatility_pct, [(12, 88), (20, 72), (30, 52), (45, 28), (70, 8)]),
-        "", weight=1.2, higher_is_better=False,
+        "", weight=RISK["volatility"], higher_is_better=False,
     ))
     p.metrics.append(Metric(
         "max_drawdown", "Max Drawdown (3Y)", r.max_drawdown_pct, "%",
         band(r.max_drawdown_pct, [(-75, 5), (-55, 20), (-38, 42), (-25, 65), (-12, 88)]),
         (f"Worst peak-to-trough fall was {abs(r.max_drawdown_pct):.0f}% — size the position for that."
          if r.max_drawdown_pct else ""),
-        weight=1.3, higher_is_better=False,
+        weight=RISK["max_drawdown"], higher_is_better=False,
     ))
     p.metrics.append(Metric(
         "liquidity", "Avg Daily Turnover", r.liquidity_cr_per_day, "cr",
         band(r.liquidity_cr_per_day, [(0.3, 10), (2, 38), (8, 65), (30, 85), (100, 95)]),
         ("Thin trading — exiting a position in a hurry will cost you."
          if (r.liquidity_cr_per_day or 99) < 3 else ""),
-        weight=1.1,
+        weight=RISK["liquidity"],
     ))
 
     # --- red flags (surfaced separately, not averaged away) ------------------
@@ -200,12 +201,12 @@ def earnings_analyse(bundle: StockBundle) -> tuple[EarningsFacts, Pillar]:
         band(e.beat_rate, [(0, 15), (25, 32), (50, 55), (75, 80), (100, 92)]),
         (f"Beat consensus in {int(e.beat_rate / 25)} of the last 4 quarters."
          if e.beat_rate is not None else ""),
-        weight=1.4,
+        weight=EARNINGS["beat_rate"],
     ))
     p.metrics.append(Metric(
         "avg_surprise", "Avg Surprise", e.avg_surprise_pct, "%",
         band(e.avg_surprise_pct, [(-25, 10), (-8, 32), (0, 52), (8, 76), (25, 92)]),
-        "", weight=1.2,
+        "", weight=EARNINGS["avg_surprise"],
     ))
     if e.next_date:
         p.notes.append(f"Next results expected around {e.next_date} — an event risk for short-dated positions.")
@@ -235,24 +236,24 @@ def sentiment_analyse(bundle: StockBundle, analyst_upside: float | None) -> Pill
         float(rec_scores[rec]) if rec in rec_scores else None,
         (f"Consensus is '{a.recommendation}' across {a.analyst_count or '?'} analysts."
          if rec else "No analyst coverage found."),
-        weight=1.0,
+        weight=SENTIMENT["analyst_rating"],
     ))
     p.metrics.append(Metric(
         "analyst_upside", "Upside to Target", analyst_upside, "%",
         band(analyst_upside, [(-25, 10), (-5, 35), (5, 58), (20, 80), (45, 92)]),
-        "", weight=1.2,
+        "", weight=SENTIMENT["analyst_upside"],
     ))
     p.metrics.append(Metric(
         "promoter_holding", "Promoter / Insider Holding", own.promoter_or_insider_pct, "%",
         band(own.promoter_or_insider_pct, [(5, 15), (25, 40), (45, 68), (60, 85), (75, 88)]),
         (f"Promoters hold {own.promoter_or_insider_pct:.1f}%."
          if own.promoter_or_insider_pct is not None else ""),
-        weight=1.1,
+        weight=SENTIMENT["promoter_holding"],
     ))
     p.metrics.append(Metric(
         "institutional_holding", "Institutional Holding", own.institutions_pct, "%",
         band(own.institutions_pct, [(1, 25), (8, 45), (18, 65), (35, 82), (55, 88)]),
-        "", weight=0.8,
+        "", weight=SENTIMENT["institutional_holding"],
     ))
     if bundle.news:
         p.notes.append(f"{len(bundle.news)} recent news items pulled for the AI read.")

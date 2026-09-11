@@ -18,6 +18,7 @@ import pandas as pd
 
 from ..providers.base import Statements, StockBundle, latest, pick_row, series_values
 from .common import Metric, Pillar, band, cagr, pct_change, safe_div, trend_slope_pct
+from .metric_weights import GROWTH, HEALTH, PROFIT
 
 CRORE = 1e7
 
@@ -145,26 +146,26 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     growth.metrics.append(Metric(
         "rev_yoy", "Revenue Growth (YoY)", rev_yoy, "%",
         band(rev_yoy, [(-20, 5), (-5, 25), (0, 42), (8, 62), (15, 78), (25, 90), (45, 95)]),
-        _growth_note("Revenue", rev_yoy), weight=1.4,
+        _growth_note("Revenue", rev_yoy), weight=GROWTH["rev_yoy"],
     ))
     rev_cagr = cagr(f.revenue_series)
     growth.metrics.append(Metric(
         "rev_cagr", f"Revenue CAGR ({max(len(f.revenue_series) - 1, 0)}Y)", rev_cagr, "%",
         band(rev_cagr, [(-10, 8), (0, 30), (6, 52), (12, 72), (20, 88), (35, 95)]),
-        "", weight=1.5,
+        "", weight=GROWTH["rev_cagr"],
     ))
     pat_yoy = pct_change(f.net_income, latest(pick_row(st.income_annual,
                         "Net Income Common Stockholders", "Net Income"), 1))
     growth.metrics.append(Metric(
         "pat_yoy", "Net Profit Growth (YoY)", pat_yoy, "%",
         band(pat_yoy, [(-35, 5), (-10, 25), (0, 45), (10, 65), (20, 82), (40, 94)]),
-        _growth_note("Net profit", pat_yoy), weight=1.5,
+        _growth_note("Net profit", pat_yoy), weight=GROWTH["pat_yoy"],
     ))
     pat_cagr = cagr(f.profit_series)
     growth.metrics.append(Metric(
         "pat_cagr", f"Profit CAGR ({max(len(f.profit_series) - 1, 0)}Y)", pat_cagr, "%",
         band(pat_cagr, [(-10, 8), (0, 30), (8, 55), (15, 75), (25, 90), (40, 96)]),
-        "", weight=1.6,
+        "", weight=GROWTH["pat_cagr"],
     ))
 
     q_rev, q_rev_prev = _yoy_quarter(st.income_quarterly, "Total Revenue", "Operating Revenue")
@@ -172,14 +173,14 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     growth.metrics.append(Metric(
         "q_rev_yoy", "Latest Quarter Revenue (YoY)", q_rev_yoy, "%",
         band(q_rev_yoy, [(-20, 8), (-5, 30), (0, 48), (10, 70), (20, 86), (35, 94)]),
-        "Most recent reported quarter vs the same quarter last year.", weight=1.3,
+        "Most recent reported quarter vs the same quarter last year.", weight=GROWTH["q_rev_yoy"],
     ))
     q_pat, q_pat_prev = _yoy_quarter(st.income_quarterly, "Net Income Common Stockholders", "Net Income")
     q_pat_yoy = pct_change(q_pat, q_pat_prev)
     growth.metrics.append(Metric(
         "q_pat_yoy", "Latest Quarter Profit (YoY)", q_pat_yoy, "%",
         band(q_pat_yoy, [(-35, 8), (-10, 28), (0, 48), (12, 70), (25, 88), (45, 95)]),
-        "", weight=1.3,
+        "", weight=GROWTH["q_pat_yoy"],
     ))
     if f.revenue_series and f.profit_series and rev_cagr is not None and pat_cagr is not None:
         if pat_cagr > rev_cagr + 3:
@@ -209,7 +210,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     profit.metrics.append(Metric(
         "op_margin", "Operating Margin", op_margin, "%",
         band(op_margin, [(0, 10), (5, 32), (10, 52), (16, 72), (25, 88), (40, 95)]),
-        "", weight=1.3,
+        "", weight=PROFIT["op_margin"],
     ))
     if exceptional:
         net_margin = None
@@ -221,7 +222,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     profit.metrics.append(Metric(
         "net_margin", "Net Margin", net_margin, "%",
         band(net_margin, [(0, 10), (3, 30), (7, 50), (12, 70), (20, 87), (30, 95)]),
-        "", weight=1.2,
+        "", weight=PROFIT["net_margin"],
     ))
     margin_trend = None if exceptional else trend_slope_pct(f.margin_series)
     profit.metrics.append(Metric(
@@ -230,7 +231,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
         ("Margins expanding year on year." if (margin_trend or 0) > 1
          else "Margins compressing year on year." if (margin_trend or 0) < -1
          else "Margins broadly stable."),
-        weight=1.1,
+        weight=PROFIT["margin_trend"],
     ))
     # Negative shareholders' equity makes every equity-denominated ratio
     # invert: D/E goes negative (scoring as "debt-free"), P/B goes negative
@@ -246,7 +247,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     profit.metrics.append(Metric(
         "roe", "Return on Equity", roe, "%",
         band(roe, [(0, 8), (8, 30), (13, 52), (18, 74), (25, 90), (40, 97)]),
-        _roe_note(roe), weight=1.8,
+        _roe_note(roe), weight=PROFIT["roe"],
     ))
     # ROCE is the ratio Indian analysts anchor on: EBIT over capital employed.
     total_assets = latest(pick_row(st.balance_annual, "Total Assets"))
@@ -263,7 +264,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
          if (roce or 0) >= 18 else
          "Returns are below what the capital costs — value is being destroyed, not created."
          if (roce is not None and roce < 10) else ""),
-        weight=1.8,
+        weight=PROFIT["roce"],
     ))
 
     # --- balance sheet & cash ------------------------------------------------
@@ -274,7 +275,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
         "debt_equity", "Debt / Equity", de, "x",
         band(de, [(0, 98), (0.25, 88), (0.5, 74), (1.0, 52), (1.8, 28), (3.0, 8)]),
         _debt_note(de) if equity_ok else "Net worth is negative — the ratio is not meaningful.",
-        weight=1.6, higher_is_better=False,
+        weight=HEALTH["debt_equity"], higher_is_better=False,
     ))
     if not equity_ok and f.equity is not None:
         health.notes.append(
@@ -288,7 +289,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
         band(nd_ebitda, [(-1, 97), (0, 92), (1, 78), (2, 60), (3.5, 32), (5, 8)]),
         ("Net cash on the balance sheet." if (nd_ebitda or 0) < 0
          else "Leverage is high enough to matter in a downturn." if (nd_ebitda or 0) > 3 else ""),
-        weight=1.4, higher_is_better=False,
+        weight=HEALTH["net_debt_ebitda"], higher_is_better=False,
     ))
     interest = pick_row(st.income_annual, "Interest Expense")
     icr = safe_div(f.ebit, abs(latest(interest)) if latest(interest) else None)
@@ -297,14 +298,14 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
         band(icr, [(1, 5), (2.5, 30), (4, 52), (8, 76), (15, 92)]),
         ("Interest is barely covered by operating profit — a genuine solvency risk."
          if (icr is not None and icr < 2.5) else ""),
-        weight=1.3,
+        weight=HEALTH["interest_cover"],
     ))
     cur_assets = latest(pick_row(st.balance_annual, "Current Assets"))
     current_ratio = safe_div(cur_assets, current_liab)
     health.metrics.append(Metric(
         "current_ratio", "Current Ratio", current_ratio, "x",
         band(current_ratio, [(0.5, 12), (1.0, 42), (1.5, 70), (2.2, 82), (4, 62)]),
-        "", weight=0.9,
+        "", weight=HEALTH["current_ratio"],
     ))
     # Earnings quality: profit that never becomes cash is the classic accounting red flag.
     ocf_ni = safe_div(f.ocf, f.net_income)
@@ -315,7 +316,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
          if (ocf_ni or 0) >= 0.9 else
          "Profit is not converting into cash — check receivables and revenue recognition."
          if (ocf_ni is not None and ocf_ni < 0.7) else ""),
-        weight=1.7,
+        weight=HEALTH["ocf_to_pat"],
     ))
     fcf_margin = safe_div(f.fcf, f.revenue)
     fcf_margin = fcf_margin * 100 if fcf_margin is not None else None
@@ -323,7 +324,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
         "fcf_margin", "Free Cash Flow Margin", fcf_margin, "%",
         band(fcf_margin, [(-10, 8), (0, 35), (4, 58), (10, 78), (18, 92)]),
         ("Burning cash after capex." if (fcf_margin is not None and fcf_margin < 0) else ""),
-        weight=1.2,
+        weight=HEALTH["fcf_margin"],
     ))
     return f, growth, profit, health
 
