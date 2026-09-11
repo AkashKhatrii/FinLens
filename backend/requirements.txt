@@ -1,0 +1,11 @@
+fastapi>=0.115
+uvicorn[standard]>=0.32
+yfinance>=0.2.54
+pandas>=2.2
+numpy>=1.26
+lxml>=5.0
+requests>=2.32
+anthropic>=1.0
+openai>=1.0
+pydantic>=2.9
+python-dotenv>=1.0

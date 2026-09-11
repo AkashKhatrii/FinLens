@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinLens — AI Equity Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans: ['Inter','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+    colors: { ink: '#07070a', panel: '#0e0e13', edge: '#1c1c26' },
+  }}
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: #07070a; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-track { background: #07070a; }
+  ::-webkit-scrollbar-thumb { background: #24242f; border-radius: 9px; }
+  ::-webkit-scrollbar-thumb:hover { background: #35354a; }
+
+  /* GPU hints for everything that animates */
+  .letter-pullup span, .morph .item, .halo::before, .shimmer, .cursor-glow, .ring-arc {
+    will-change: transform, opacity; backface-visibility: hidden;
+  }
+
+  /* Ambient cursor glow - subtle, no custom cursor replacement so the app
+     stays usable for data entry */
+  .cursor-glow {
+    position: fixed; top: 0; left: 0; width: 460px; height: 460px; border-radius: 50%;
+    pointer-events: none; z-index: 0; opacity: .5;
+    background: radial-gradient(circle, rgba(56,110,255,.10) 0%, rgba(120,60,220,.05) 40%, transparent 70%);
+    transform: translate(-50%, -50%); transition: opacity .4s ease;
+  }
+
+  /* Letter pull-up */
+  .letter-pullup { display: inline-flex; }
+  .letter-pullup span { display: inline-block; opacity: 0; transform: translateY(100%); animation: pullUp .55s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes pullUp { to { opacity: 1; transform: translateY(0); } }
+
+  /* Morphing tagline */
+  .morph { position: relative; display: block; height: 1.6rem; }
+  .morph .item { position: absolute; inset: 0; opacity: 0; transform: translateY(8px);
+    transition: opacity .6s ease, transform .6s ease; white-space: nowrap; }
+  .morph .item.active { opacity: 1; transform: translateY(0); }
+
+  /* Animated gradient border on the search field */
+  .halo { position: relative; border-radius: .75rem; }
+  .halo::before {
+    content: ''; position: absolute; inset: -1px; border-radius: .75rem; padding: 1px;
+    background: linear-gradient(90deg,#2a4cff,#7b3fe4,#2ab6ff,#7b3fe4,#2a4cff);
+    background-size: 300% 100%; animation: borderFlow 5s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: .45; pointer-events: none; transition: opacity .3s ease;
+  }
+  .halo:focus-within::before { opacity: .95; }
+  @keyframes borderFlow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+
+  .ticker-drop {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 40;
+    background: #0e0e13; border: 1px solid #1c1c26; border-radius: .75rem;
+    overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.45);
+    text-align: left;
+  }
+  .ticker-drop button.active, .ticker-drop button:hover { background: rgba(37, 99, 235, .12); }
+
+  .term { position: relative; display: inline; border-bottom: 1px dotted #64748b; cursor: help; }
+  .term:hover { color: #e2e8f0; border-bottom-color: #93c5fd; }
+  .term:focus { outline: none; color: #e2e8f0; border-bottom-color: #93c5fd; }
+  .term-pop {
+    position: fixed; z-index: 80; width: min(18rem, 72vw);
+    background: #0e0e13; border: 1px solid #2a2a38; border-radius: .75rem; padding: .85rem .95rem;
+    box-shadow: 0 18px 40px rgba(0,0,0,.55); text-align: left; font-weight: 400;
+    white-space: normal; letter-spacing: 0; text-transform: none;
+  }
+  .term-pop .kicker { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: #64748b; margin-bottom: .2rem; }
+  .glossary-scrim { background: rgba(0,0,0,.55); }
+
+  /* Shimmer button */
+  .shimmer { position: relative; overflow: hidden;
+    background: linear-gradient(110deg,#161a2e 45%,#232a49 55%,#161a2e); background-size: 200% 100%;
+    animation: shimmer 4.5s linear infinite; }
+  .shimmer::before { content:''; position:absolute; inset:0;
+    background: linear-gradient(110deg,transparent 25%,rgba(255,255,255,.10) 50%,transparent 75%);
+    background-size: 200% 100%; animation: shimmer 4.5s linear infinite; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* Staggered card entrance */
+  .rise { opacity: 0; transform: translateY(14px); animation: rise .6s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+  /* Score ring sweep */
+  .ring-arc { transition: stroke-dashoffset 1.3s cubic-bezier(.22,1,.36,1), stroke .4s ease; }
+  .bar-fill { transition: width 1.1s cubic-bezier(.22,1,.36,1); }
+
+  .panel { background: linear-gradient(180deg, rgba(20,20,28,.9), rgba(12,12,18,.9));
+           border: 1px solid #1c1c26; }
+  .skeleton { background: linear-gradient(90deg,#111119 25%,#1a1a25 50%,#111119 75%);
+              background-size: 200% 100%; animation: sk 1.4s linear infinite; }
+  @keyframes sk { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .fade-enter-active { transition: all .45s ease; }
+  .fade-enter-from { opacity: 0; transform: translateY(10px); }
+</style>
+</head>
+<body class="text-slate-200 antialiased">
+<div class="cursor-glow" id="glow"></div>
+
+<div id="app" class="relative z-10 min-h-screen">
+
+  <!-- ============ HEADER ============ -->
+  <header class="border-b border-edge/80 sticky top-0 z-30 bg-ink/85 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 grid place-items-center text-sm font-bold">F</div>
+        <span class="text-[17px] font-semibold tracking-tight letter-pullup">
+          <span v-for="(ch,i) in 'FinLens'" :key="i" :style="{ animationDelay: (i*0.05)+'s' }"
+                :class="i>=3 ? 'text-blue-400 font-normal' : ''">{{ ch }}</span>
+        </span>
+        <span class="hidden sm:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-slate-500">NSE / BSE</span>
+      </div>
+
+      <!-- compact search once results are shown -->
+      <form v-if="result" class="flex-1 max-w-md" v-on:submit.prevent="run()">
+        <ticker-search v-model="query" placeholder="Analyse another company…" compact
+                       @submit="run()" @pick="pickTicker"></ticker-search>
+      </form>
+
+      <div class="flex items-center gap-3 text-[11px] text-slate-500 shrink-0">
+        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-white hover:border-slate-600"
+                v-on:click="glossaryOpen = true">Terms</button>
+        <span class="hidden md:flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full" :class="aiReady ? 'bg-emerald-400' : 'bg-amber-400'"></span>
+          {{ aiReady ? 'AI ready' : 'Quant only' }}
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO / SEARCH ============ -->
+  <section v-if="!result && !loading && !error" class="max-w-3xl mx-auto px-6 pt-24 pb-16 text-center">
+    <h1 class="text-5xl font-bold tracking-tight mb-5 leading-tight">
+      Know what a stock is<br>
+      <span class="bg-gradient-to-r from-blue-400 via-violet-400 to-sky-300 bg-clip-text text-transparent">actually worth</span>
+    </h1>
+    <div class="morph text-slate-400 text-base mb-12">
+      <span v-for="(t,i) in taglines" :key="i" class="item" :class="{active: morphIndex===i}">{{ t }}</span>
+    </div>
+
+    <form v-on:submit.prevent="run()" class="space-y-3">
+      <ticker-search v-model="query" placeholder="Try RELIANCE, TCS, or 'tata motors'"
+                     @submit="run()" @pick="pickTicker"></ticker-search>
+      <button type="submit" :disabled="loading"
+              class="shimmer w-full rounded-xl px-5 py-3.5 text-sm font-semibold border border-edge disabled:opacity-50">
+        <span class="relative z-10">Run full analysis</span>
+      </button>
+    </form>
+
+    <div class="flex flex-wrap gap-2 justify-center mt-7">
+      <button v-for="s in suggestions" :key="s" v-on:click="query=s; run()"
+              class="text-xs px-3 py-1.5 rounded-full border border-edge text-slate-400 hover:text-white hover:border-slate-600 transition">{{ s }}</button>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 mt-16 text-left">
+      <div v-for="f in features" :key="f.t" class="panel rounded-xl p-4">
+        <div class="text-xs font-semibold text-blue-400 mb-1.5">{{ f.t }}</div>
+        <div class="text-xs text-slate-500 leading-relaxed">{{ f.d }}</div>
+      </div>
+    </div>
+    <p class="text-[11px] text-slate-600 mt-10 leading-relaxed">{{ disclaimerText }}
+      Dotted labels on a report explain the term and how FinLens uses it — or open <button type="button" class="underline hover:text-slate-400" v-on:click="glossaryOpen = true">Terms</button>.</p>
+  </section>
+
+  <!-- ============ LOADING ============ -->
+  <section v-if="loading" class="max-w-7xl mx-auto px-6 py-16">
+    <div class="text-center mb-10">
+      <div class="text-sm text-slate-400 mb-2">{{ loadingStep }}</div>
+      <div class="w-56 h-0.5 bg-edge rounded-full mx-auto overflow-hidden">
+        <div class="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-700"
+             :style="{ width: loadingPct + '%' }"></div>
+      </div>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-4">
+      <div v-for="n in 6" :key="n" class="skeleton h-32 rounded-xl"></div>
+    </div>
+  </section>
+
+  <!-- ============ ERROR ============ -->
+  <section v-if="error" class="max-w-xl mx-auto px-6 py-20 text-center">
+    <div class="panel rounded-xl p-7" :class="didYouMean.length ? 'border-amber-900/50' : 'border-red-900/50'">
+      <div class="font-semibold mb-2" :class="didYouMean.length ? 'text-amber-400' : 'text-red-400'">
+        {{ didYouMean.length ? 'Did you mean…' : "Couldn't analyse that" }}
+      </div>
+      <div class="text-sm text-slate-400 mb-5">{{ error }}</div>
+      <div v-if="didYouMean.length" class="flex flex-wrap gap-2 justify-center mb-5">
+        <button v-for="s in didYouMean" :key="s.symbol" v-on:click="query = s.symbol; run()"
+                class="text-left px-3 py-2 rounded-lg border border-edge hover:border-blue-600 hover:bg-blue-950/20 transition">
+          <div class="text-xs font-mono text-blue-300">{{ s.symbol }}</div>
+          <div class="text-[10px] text-slate-500">{{ s.name }}</div>
+        </button>
+      </div>
+      <button v-on:click="reset()" class="text-xs px-4 py-2 rounded-lg border border-edge hover:border-slate-600">Start over</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <main v-if="result" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
+
+    <!-- Company header -->
+    <div class="rise panel rounded-2xl p-6" style="animation-delay:.02s">
+      <div class="flex flex-wrap items-start justify-between gap-6">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2.5 mb-1.5 flex-wrap">
+            <h2 class="text-2xl font-bold tracking-tight">{{ result.company.name }}</h2>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-white/5 border border-edge text-slate-400">{{ result.symbol }}</span>
+          </div>
+          <div class="text-xs text-slate-500">
+            {{ result.company.sector || '—' }}<span v-if="result.company.industry"> · {{ result.company.industry }}</span>
+            <span v-if="result.company.market_cap_cr"> · ₹{{ fmtCr(result.company.market_cap_cr) }} Cr <term-tip id="mcap" label="mcap"></term-tip></span>
+          </div>
+        </div>
+        <div class="text-right shrink-0">
+          <div class="text-3xl font-semibold font-mono">₹{{ num(result.price.last) }}</div>
+          <div class="text-sm font-medium" :class="result.price.day_change_pct >= 0 ? 'text-emerald-400' : 'text-red-400'">
+            {{ result.price.day_change_pct >= 0 ? '▲' : '▼' }} {{ num(Math.abs(result.price.day_change_pct)) }}%
+          </div>
+          <div class="text-[11px] text-slate-600 mt-1" v-if="result.price.off_52w_high_pct != null">
+            {{ num(result.price.off_52w_high_pct) }}% from <term-tip id="52whigh" label="52W high"></term-tip>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall + horizons -->
+    <div class="grid lg:grid-cols-4 gap-5">
+      <div class="rise panel rounded-2xl p-6 flex flex-col items-center justify-center text-center" style="animation-delay:.06s">
+        <div class="text-[11px] uppercase tracking-wider text-slate-500 mb-3">
+          <term-tip id="overall" label="Overall"></term-tip>
+        </div>
+        <score-ring :score="result.overall.score" :size="128" :stroke="9"></score-ring>
+        <div class="mt-3 px-3 py-1 rounded-full text-xs font-semibold" :class="verdictClass(result.overall.verdict_class)">
+          <term-tip :id="result.overall.verdict" :label="result.overall.verdict"></term-tip>
+        </div>
+        <div v-if="result.overall.rank" class="mt-3 w-full">
+          <div class="text-[11px] font-semibold" :class="pctColor(result.overall.rank.percentile)">
+            {{ result.overall.rank.label }}
+          </div>
+          <div class="h-1 bg-edge rounded-full overflow-hidden mt-1.5">
+            <div class="h-full bar-fill rounded-full" :class="pctBg(result.overall.rank.percentile)"
+                 :style="{ width: (mounted ? result.overall.rank.percentile : 0) + '%' }"></div>
+          </div>
+          <div class="text-[10px] text-slate-600 mt-1.5 leading-relaxed">
+            Beats {{ result.overall.rank.percentile }}% of {{ result.overall.rank.universe_size }} NIFTY-grade
+            names (median {{ result.overall.rank.universe_median }}).
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-600 mt-2 leading-relaxed">
+          Blend of 20% <term-tip id="short" label="short"></term-tip>
+          · 30% <term-tip id="swing" label="swing"></term-tip>
+          · 50% <term-tip id="long" label="long"></term-tip>
+        </div>
+      </div>
+
+      <div v-for="(h,k,i) in result.horizons" :key="k"
+           class="rise panel rounded-2xl p-5" :style="{ animationDelay: (0.10 + i*0.05)+'s' }">
+        <div class="flex items-start justify-between mb-3">
+          <div>
+            <div class="text-sm font-semibold"><term-tip :id="k" :label="h.label"></term-tip></div>
+            <div class="text-[11px] text-slate-500">{{ h.window }}</div>
+          </div>
+          <score-ring :score="h.score" :size="62" :stroke="6" :compact="true"></score-ring>
+        </div>
+        <div class="flex items-center gap-2 mb-3 flex-wrap">
+          <span class="px-2.5 py-1 rounded-md text-xs font-semibold" :class="verdictClass(h.verdict_class)">
+            <term-tip :id="h.verdict" :label="h.verdict"></term-tip>
+          </span>
+          <span v-if="h.rank" class="text-[10px] font-medium" :class="pctColor(h.rank.percentile)">
+            {{ h.rank.percentile }}th pct
+          </span>
+        </div>
+        <div class="text-[11px] text-slate-500 leading-relaxed mb-3">{{ h.thesis }}</div>
+
+        <div class="flex items-center gap-1.5 mb-3">
+          <span class="text-[10px] text-slate-600"><term-tip id="confidence" label="Confidence"></term-tip></span>
+          <div class="flex-1 h-1 bg-edge rounded-full overflow-hidden">
+            <div class="h-full bar-fill rounded-full"
+                 :class="h.confidence >= 72 ? 'bg-emerald-500' : h.confidence >= 48 ? 'bg-amber-500' : 'bg-red-500'"
+                 :style="{ width: (mounted ? h.confidence : 0) + '%' }"></div>
+          </div>
+          <span class="text-[10px] text-slate-500">{{ h.confidence_label }}</span>
+        </div>
+
+        <div v-if="h.plan && h.plan.stop_loss" class="grid grid-cols-3 gap-1.5 text-center pt-3 border-t border-edge">
+          <div><div class="text-[9px] text-slate-600 uppercase"><term-tip id="stop" label="Stop"></term-tip></div><div class="text-[11px] font-mono text-red-400">₹{{ num(h.plan.stop_loss) }}</div></div>
+          <div><div class="text-[9px] text-slate-600 uppercase"><term-tip id="target" label="Target"></term-tip></div><div class="text-[11px] font-mono text-emerald-400">₹{{ num(h.plan.target) }}</div></div>
+          <div><div class="text-[9px] text-slate-600 uppercase"><term-tip id="rr" label="R:R"></term-tip></div><div class="text-[11px] font-mono">{{ h.plan.risk_reward ?? '—' }}</div></div>
+        </div>
+        <div v-else-if="h.plan && h.plan.target" class="pt-3 border-t border-edge text-center">
+          <div class="text-[9px] text-slate-600 uppercase"><term-tip id="dcf" label="DCF fair value"></term-tip></div>
+          <div class="text-[11px] font-mono">₹{{ num(h.plan.target) }} ({{ num(h.plan.reward_pct) }}%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart + pillars -->
+    <div class="grid lg:grid-cols-3 gap-5">
+      <div class="rise panel rounded-2xl p-5 lg:col-span-2" style="animation-delay:.24s">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-sm font-semibold">Price &amp; Trend</div>
+          <div class="flex gap-3 text-[10px] text-slate-500">
+            <span class="flex items-center gap-1"><i class="w-3 h-0.5 bg-blue-400 inline-block"></i>Close</span>
+            <span class="flex items-center gap-1"><i class="w-3 h-0.5 bg-amber-500 inline-block"></i><term-tip id="50dma" label="50-DMA"></term-tip></span>
+            <span class="flex items-center gap-1"><i class="w-3 h-0.5 bg-violet-500 inline-block"></i><term-tip id="200dma" label="200-DMA"></term-tip></span>
+          </div>
+        </div>
+        <price-chart :series="result.technicals.series"></price-chart>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-edge">
+          <div v-for="m in chartStats" :key="m.k">
+            <div class="text-[10px] text-slate-600 uppercase tracking-wide"><term-tip :id="m.id || m.k" :label="m.k"></term-tip></div>
+            <div class="text-sm font-mono" :class="m.cls">{{ m.v }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rise panel rounded-2xl p-5" style="animation-delay:.28s">
+        <div class="text-sm font-semibold mb-4">Pillar Scores</div>
+        <div class="space-y-2.5">
+          <div v-for="(p,k) in result.pillars" :key="k" class="cursor-pointer group" v-on:click="togglePillar(k)">
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="text-slate-400 group-hover:text-white transition"><term-tip :id="k" :label="p.label"></term-tip></span>
+              <span class="font-mono" :class="scoreColor(p.score)">{{ p.score != null ? p.score.toFixed(0) : '—' }}</span>
+            </div>
+            <div class="h-1.5 bg-edge rounded-full overflow-hidden">
+              <div class="h-full bar-fill rounded-full" :class="scoreBg(p.score)"
+                   :style="{ width: (mounted && p.score ? p.score : 0) + '%' }"></div>
+            </div>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-600 mt-4 pt-3 border-t border-edge">Click a pillar to see its metrics. Dotted terms explain what they mean here.</div>
+      </div>
+    </div>
+
+    <!-- Pros / Cons -->
+    <div class="grid lg:grid-cols-2 gap-5">
+      <div class="rise panel rounded-2xl p-5" style="animation-delay:.32s">
+        <div class="text-sm font-semibold mb-3 text-emerald-400">What's working</div>
+        <ul class="space-y-2">
+          <li v-for="(p,i) in result.pros" :key="i" class="flex gap-2.5 text-xs text-slate-300 leading-relaxed">
+            <span class="text-emerald-500 mt-0.5 shrink-0">▸</span><span>{{ p }}</span>
+          </li>
+          <li v-if="!result.pros.length" class="text-xs text-slate-600">Nothing scored strongly enough to list.</li>
+        </ul>
+      </div>
+      <div class="rise panel rounded-2xl p-5" style="animation-delay:.34s">
+        <div class="text-sm font-semibold mb-3 text-red-400">What's not</div>
+        <ul class="space-y-2">
+          <li v-for="(c,i) in result.cons" :key="i" class="flex gap-2.5 text-xs text-slate-300 leading-relaxed">
+            <span class="text-red-500 mt-0.5 shrink-0">▸</span><span>{{ c }}</span>
+          </li>
+          <li v-if="!result.cons.length" class="text-xs text-slate-600">No material negatives flagged.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AI thesis -->
+    <div class="rise panel rounded-2xl p-6" style="animation-delay:.38s"
+         :class="ai ? 'border-blue-900/40' : ''">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-5 h-5 rounded bg-gradient-to-br from-blue-500 to-violet-600 grid place-items-center text-[10px] font-bold">AI</div>
+        <div class="text-sm font-semibold">Analyst Thesis</div>
+        <span v-if="result.ai && result.ai.model" class="text-[10px] text-slate-600 font-mono">{{ result.ai.model }}</span>
+      </div>
+
+      <div v-if="aiLoading" class="text-xs text-slate-500 bg-black/30 rounded-lg p-4 border border-edge">
+        Writing the thesis from the numbers above…
+      </div>
+      <div v-else-if="!ai" class="text-xs text-slate-500 bg-black/30 rounded-lg p-4 border border-edge">
+        <div v-if="result.ai && result.ai.error" class="text-amber-400/90 mb-2">{{ result.ai.error }}</div>
+        <div v-else>Quant is done. Generate a written thesis from these numbers only if you want one.</div>
+        <div class="mt-2 text-slate-600">The scores above are computed from filings and price data, and do not depend on the AI layer.</div>
+        <button type="button" v-on:click="runThesis()" :disabled="!aiReady || aiLoading"
+                class="mt-4 shimmer rounded-lg px-4 py-2 text-xs font-semibold border border-edge disabled:opacity-40">
+          <span class="relative z-10">{{ aiReady ? 'Generate thesis' : 'AI not configured' }}</span>
+        </button>
+      </div>
+
+      <div v-else-if="ai" class="space-y-5">
+        <div class="text-base font-medium text-white leading-relaxed">{{ ai.headline }}</div>
+        <p class="text-xs text-slate-400 leading-relaxed">{{ ai.business_summary }}</p>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-black/30 rounded-lg p-4 border border-edge">
+            <div class="text-[11px] font-semibold text-slate-300 mb-1.5">Business quality</div>
+            <p class="text-xs text-slate-400 leading-relaxed">{{ ai.quality_verdict }}</p>
+          </div>
+          <div class="bg-black/30 rounded-lg p-4 border border-edge">
+            <div class="text-[11px] font-semibold text-slate-300 mb-1.5">Valuation</div>
+            <p class="text-xs text-slate-400 leading-relaxed">{{ ai.valuation_verdict }}</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <div class="text-[11px] font-semibold text-emerald-400 mb-2">Bull case</div>
+            <ul class="space-y-1.5">
+              <li v-for="(b,i) in ai.bull_case" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-emerald-600">+</span>{{ b }}</li>
+            </ul>
+          </div>
+          <div>
+            <div class="text-[11px] font-semibold text-red-400 mb-2">Bear case</div>
+            <ul class="space-y-1.5">
+              <li v-for="(b,i) in ai.bear_case" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-red-600">−</span>{{ b }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-3">
+          <div v-for="c in ai.horizon_calls" :key="c.horizon" class="bg-black/30 rounded-lg p-3.5 border border-edge">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-semibold capitalize">{{ c.horizon }}</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(c.stance))">{{ c.stance }}</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed mb-2">{{ c.rationale }}</p>
+            <div class="text-[10px] text-slate-600 leading-relaxed pt-2 border-t border-edge">
+              <span class="text-slate-500">Flips if:</span> {{ c.what_would_change_it }}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <div class="text-[11px] font-semibold text-amber-400 mb-2">Key risks</div>
+            <ul class="space-y-1.5"><li v-for="(r,i) in ai.key_risks" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-amber-600">!</span>{{ r }}</li></ul>
+          </div>
+          <div>
+            <div class="text-[11px] font-semibold text-sky-400 mb-2">What to watch</div>
+            <ul class="space-y-1.5"><li v-for="(w,i) in ai.what_to_watch" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-sky-600">◆</span>{{ w }}</li></ul>
+          </div>
+        </div>
+
+        <div class="bg-violet-950/20 border border-violet-900/40 rounded-lg p-4">
+          <div class="text-[11px] font-semibold text-violet-300 mb-1.5">Where the score may be wrong</div>
+          <p class="text-xs text-slate-400 leading-relaxed">{{ ai.contrarian_note }}</p>
+        </div>
+
+        <div v-if="ai.data_caveats && ai.data_caveats.length" class="text-[10px] text-slate-600">
+          <span class="text-slate-500">Data caveats:</span> {{ ai.data_caveats.join(' · ') }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Valuation + risk -->
+    <div class="grid lg:grid-cols-2 gap-5">
+      <div class="rise panel rounded-2xl p-5" style="animation-delay:.42s">
+        <div class="text-sm font-semibold mb-4">Valuation &amp; DCF</div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div v-for="v in valuationStats" :key="v.k" class="bg-black/25 rounded-lg px-3 py-2.5 border border-edge">
+            <div class="text-[10px] text-slate-600 uppercase tracking-wide"><term-tip :id="v.id || v.k" :label="v.k"></term-tip></div>
+            <div class="text-sm font-mono">{{ v.v }}</div>
+          </div>
+        </div>
+        <div v-if="dcf && dcf.skipped" class="text-[11px] text-slate-500 bg-black/25 rounded-lg p-3 border border-edge">
+          <term-tip id="dcf" label="DCF"></term-tip> skipped — {{ dcf.skipped }}
+        </div>
+        <div v-else-if="dcf" class="text-[11px] text-slate-500 bg-black/25 rounded-lg p-3 border border-edge leading-relaxed">
+          <span class="text-slate-400"><term-tip id="dcf" label="DCF"></term-tip> assumptions:</span>
+          base <term-tip id="fcf" label="FCF"></term-tip> ₹{{ fmtCr(dcf.base_fcf_cr) }} Cr, growing {{ dcf.stage1_growth_pct }}% fading to
+          <term-tip id="terminalgrowth" label="terminal growth"></term-tip> {{ dcf.terminal_growth_pct }}%,
+          <term-tip id="discountrate" label="discounted"></term-tip> at {{ dcf.discount_rate_pct }}%
+          (<term-tip id="beta" label="beta"></term-tip> {{ dcf.beta_used }}) over {{ dcf.horizon_years }} years.
+        </div>
+      </div>
+
+      <div class="rise panel rounded-2xl p-5" style="animation-delay:.44s">
+        <div class="text-sm font-semibold mb-4">Risk</div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div v-for="v in riskStats" :key="v.k" class="bg-black/25 rounded-lg px-3 py-2.5 border border-edge">
+            <div class="text-[10px] text-slate-600 uppercase tracking-wide"><term-tip :id="v.id || v.k" :label="v.k"></term-tip></div>
+            <div class="text-sm font-mono">{{ v.v }}</div>
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          <div v-for="(f,i) in result.risk.red_flags" :key="i"
+               class="text-[11px] px-3 py-2 rounded-lg border flex gap-2 leading-relaxed"
+               :class="f.severity==='high' ? 'bg-red-950/25 border-red-900/40 text-red-300'
+                     : f.severity==='medium' ? 'bg-amber-950/25 border-amber-900/40 text-amber-300'
+                     : 'bg-black/25 border-edge text-slate-500'">
+            <span class="shrink-0 uppercase text-[9px] font-bold pt-0.5">{{ f.severity }}</span>{{ f.text }}
+          </div>
+          <div v-if="!result.risk.red_flags.length" class="text-[11px] text-slate-600">No red flags triggered.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metric detail -->
+    <div class="rise panel rounded-2xl p-5" style="animation-delay:.48s">
+      <div class="flex items-center gap-2 flex-wrap mb-4">
+        <div class="text-sm font-semibold mr-2">Metric detail</div>
+        <button v-for="(p,k) in result.pillars" :key="k" v-on:click="activePillar=k"
+                class="text-[11px] px-2.5 py-1 rounded-md border transition"
+                :class="activePillar===k ? 'border-blue-600 bg-blue-950/40 text-blue-300' : 'border-edge text-slate-500 hover:text-slate-300'">
+          {{ p.label }}
+        </button>
+      </div>
+      <div v-if="currentPillar">
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead><tr class="text-[10px] uppercase tracking-wide text-slate-600 border-b border-edge">
+              <th class="text-left py-2 font-medium"><term-tip id="metric" label="Metric"></term-tip></th>
+              <th class="text-right py-2 font-medium">Value</th>
+              <th class="text-right py-2 font-medium w-20"><term-tip id="metricscore" label="Score"></term-tip></th>
+              <th class="text-left py-2 pl-4 font-medium hidden md:table-cell">Read</th>
+            </tr></thead>
+            <tbody>
+              <tr v-for="m in currentPillar.metrics" :key="m.key" class="border-b border-edge/50">
+                <td class="py-2.5 text-slate-300"><term-tip :id="m.key" :label="m.label"></term-tip></td>
+                <td class="py-2.5 text-right font-mono">{{ m.display }}</td>
+                <td class="py-2.5 text-right">
+                  <span class="font-mono px-1.5 py-0.5 rounded text-[11px]" :class="verdictPill(m.verdict)">
+                    {{ m.score != null ? m.score.toFixed(0) : '—' }}
+                  </span>
+                </td>
+                <td class="py-2.5 pl-4 text-slate-500 hidden md:table-cell leading-relaxed">{{ m.note }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-if="currentPillar.notes.length" class="mt-3 pt-3 border-t border-edge space-y-1">
+          <div v-for="(n,i) in currentPillar.notes" :key="i" class="text-[11px] text-slate-500">· {{ n }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- News -->
+    <div v-if="result.news.length" class="rise panel rounded-2xl p-5" style="animation-delay:.52s">
+      <div class="text-sm font-semibold mb-3">Recent news</div>
+      <div class="space-y-2">
+        <a v-for="(n,i) in result.news" :key="i" :href="n.url" target="_blank" rel="noopener"
+           class="block px-3 py-2.5 rounded-lg bg-black/25 border border-edge hover:border-slate-700 transition">
+          <div class="text-xs text-slate-300 leading-relaxed">{{ n.title }}</div>
+          <div class="text-[10px] text-slate-600 mt-1">{{ n.publisher }}</div>
+        </a>
+      </div>
+    </div>
+
+    <footer class="text-[11px] text-slate-600 leading-relaxed pt-4 pb-10 text-center">
+      {{ result.disclaimer }}
+      <span v-if="result.data_gaps.length" class="block mt-1">Data gaps: {{ result.data_gaps.join(', ') }}.</span>
+      <span class="block mt-1">Computed in {{ result.elapsed_ms }} ms.</span>
+    </footer>
+  </main>
+
+  <div v-if="glossaryOpen" class="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-20 pb-8 glossary-scrim"
+       v-on:click.self="glossaryOpen = false">
+    <div class="rounded-2xl w-full max-w-2xl max-h-[min(80vh,40rem)] overflow-hidden flex flex-col border border-edge shadow-2xl bg-[#0c0c12]">
+      <div class="flex items-center gap-3 px-4 py-3 border-b border-edge">
+        <input v-model="glossaryQuery" type="search" placeholder="Search terms — P/E, ROCE, RSI…"
+               class="flex-1 bg-black/50 rounded-lg px-3 py-2 text-sm outline-none placeholder-slate-600"
+               autofocus>
+        <button type="button" class="text-[11px] px-2 py-1 rounded-md border border-edge text-slate-400 hover:text-white"
+                v-on:click="glossaryOpen = false">Close</button>
+      </div>
+      <div class="overflow-y-auto px-4 py-3 space-y-3">
+        <div v-for="e in glossaryHits" :key="e.title" class="border-b border-edge/60 pb-3 last:border-0">
+          <div class="text-sm font-semibold text-white mb-1.5">{{ e.title }}</div>
+          <div class="text-[9px] uppercase tracking-wider text-slate-600 mb-0.5">What it is</div>
+          <p class="text-[12px] text-slate-400 leading-relaxed mb-2">{{ e.what }}</p>
+          <div class="text-[9px] uppercase tracking-wider text-slate-600 mb-0.5">In this score</div>
+          <p class="text-[12px] text-slate-400 leading-relaxed">{{ e.here }}</p>
+        </div>
+        <div v-if="!glossaryHits.length" class="text-xs text-slate-600 py-8 text-center">No terms match that.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/glossary.js"></script>
+<script>
+const { createApp } = Vue;
+
+const TickerSearch = {
+  props: {
+    modelValue: String,
+    placeholder: { default: '' },
+    compact: Boolean,
+  },
+  emits: ['update:modelValue', 'submit', 'pick'],
+  data() {
+    return { hits: [], open: false, active: -1, seq: 0, timer: null, suppress: false };
+  },
+  watch: {
+    modelValue() {
+      if (this.suppress) { this.suppress = false; return; }
+      this.schedule();
+    },
+  },
+  methods: {
+    schedule() {
+      clearTimeout(this.timer);
+      const q = (this.modelValue || '').trim();
+      if (q.length < 1) {
+        this.hits = []; this.open = false; this.active = -1;
+        return;
+      }
+      this.timer = setTimeout(() => this.load(q), 160);
+    },
+    async load(q) {
+      const id = ++this.seq;
+      try {
+        const res = await fetch('/api/search?q=' + encodeURIComponent(q));
+        const data = await res.json();
+        if (id !== this.seq) return;
+        this.hits = data.matches || [];
+        this.open = this.hits.length > 0;
+        this.active = this.hits.length ? 0 : -1;
+      } catch (_) {
+        if (id !== this.seq) return;
+        this.hits = [];
+        this.open = false;
+      }
+    },
+    onInput(e) { this.$emit('update:modelValue', e.target.value); },
+    onKey(e) {
+      if (!this.open || !this.hits.length) {
+        if (e.key === 'Enter') { e.preventDefault(); this.$emit('submit'); }
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.active = (this.active + 1) % this.hits.length;
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.active = (this.active - 1 + this.hits.length) % this.hits.length;
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (this.active >= 0) this.choose(this.hits[this.active]);
+        else this.$emit('submit');
+      } else if (e.key === 'Escape') {
+        this.open = false;
+      }
+    },
+    choose(hit) {
+      this.suppress = true;
+      this.open = false;
+      this.hits = [];
+      this.$emit('update:modelValue', hit.symbol);
+      this.$emit('pick', hit);
+    },
+  },
+  template: `
+    <div class="halo">
+      <input :value="modelValue" :placeholder="placeholder" :autofocus="!compact"
+             autocomplete="off" spellcheck="false"
+             :class="compact ? 'px-4 py-2 text-sm' : 'px-5 py-4 text-base'"
+             class="w-full bg-black/85 rounded-xl outline-none placeholder-slate-600"
+             @input="onInput" @keydown="onKey" @focus="open = hits.length > 0">
+      <div v-if="open && hits.length" class="ticker-drop">
+        <button type="button" v-for="(h,i) in hits" :key="h.symbol"
+                class="w-full px-4 py-2.5 flex items-baseline justify-between gap-3"
+                :class="i === active ? 'active' : ''"
+                @mousedown.prevent="choose(h)"
+                @mouseenter="active = i">
+          <span class="text-xs font-mono text-blue-300">{{ h.symbol }}</span>
+          <span class="text-[11px] text-slate-500 truncate">{{ h.name }}</span>
+        </button>
+      </div>
+    </div>`,
+};
+
+const TermTip = {
+  props: { id: [String, Number], label: String },
+  data() { return { open: false, popStyle: {} }; },
+  computed: {
+    entry() { return window.termEntry ? (termEntry(this.id) || termEntry(this.label)) : null; },
+  },
+  mounted() {
+    this._onDoc = (e) => {
+      if (!this.open) return;
+      if (this.$el.contains(e.target)) return;
+      if (this.$refs.pop && this.$refs.pop.contains(e.target)) return;
+      this.open = false;
+    };
+    this._onPeer = (e) => { if (e.detail !== this) this.open = false; };
+    this._onEsc = (e) => { if (e.key === 'Escape') this.open = false; };
+    this._reposition = () => { if (this.open) this.place(); };
+    document.addEventListener('click', this._onDoc);
+    document.addEventListener('term-open', this._onPeer);
+    document.addEventListener('keydown', this._onEsc);
+    window.addEventListener('scroll', this._reposition, true);
+    window.addEventListener('resize', this._reposition);
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this._onDoc);
+    document.removeEventListener('term-open', this._onPeer);
+    document.removeEventListener('keydown', this._onEsc);
+    window.removeEventListener('scroll', this._reposition, true);
+    window.removeEventListener('resize', this._reposition);
+  },
+  methods: {
+    toggle(e) {
+      if (!this.entry) return;
+      e.preventDefault();
+      e.stopPropagation();
+      document.dispatchEvent(new CustomEvent('term-open', { detail: this }));
+      this.open = !this.open;
+      if (this.open) this.$nextTick(() => this.place());
+    },
+    place() {
+      const el = this.$refs.anchor;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const w = Math.min(288, window.innerWidth * 0.72);
+      let left = r.left;
+      if (left + w > window.innerWidth - 12) left = Math.max(12, window.innerWidth - w - 12);
+      if (left < 12) left = 12;
+      const flip = window.innerHeight - r.bottom < 220;
+      this.popStyle = {
+        position: 'fixed',
+        left: left + 'px',
+        width: w + 'px',
+        zIndex: 80,
+        ...(flip
+          ? { bottom: (window.innerHeight - r.top + 8) + 'px', top: 'auto' }
+          : { top: (r.bottom + 8) + 'px', bottom: 'auto' }),
+      };
+    },
+  },
+  template: `
+    <span>
+      <span v-if="!entry">{{ label }}</span>
+      <span v-else ref="anchor" class="term" role="button" tabindex="0"
+            :aria-expanded="open ? 'true' : 'false'"
+            @click="toggle" @keydown.enter.prevent="toggle" @keydown.space.prevent="toggle">{{ label }}</span>
+      <teleport to="body">
+        <div v-if="open && entry" ref="pop" class="term-pop" :style="popStyle" @click.stop>
+          <div class="text-[12px] font-semibold text-white mb-2">{{ entry.title }}</div>
+          <div class="kicker">What it is</div>
+          <p class="text-[11px] text-slate-400 leading-relaxed mb-2">{{ entry.what }}</p>
+          <div class="kicker">In this score</div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">{{ entry.here }}</p>
+        </div>
+      </teleport>
+    </span>`,
+};
+
+const ScoreRing = {
+  props: { score: Number, size: { default: 120 }, stroke: { default: 8 }, compact: Boolean },
+  data() { return { shown: 0 }; },
+  mounted() { requestAnimationFrame(() => { this.shown = this.score || 0; }); },
+  watch: { score(v) { this.shown = 0; requestAnimationFrame(() => { this.shown = v || 0; }); } },
+  computed: {
+    r() { return (this.size - this.stroke) / 2; },
+    circ() { return 2 * Math.PI * this.r; },
+    offset() { return this.circ * (1 - (this.shown || 0) / 100); },
+    color() {
+      const s = this.score;
+      if (s == null) return '#3f3f52';
+      if (s >= 80) return '#10b981';
+      if (s >= 66) return '#34d399';
+      if (s >= 50) return '#f59e0b';
+      if (s >= 35) return '#fb923c';
+      return '#ef4444';
+    },
+  },
+  template: `
+    <div class="relative inline-grid place-items-center" :style="{width: size+'px', height: size+'px'}">
+      <svg :width="size" :height="size" class="-rotate-90">
+        <circle :cx="size/2" :cy="size/2" :r="r" fill="none" stroke="#1c1c26" :stroke-width="stroke"/>
+        <circle class="ring-arc" :cx="size/2" :cy="size/2" :r="r" fill="none" :stroke="color"
+                :stroke-width="stroke" stroke-linecap="round"
+                :stroke-dasharray="circ" :stroke-dashoffset="offset"/>
+      </svg>
+      <div class="absolute text-center">
+        <div :class="compact ? 'text-lg' : 'text-3xl'" class="font-bold font-mono leading-none">
+          {{ score != null ? score.toFixed(0) : '—' }}
+        </div>
+        <div v-if="!compact" class="text-[9px] text-slate-600 uppercase tracking-wider mt-1">/ 100</div>
+      </div>
+    </div>`,
+};
+
+const PriceChart = {
+  props: { series: Object },
+  computed: {
+    view() {
+      const s = this.series;
+      if (!s || !s.close || !s.close.length) return null;
+      const W = 720, H = 200, PAD = 6;
+      const all = [...s.close, ...(s.sma50 || []), ...(s.sma200 || [])].filter(v => v != null);
+      const min = Math.min(...all), max = Math.max(...all);
+      const span = (max - min) || 1;
+      const n = s.close.length;
+      const x = i => PAD + (i / (n - 1)) * (W - PAD * 2);
+      const y = v => PAD + (1 - (v - min) / span) * (H - PAD * 2);
+      const path = arr => {
+        let d = '', started = false;
+        arr.forEach((v, i) => {
+          if (v == null) { started = false; return; }
+          d += (started ? ' L' : ' M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1);
+          started = true;
+        });
+        return d.trim();
+      };
+      const closePath = path(s.close);
+      const area = closePath ? `${closePath} L${x(n - 1).toFixed(1)} ${H - PAD} L${x(0).toFixed(1)} ${H - PAD} Z` : '';
+      return {
+        W, H, close: closePath, area,
+        sma50: path(s.sma50 || []), sma200: path(s.sma200 || []),
+        first: s.dates[0], last: s.dates[s.dates.length - 1],
+        hi: max.toFixed(0), lo: min.toFixed(0),
+      };
+    },
+  },
+  template: `
+    <div v-if="view" class="relative">
+      <svg :viewBox="'0 0 ' + view.W + ' ' + view.H" class="w-full" preserveAspectRatio="none" style="height:200px">
+        <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity=".22"/>
+          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+        </linearGradient></defs>
+        <path :d="view.area" fill="url(#ag)"/>
+        <path :d="view.sma200" fill="none" stroke="#8b5cf6" stroke-width="1.2" opacity=".75"/>
+        <path :d="view.sma50" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity=".75"/>
+        <path :d="view.close" fill="none" stroke="#60a5fa" stroke-width="1.8"/>
+      </svg>
+      <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+        <span>{{ view.first }}</span><span>₹{{ view.lo }} – ₹{{ view.hi }}</span><span>{{ view.last }}</span>
+      </div>
+    </div>
+    <div v-else class="h-[200px] grid place-items-center text-xs text-slate-600">No price history available.</div>`,
+};
+
+createApp({
+  components: { ScoreRing, PriceChart, TickerSearch, TermTip },
+  data() {
+    return {
+      query: '', result: null, loading: false, error: '', didYouMean: [], mounted: false,
+      activePillar: 'growth', morphIndex: 0, loadingStep: '', loadingPct: 0,
+      aiReady: false, aiLoading: false, glossaryOpen: false, glossaryQuery: '',
+      taglines: [
+        'Fundamentals, valuation, technicals and filings — in one pass.',
+        'Separate verdicts for short-term, swing and long-term horizons.',
+        'Every score traced back to the number that produced it.',
+        'Built for NSE and BSE listed companies.',
+      ],
+      suggestions: ['RELIANCE', 'TCS', 'HDFCBANK', 'ITC', 'TATASTEEL', 'DMART'],
+      features: [
+        { t: 'Statement-derived', d: 'ROE, ROCE, cash conversion and leverage computed from the filings, not scraped summary fields.' },
+        { t: 'Horizon-aware', d: 'The same evidence weighted three ways, because a good business can be a bad trade.' },
+        { t: 'Shows its work', d: 'Every pillar expands into the individual metrics, thresholds and scores behind it.' },
+      ],
+      disclaimerText: 'Research and education only — not investment advice. Data comes from a free third-party feed and may be delayed or wrong.',
+    };
+  },
+  computed: {
+    ai() { return this.result && this.result.ai && this.result.ai.thesis ? this.result.ai.thesis : null; },
+    currentPillar() { return this.result ? this.result.pillars[this.activePillar] : null; },
+    dcf() { return this.result ? this.result.valuation.dcf_assumptions : null; },
+    chartStats() {
+      const t = this.result.technicals, r = t.returns || {}, rs = t.relative_strength || {};
+      const f = v => v == null ? '—' : (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+      const c = v => v == null ? '' : v >= 0 ? 'text-emerald-400' : 'text-red-400';
+      return [
+        { k: '1M', id: '1m', v: f(r['1m']), cls: c(r['1m']) },
+        { k: '1Y', id: '1y', v: f(r['1y']), cls: c(r['1y']) },
+        { k: 'vs Index 3M', id: 'rs_3m', v: f(rs['3m']), cls: c(rs['3m']) },
+        { k: 'RSI', id: 'rsi', v: t.rsi14 == null ? '—' : t.rsi14.toFixed(0), cls: '' },
+      ];
+    },
+    valuationStats() {
+      const v = this.result.valuation, n = (x, s = 'x') => x == null ? '—' : x.toFixed(2) + s;
+      return [
+        { k: 'P/E', v: n(v.pe) }, { k: '5Y median P/E', v: n(v.pe_median_5y) },
+        { k: 'P/B', v: n(v.pb) }, { k: 'EV/EBITDA', v: n(v.ev_ebitda) },
+        { k: 'PEG', v: n(v.peg) }, { k: 'Div yield', v: v.dividend_yield == null ? '—' : v.dividend_yield.toFixed(2) + '%' },
+        { k: 'DCF value', v: v.dcf_value == null ? '—' : '₹' + v.dcf_value.toFixed(0) },
+        { k: 'DCF upside', v: v.dcf_upside_pct == null ? '—' : v.dcf_upside_pct.toFixed(1) + '%' },
+      ];
+    },
+    riskStats() {
+      const r = this.result.risk, n = (x, s = '') => x == null ? '—' : x.toFixed(2) + s;
+      return [
+        { k: 'Beta', v: n(r.beta) },
+        { k: 'Volatility', v: r.volatility_pct == null ? '—' : r.volatility_pct.toFixed(1) + '%' },
+        { k: 'Max drawdown', v: r.max_drawdown_pct == null ? '—' : r.max_drawdown_pct.toFixed(1) + '%' },
+        { k: 'Turnover/day', v: r.liquidity_cr_per_day == null ? '—' : '₹' + r.liquidity_cr_per_day.toFixed(0) + ' Cr' },
+      ];
+    },
+    glossaryHits() {
+      const all = window.termCatalog ? termCatalog() : [];
+      const q = (this.glossaryQuery || '').trim().toLowerCase();
+      if (!q) return all;
+      return all.filter((e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.what.toLowerCase().includes(q) ||
+        e.here.toLowerCase().includes(q)
+      );
+    },
+  },
+  watch: {
+    glossaryOpen(v) { if (v) this.glossaryQuery = ''; },
+  },
+  mounted() {
+    this.mounted = true;
+    setInterval(() => { this.morphIndex = (this.morphIndex + 1) % this.taglines.length; }, 3200);
+
+    const glow = document.getElementById('glow');
+    let gx = window.innerWidth / 2, gy = 220, tx = gx, ty = gy;
+    document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+    const follow = () => {
+      gx += (tx - gx) * 0.06; gy += (ty - gy) * 0.06;   // damped follow, not a snap
+      glow.style.transform = `translate(${gx}px, ${gy}px) translate(-50%, -50%)`;
+      requestAnimationFrame(follow);
+    };
+    follow();
+
+    fetch('/api/health').then(r => r.json()).then(d => { this.aiReady = !!(d.ai && d.ai.available); }).catch(() => {});
+
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) { this.query = q; this.run(); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.glossaryOpen = false;
+    });
+  },
+  methods: {
+    pickTicker(hit) {
+      this.query = hit.symbol;
+      this.run();
+    },
+    async run() {
+      const q = this.query.trim();
+      if (!q || this.loading) return;
+      this.loading = true; this.aiLoading = false; this.error = ''; this.didYouMean = []; this.result = null;
+      this.stepThrough();
+      try {
+        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=false`);
+        const data = await res.json();
+        if (!res.ok) {
+          // 404s carry {message, suggestions}; other errors carry a plain string.
+          const d = data.detail;
+          if (d && typeof d === 'object') {
+            this.didYouMean = d.suggestions || [];
+            throw new Error(d.message || 'Analysis failed');
+          }
+          throw new Error(d || 'Analysis failed');
+        }
+        this.loadingPct = 100;
+        this.result = data;
+        this.activePillar = 'growth';
+        history.replaceState(null, '', `?q=${encodeURIComponent(q)}`);
+      } catch (e) {
+        this.error = e.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+    stepThrough() {
+      const steps = [
+        'Resolving ticker…', 'Pulling filings and price history…',
+        'Computing ratios from the statements…', 'Running valuation and DCF…',
+        'Scoring technicals and risk…',
+      ];
+      let i = 0;
+      this.loadingStep = steps[0]; this.loadingPct = 8;
+      const tick = setInterval(() => {
+        i++;
+        if (i >= steps.length || !this.loading) { clearInterval(tick); return; }
+        this.loadingStep = steps[i];
+        this.loadingPct = Math.min(92, 8 + (i / steps.length) * 84);
+      }, 1400);
+    },
+    async runThesis() {
+      if (!this.result || this.aiLoading || this.loading || !this.aiReady) return;
+      const q = this.result.symbol || this.query.trim();
+      if (!q) return;
+      this.aiLoading = true;
+      try {
+        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=true`);
+        const data = await res.json();
+        if (!res.ok) {
+          const d = data.detail;
+          const msg = (d && typeof d === 'object') ? (d.message || 'Thesis failed') : (d || 'Thesis failed');
+          throw new Error(msg);
+        }
+        this.result = { ...this.result, ai: data.ai || { error: 'No thesis returned.' } };
+      } catch (e) {
+        this.result = { ...this.result, ai: { error: e.message } };
+      } finally {
+        this.aiLoading = false;
+      }
+    },
+    reset() { this.result = null; this.error = ''; this.query = ''; this.aiLoading = false; history.replaceState(null, '', '/'); },
+    togglePillar(k) { this.activePillar = k; document.querySelector('table')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); },
+    num(v) { return v == null ? '—' : Number(v).toLocaleString('en-IN', { maximumFractionDigits: 2 }); },
+    fmtCr(v) { return v == null ? '—' : Number(v).toLocaleString('en-IN', { maximumFractionDigits: 0 }); },
+    pctColor(p) { return p == null ? 'text-slate-600' : p >= 75 ? 'text-emerald-400' : p >= 45 ? 'text-amber-400' : 'text-red-400'; },
+    pctBg(p) { return p == null ? 'bg-slate-700' : p >= 75 ? 'bg-emerald-500' : p >= 45 ? 'bg-amber-500' : 'bg-red-500'; },
+    scoreColor(s) { return s == null ? 'text-slate-600' : s >= 66 ? 'text-emerald-400' : s >= 50 ? 'text-amber-400' : 'text-red-400'; },
+    scoreBg(s) { return s == null ? 'bg-slate-700' : s >= 66 ? 'bg-emerald-500' : s >= 50 ? 'bg-amber-500' : 'bg-red-500'; },
+    verdictClass(c) {
+      return {
+        'strong-buy': 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60',
+        'buy': 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50',
+        'hold': 'bg-amber-950/40 text-amber-300 border border-amber-900/50',
+        'reduce': 'bg-orange-950/40 text-orange-300 border border-orange-900/50',
+        'avoid': 'bg-red-950/40 text-red-300 border border-red-900/50',
+      }[c] || 'bg-slate-800/60 text-slate-400 border border-edge';
+    },
+    stanceClass(s) { return { 'Strong Buy': 'strong-buy', 'Buy': 'buy', 'Hold': 'hold', 'Reduce': 'reduce', 'Avoid': 'avoid' }[s] || 'hold'; },
+    verdictPill(v) {
+      return { good: 'bg-emerald-950/60 text-emerald-400', ok: 'bg-amber-950/60 text-amber-400',
+               bad: 'bg-red-950/60 text-red-400' }[v] || 'bg-slate-800 text-slate-500';
+    },
+  },
+}).mount('#app');
+</script>
+</body>
+</html>
