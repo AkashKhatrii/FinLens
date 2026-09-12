@@ -52,6 +52,72 @@ HORIZONS: dict[str, dict[str, Any]] = {
     },
 }
 
+# Within-pillar applicability. Default is 1.0 — the metric votes at the
+# de-overlap weight in metric_weights.py. Only contaminated factors are
+# listed. 0 means the metric is shown on the report but does not move this
+# horizon. Pillar mix above is unchanged.
+HORIZON_FACTOR: dict[str, dict[str, float]] = {
+    "short": {
+        "rev_cagr": 0.0, "pat_cagr": 0.0,
+        "roe": 0.0, "roce": 0.0, "op_margin": 0.0, "net_margin": 0.0,
+        "debt_equity": 0.0, "net_debt_ebitda": 0.0, "interest_cover": 0.0,
+        "current_ratio": 0.0, "ocf_to_pat": 0.0, "fcf_margin": 0.0,
+        "dcf_upside": 0.0, "promoter_holding": 0.0,
+        "rev_yoy": 0.35, "pat_yoy": 0.35, "margin_trend": 0.25,
+        "pe": 0.5, "pe_vs_history": 0.5, "pb": 0.4, "ev_ebitda": 0.25,
+        "peg": 0.25, "earnings_yield_spread": 0.4, "dividend_yield": 0.15,
+        "institutional_holding": 0.35,
+    },
+    "swing": {
+        "rev_cagr": 0.55, "pat_cagr": 0.55,
+        "dcf_upside": 0.5, "promoter_holding": 0.45,
+    },
+    "long": {
+        "rsi14": 0.0, "pct_b": 0.0, "vs_sma20": 0.0, "ret_1w": 0.0,
+        "volume_ratio": 0.0,
+        "rs_3m": 0.2, "vs_sma50": 0.25,
+        "q_rev_yoy": 0.25, "q_pat_yoy": 0.25,
+        "avg_surprise": 0.4,
+        "analyst_rating": 0.4, "analyst_upside": 0.4,
+    },
+}
+
+
+def factor_scale(horizon: str, key: str) -> float:
+    """How much a metric may influence this horizon. 1.0 is full, 0 is none."""
+    return float(HORIZON_FACTOR.get(horizon, {}).get(key, 1.0))
+
+
+def _horizon_pillar_score(pillar: Pillar, horizon: str) -> float | None:
+    scored = []
+    for m in pillar.metrics:
+        if m.score is None:
+            continue
+        scale = factor_scale(horizon, m.key)
+        if scale <= 0:
+            continue
+        scored.append((m.score, m.weight * scale))
+    if not scored:
+        return None
+    total_w = sum(w for _, w in scored)
+    if total_w == 0:
+        return None
+    return sum(score * w for score, w in scored) / total_w
+
+
+def _horizon_pillar_coverage(pillar: Pillar, horizon: str) -> float:
+    total = have = 0.0
+    for m in pillar.metrics:
+        scale = factor_scale(horizon, m.key)
+        if scale <= 0:
+            continue
+        w = m.weight * scale
+        total += w
+        if m.score is not None:
+            have += w
+    return have / total if total else 0.0
+
+
 # Blend used for the single headline number, tilted toward the long view.
 OVERALL_BLEND = {"short": 0.20, "swing": 0.30, "long": 0.50}
 
@@ -92,7 +158,8 @@ def verdict_for(score: float | None) -> tuple[str, str]:
     return "Avoid", "avoid"
 
 
-def _confidence(pillars: dict[str, Pillar], weights: dict[str, float]) -> tuple[float, str]:
+def _confidence(pillars: dict[str, Pillar], weights: dict[str, float],
+                horizon: str) -> tuple[float, str]:
     """Confidence = how much of the weighted evidence we actually have,
     discounted when the pillars disagree sharply with each other."""
     total_w = sum(w for k, w in weights.items() if w > 0)
@@ -101,10 +168,13 @@ def _confidence(pillars: dict[str, Pillar], weights: dict[str, float]) -> tuple[
         if w <= 0:
             continue
         p = pillars.get(key)
-        if p is None or p.score is None:
+        if p is None:
             continue
-        have_w += w * p.coverage
-        scores.append(p.score)
+        hs = _horizon_pillar_score(p, horizon)
+        if hs is None:
+            continue
+        have_w += w * _horizon_pillar_coverage(p, horizon)
+        scores.append(hs)
 
     coverage = (have_w / total_w) if total_w else 0.0
     agreement = 1.0
@@ -118,7 +188,8 @@ def _confidence(pillars: dict[str, Pillar], weights: dict[str, float]) -> tuple[
     return round(conf * 100, 1), label
 
 
-def _evidence(pillars: dict[str, Pillar], weights: dict[str, float]) -> tuple[list, list]:
+def _evidence(pillars: dict[str, Pillar], weights: dict[str, float],
+              horizon: str) -> tuple[list, list]:
     """Best and worst individual metrics, weighted by how much this horizon
     cares about the pillar they came from."""
     items = []
@@ -131,7 +202,11 @@ def _evidence(pillars: dict[str, Pillar], weights: dict[str, float]) -> tuple[li
         for m in p.metrics:
             if m.score is None:
                 continue
-            items.append((m, p, w))
+            scale = factor_scale(horizon, m.key)
+            if scale <= 0:
+                continue
+            items.append((m, p, w * scale))
+
 
     drivers, detractors = [], []
     for m, p, w in sorted(items, key=lambda t: (-(t[0].score * t[2]))):
@@ -199,15 +274,18 @@ def score_all(pillars: dict[str, Pillar], tech, val, price: float | None) -> dic
             if w <= 0:
                 continue
             p = pillars.get(pillar_key)
-            if p is None or p.score is None:
+            if p is None:
                 continue
-            num += p.score * w
+            hs = _horizon_pillar_score(p, key)
+            if hs is None:
+                continue
+            num += hs * w
             den += w
         score = (num / den) if den else None
 
         label, cls = verdict_for(score)
-        conf, conf_label = _confidence(pillars, weights)
-        drivers, detractors = _evidence(pillars, weights)
+        conf, conf_label = _confidence(pillars, weights, key)
+        drivers, detractors = _evidence(pillars, weights, key)
 
         verdicts[key] = HorizonVerdict(
             key=key, label=spec["label"], window=spec["window"], thesis=spec["thesis"],
