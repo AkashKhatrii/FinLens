@@ -16,6 +16,7 @@ from ..providers.base import StockBundle
 from .common import Metric, Pillar, band, safe_div
 from .fundamentals import FundamentalFacts
 from .metric_weights import EARNINGS, RISK, SENTIMENT
+from .sector import PROFILE_BANK, apply_profile, classify
 
 TRADING_DAYS = 252
 
@@ -60,6 +61,8 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
     r = RiskFacts()
     p = Pillar("risk", "Risk")
     hist = bundle.history
+    profile = classify(bundle.quote.sector, bundle.quote.industry)
+    is_bank = profile == PROFILE_BANK
 
     r.beta = compute_beta(hist, bundle.benchmark_history)
 
@@ -120,14 +123,15 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
             "text": f"Operating margin of {op_m * 100:.0f}% is not achievable from operations — the "
                     "reported profit contains a large one-off. Treat the headline earnings as non-recurring.",
         })
-    elif op_m is not None and net_m is not None and net_m > op_m + 0.05:
+    elif (not is_bank and op_m is not None and net_m is not None
+          and net_m > op_m + 0.05):
         r.red_flags.append({
             "severity": "medium",
             "text": "Net profit exceeds operating profit — earnings depend on non-operating income "
                     "or an exceptional item rather than the core business.",
         })
     ocf_ni = safe_div(f.ocf, f.net_income)
-    if ocf_ni is not None and ocf_ni < 0.6:
+    if not is_bank and ocf_ni is not None and ocf_ni < 0.6:
         r.red_flags.append({"severity": "high",
                             "text": f"Operating cash flow is only {ocf_ni:.0%} of reported profit — earnings quality concern."})
     if f.net_income is not None and f.net_income < 0:
@@ -136,7 +140,7 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
         r.red_flags.append({"severity": "medium",
                             "text": f"Average turnover under ₹{r.liquidity_cr_per_day:.1f} Cr/day — liquidity risk."})
     promoter = bundle.ownership.promoter_or_insider_pct
-    if promoter is not None and promoter < 25:
+    if not is_bank and promoter is not None and promoter < 25:
         r.red_flags.append({"severity": "medium",
                             "text": f"Promoter/insider holding is only {promoter:.1f}% — limited skin in the game."})
     if bundle.gaps:
@@ -259,4 +263,5 @@ def sentiment_analyse(bundle: StockBundle, analyst_upside: float | None) -> Pill
         p.notes.append(f"{len(bundle.news)} recent news items pulled for the AI read.")
     if own.promoter_pledge_pct is None:
         p.notes.append("Promoter pledge data not available from this source — check BSE filings before a large position.")
+    apply_profile(p, classify(bundle.quote.sector, bundle.quote.industry))
     return p

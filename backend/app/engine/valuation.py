@@ -18,6 +18,7 @@ from ..providers.base import StockBundle, latest, pick_row
 from .common import Metric, Pillar, band, cagr, safe_div
 from .fundamentals import FundamentalFacts
 from .metric_weights import VALUATION
+from .sector import PROFILE_BANK, apply_profile, classify
 
 
 @dataclass
@@ -138,7 +139,11 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
     if bundle.analysts.target_mean and price:
         v.analyst_upside_pct = (bundle.analysts.target_mean / price - 1) * 100
 
-    _dcf(v, bundle, f, beta, cfg)
+    profile = classify(bundle.quote.sector, bundle.quote.industry)
+    if profile == PROFILE_BANK:
+        v.dcf_assumptions = {"skipped": "FCF DCF is not applicable for banks."}
+    else:
+        _dcf(v, bundle, f, beta, cfg)
 
     # --- metrics -------------------------------------------------------------
     p.metrics.append(Metric(
@@ -200,6 +205,7 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
             f"Street target ₹{bundle.analysts.target_mean:,.0f} "
             f"({v.analyst_upside_pct:+.1f}%) across {bundle.analysts.analyst_count or '?'} analysts."
         )
+    apply_profile(p, profile)
     return v, p
 
 

@@ -19,6 +19,7 @@ import pandas as pd
 from ..providers.base import Statements, StockBundle, latest, pick_row, series_values
 from .common import Metric, Pillar, band, cagr, pct_change, safe_div, trend_slope_pct
 from .metric_weights import GROWTH, HEALTH, PROFIT
+from .sector import PROFILE_BANK, apply_profile, classify
 
 CRORE = 1e7
 
@@ -131,6 +132,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     st = bundle.statements
     f = extract(st)
     info = bundle.info
+    profile = classify(bundle.quote.sector, bundle.quote.industry)
 
     growth = Pillar("growth", "Growth")
     profit = Pillar("profitability", "Profitability & Returns")
@@ -214,7 +216,9 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     ))
     if exceptional:
         net_margin = None
-    elif op_margin is not None and net_margin is not None and net_margin > op_margin + 5:
+    elif (profile != PROFILE_BANK
+          and op_margin is not None and net_margin is not None
+          and net_margin > op_margin + 5):
         profit.notes.append(
             "Net margin exceeds operating margin — the bottom line is being driven by "
             "non-operating income or a one-off, not by the core business."
@@ -326,6 +330,9 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
         ("Burning cash after capex." if (fcf_margin is not None and fcf_margin < 0) else ""),
         weight=HEALTH["fcf_margin"],
     ))
+    apply_profile(growth, profile)
+    apply_profile(profit, profile)
+    apply_profile(health, profile)
     return f, growth, profit, health
 
 
