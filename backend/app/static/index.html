@@ -1,9 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FinLens — AI Equity Research</title>
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('finlens-theme');
+    if (t !== 'light' && t !== 'dark') t = 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (_) {}
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -12,117 +21,184 @@
 tailwind.config = {
   theme: { extend: {
     fontFamily: { sans: ['Inter','sans-serif'], mono: ['JetBrains Mono','monospace'] },
-    colors: { ink: '#07070a', panel: '#0e0e13', edge: '#1c1c26' },
+    colors: {
+      ink: 'rgb(var(--ink) / <alpha-value>)',
+      panel: 'rgb(var(--panel) / <alpha-value>)',
+      edge: 'rgb(var(--edge) / <alpha-value>)',
+      fg: 'rgb(var(--fg) / <alpha-value>)',
+      muted: 'rgb(var(--muted) / <alpha-value>)',
+      faint: 'rgb(var(--faint) / <alpha-value>)',
+      inset: 'rgb(var(--inset) / <alpha-value>)',
+    },
   }}
 }
 </script>
 <style>
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Inter', sans-serif; background: #07070a; }
-  ::-webkit-scrollbar { width: 9px; height: 9px; }
-  ::-webkit-scrollbar-track { background: #07070a; }
-  ::-webkit-scrollbar-thumb { background: #24242f; border-radius: 9px; }
-  ::-webkit-scrollbar-thumb:hover { background: #35354a; }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: 7 7 10;
+    --panel: 14 14 19;
+    --edge: 28 28 38;
+    --fg: 232 232 237;
+    --muted: 139 139 154;
+    --faint: 92 92 106;
+    --inset: 10 10 14;
+    --track: 28 28 38;
+    --scrim: rgb(0 0 0 / 0.58);
+    --lift: 0 1px 0 rgb(255 255 255 / 0.03);
+  }
+  html[data-theme="light"] {
+    color-scheme: light;
+    --ink: 244 244 246;
+    --panel: 255 255 255;
+    --edge: 226 226 232;
+    --fg: 22 22 26;
+    --muted: 92 92 104;
+    --faint: 138 138 150;
+    --inset: 236 236 240;
+    --track: 226 226 232;
+    --scrim: rgb(22 22 26 / 0.42);
+    --lift: 0 1px 2px rgb(22 22 26 / 0.05);
+  }
 
-  /* GPU hints for everything that animates */
-  .letter-pullup span, .morph .item, .halo::before, .shimmer, .cursor-glow, .ring-arc {
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: rgb(var(--ink));
+    color: rgb(var(--fg));
+  }
+  html, body, header, .panel, .ticker-drop, .term-pop, .glossary-sheet,
+  input, button, .theme-toggle {
+    transition: background-color .22s ease, border-color .22s ease, color .18s ease, box-shadow .22s ease;
+  }
+
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-track { background: rgb(var(--ink)); }
+  ::-webkit-scrollbar-thumb { background: rgb(var(--edge)); border-radius: 9px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--faint)); }
+
+  .letter-pullup span, .morph .item, .ring-arc {
     will-change: transform, opacity; backface-visibility: hidden;
   }
 
-  /* Ambient cursor glow - subtle, no custom cursor replacement so the app
-     stays usable for data entry */
-  .cursor-glow {
-    position: fixed; top: 0; left: 0; width: 460px; height: 460px; border-radius: 50%;
-    pointer-events: none; z-index: 0; opacity: .5;
-    background: radial-gradient(circle, rgba(56,110,255,.10) 0%, rgba(120,60,220,.05) 40%, transparent 70%);
-    transform: translate(-50%, -50%); transition: opacity .4s ease;
-  }
-
-  /* Letter pull-up */
   .letter-pullup { display: inline-flex; }
   .letter-pullup span { display: inline-block; opacity: 0; transform: translateY(100%); animation: pullUp .55s cubic-bezier(.22,1,.36,1) forwards; }
   @keyframes pullUp { to { opacity: 1; transform: translateY(0); } }
 
-  /* Morphing tagline */
   .morph { position: relative; display: block; height: 1.6rem; }
   .morph .item { position: absolute; inset: 0; opacity: 0; transform: translateY(8px);
     transition: opacity .6s ease, transform .6s ease; white-space: nowrap; }
   .morph .item.active { opacity: 1; transform: translateY(0); }
 
-  /* Animated gradient border on the search field */
   .halo { position: relative; border-radius: .75rem; }
-  .halo::before {
-    content: ''; position: absolute; inset: -1px; border-radius: .75rem; padding: 1px;
-    background: linear-gradient(90deg,#2a4cff,#7b3fe4,#2ab6ff,#7b3fe4,#2a4cff);
-    background-size: 300% 100%; animation: borderFlow 5s linear infinite;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    opacity: .45; pointer-events: none; transition: opacity .3s ease;
+  .halo input {
+    border: 1px solid rgb(var(--edge));
+    background: rgb(var(--inset));
+    color: rgb(var(--fg));
   }
-  .halo:focus-within::before { opacity: .95; }
-  @keyframes borderFlow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+  .halo input:focus { border-color: rgb(59 130 246 / 0.7); outline: none; }
 
   .ticker-drop {
     position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 40;
-    background: #0e0e13; border: 1px solid #1c1c26; border-radius: .75rem;
-    overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.45);
+    background: rgb(var(--panel)); border: 1px solid rgb(var(--edge)); border-radius: .75rem;
+    overflow: hidden; box-shadow: var(--lift);
     text-align: left;
   }
-  .ticker-drop button.active, .ticker-drop button:hover { background: rgba(37, 99, 235, .12); }
+  .ticker-drop button.active, .ticker-drop button:hover { background: rgb(37 99 235 / 0.12); }
 
-  .term { position: relative; display: inline; border-bottom: 1px dotted #64748b; cursor: help; }
-  .term:hover { color: #e2e8f0; border-bottom-color: #93c5fd; }
-  .term:focus { outline: none; color: #e2e8f0; border-bottom-color: #93c5fd; }
+  .term { position: relative; display: inline; border-bottom: 1px dotted rgb(var(--faint)); cursor: help; }
+  .term:hover, .term:focus { color: rgb(var(--fg)); border-bottom-color: #93c5fd; outline: none; }
   .term-pop {
     position: fixed; z-index: 80; width: min(18rem, 72vw);
-    background: #0e0e13; border: 1px solid #2a2a38; border-radius: .75rem; padding: .85rem .95rem;
-    box-shadow: 0 18px 40px rgba(0,0,0,.55); text-align: left; font-weight: 400;
+    background: rgb(var(--panel)); border: 1px solid rgb(var(--edge)); border-radius: .75rem; padding: .85rem .95rem;
+    box-shadow: var(--lift); text-align: left; font-weight: 400;
     white-space: normal; letter-spacing: 0; text-transform: none;
   }
-  .term-pop .kicker { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: #64748b; margin-bottom: .2rem; }
-  .glossary-scrim { background: rgba(0,0,0,.55); }
+  .term-pop .kicker { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: rgb(var(--faint)); margin-bottom: .2rem; }
+  .glossary-scrim { background: var(--scrim); }
+  .glossary-sheet { background: rgb(var(--panel)); }
 
-  /* Shimmer button */
-  .shimmer { position: relative; overflow: hidden;
-    background: linear-gradient(110deg,#161a2e 45%,#232a49 55%,#161a2e); background-size: 200% 100%;
-    animation: shimmer 4.5s linear infinite; }
-  .shimmer::before { content:''; position:absolute; inset:0;
-    background: linear-gradient(110deg,transparent 25%,rgba(255,255,255,.10) 50%,transparent 75%);
-    background-size: 200% 100%; animation: shimmer 4.5s linear infinite; }
-  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .cta {
+    background: rgb(var(--panel));
+    color: rgb(var(--fg));
+  }
+  .cta:hover { background: rgb(var(--inset)); }
 
-  /* Staggered card entrance */
   .rise { opacity: 0; transform: translateY(14px); animation: rise .6s cubic-bezier(.22,1,.36,1) forwards; }
   @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 
-  /* Score ring sweep */
   .ring-arc { transition: stroke-dashoffset 1.3s cubic-bezier(.22,1,.36,1), stroke .4s ease; }
   .bar-fill { transition: width 1.1s cubic-bezier(.22,1,.36,1); }
 
-  .panel { background: linear-gradient(180deg, rgba(20,20,28,.9), rgba(12,12,18,.9));
-           border: 1px solid #1c1c26; }
-  .skeleton { background: linear-gradient(90deg,#111119 25%,#1a1a25 50%,#111119 75%);
-              background-size: 200% 100%; animation: sk 1.4s linear infinite; }
-  @keyframes sk { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-  .fade-enter-active { transition: all .45s ease; }
-  .fade-enter-from { opacity: 0; transform: translateY(10px); }
+  .panel {
+    background: rgb(var(--panel));
+    border: 1px solid rgb(var(--edge));
+    box-shadow: var(--lift);
+  }
+  .skeleton {
+    background: rgb(var(--inset));
+    position: relative; overflow: hidden;
+  }
+  .skeleton::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgb(var(--edge) / 0.55), transparent);
+    animation: sk 1.4s linear infinite;
+  }
+  @keyframes sk { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+  .theme-toggle {
+    width: 2rem; height: 2rem; border-radius: .5rem;
+    border: 1px solid rgb(var(--edge));
+    background: rgb(var(--panel));
+    color: rgb(var(--muted));
+    display: grid; place-items: center;
+  }
+  .theme-toggle:hover { color: rgb(var(--fg)); border-color: rgb(var(--muted)); }
+  .theme-toggle svg { width: 15px; height: 15px; }
+
+  .v-strong-buy { background: rgb(16 185 129 / 0.14); color: #34d399; border: 1px solid rgb(16 185 129 / 0.32); }
+  .v-buy { background: rgb(16 185 129 / 0.10); color: #34d399; border: 1px solid rgb(16 185 129 / 0.26); }
+  .v-hold { background: rgb(245 158 11 / 0.12); color: #fbbf24; border: 1px solid rgb(245 158 11 / 0.28); }
+  .v-reduce { background: rgb(251 146 60 / 0.12); color: #fb923c; border: 1px solid rgb(251 146 60 / 0.28); }
+  .v-avoid { background: rgb(239 68 68 / 0.12); color: #f87171; border: 1px solid rgb(239 68 68 / 0.28); }
+  .v-neutral { background: rgb(var(--inset)); color: rgb(var(--muted)); border: 1px solid rgb(var(--edge)); }
+  html[data-theme="light"] .v-strong-buy, html[data-theme="light"] .v-buy { color: #047857; }
+  html[data-theme="light"] .v-hold { color: #b45309; }
+  html[data-theme="light"] .v-reduce { color: #c2410c; }
+  html[data-theme="light"] .v-avoid { color: #b91c1c; }
+
+  .pill-good { background: rgb(16 185 129 / 0.14); color: #34d399; }
+  .pill-ok { background: rgb(245 158 11 / 0.14); color: #fbbf24; }
+  .pill-bad { background: rgb(239 68 68 / 0.14); color: #f87171; }
+  .pill-na { background: rgb(var(--inset)); color: rgb(var(--muted)); }
+  html[data-theme="light"] .pill-good { color: #047857; }
+  html[data-theme="light"] .pill-ok { color: #b45309; }
+  html[data-theme="light"] .pill-bad { color: #b91c1c; }
+
+  .flag-high { background: rgb(239 68 68 / 0.10); border-color: rgb(239 68 68 / 0.28); color: #fca5a5; }
+  .flag-med { background: rgb(245 158 11 / 0.10); border-color: rgb(245 158 11 / 0.28); color: #fcd34d; }
+  html[data-theme="light"] .flag-high { color: #b91c1c; }
+  html[data-theme="light"] .flag-med { color: #b45309; }
+
+  .note-violet { background: rgb(139 92 246 / 0.10); border: 1px solid rgb(139 92 246 / 0.28); }
+  .tab-on { border-color: rgb(37 99 235 / 0.7); background: rgb(37 99 235 / 0.12); color: #93c5fd; }
+  html[data-theme="light"] .tab-on { color: #1d4ed8; }
 </style>
 </head>
-<body class="text-slate-200 antialiased">
-<div class="cursor-glow" id="glow"></div>
+<body class="text-fg antialiased">
 
 <div id="app" class="relative z-10 min-h-screen">
 
   <!-- ============ HEADER ============ -->
-  <header class="border-b border-edge/80 sticky top-0 z-30 bg-ink/85 backdrop-blur-xl">
+  <header class="border-b border-edge sticky top-0 z-30 bg-ink">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
       <div class="flex items-center gap-3 shrink-0">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 grid place-items-center text-sm font-bold">F</div>
+        <div class="w-8 h-8 rounded-lg bg-blue-600 grid place-items-center text-sm font-bold text-white">F</div>
         <span class="text-[17px] font-semibold tracking-tight letter-pullup">
           <span v-for="(ch,i) in 'FinLens'" :key="i" :style="{ animationDelay: (i*0.05)+'s' }"
                 :class="i>=3 ? 'text-blue-400 font-normal' : ''">{{ ch }}</span>
         </span>
-        <span class="hidden sm:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-slate-500">NSE / BSE</span>
+        <span class="hidden sm:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-muted">NSE / BSE</span>
       </div>
 
       <!-- compact search once results are shown -->
@@ -131,13 +207,24 @@ tailwind.config = {
                        @submit="run()" @pick="pickTicker"></ticker-search>
       </form>
 
-      <div class="flex items-center gap-3 text-[11px] text-slate-500 shrink-0">
-        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-white hover:border-slate-600"
+      <div class="flex items-center gap-3 text-[11px] text-muted shrink-0">
+        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 v-on:click="glossaryOpen = true">Terms</button>
         <span class="hidden md:flex items-center gap-2">
           <span class="w-1.5 h-1.5 rounded-full" :class="aiReady ? 'bg-emerald-400' : 'bg-amber-400'"></span>
           {{ aiReady ? 'AI ready' : 'Quant only' }}
         </span>
+        <button type="button" class="theme-toggle" v-on:click="toggleTheme"
+                :aria-label="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+                :title="theme === 'dark' ? 'Light mode' : 'Dark mode'">
+          <svg v-if="theme === 'dark'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 3v1.5M12 19.5V21M4.9 4.9l1.1 1.1M18 18l1.1 1.1M3 12h1.5M19.5 12H21M4.9 19.1l1.1-1.1M18 6l1.1-1.1"></path>
+          </svg>
+          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"></path>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
@@ -146,9 +233,9 @@ tailwind.config = {
   <section v-if="!result && !loading && !error" class="max-w-3xl mx-auto px-6 pt-24 pb-16 text-center">
     <h1 class="text-5xl font-bold tracking-tight mb-5 leading-tight">
       Know what a stock is<br>
-      <span class="bg-gradient-to-r from-blue-400 via-violet-400 to-sky-300 bg-clip-text text-transparent">actually worth</span>
+      <span class="text-blue-400">actually worth</span>
     </h1>
-    <div class="morph text-slate-400 text-base mb-12">
+    <div class="morph text-muted text-base mb-12">
       <span v-for="(t,i) in taglines" :key="i" class="item" :class="{active: morphIndex===i}">{{ t }}</span>
     </div>
 
@@ -156,32 +243,32 @@ tailwind.config = {
       <ticker-search v-model="query" placeholder="Try RELIANCE, TCS, or 'tata motors'"
                      @submit="run()" @pick="pickTicker"></ticker-search>
       <button type="submit" :disabled="loading"
-              class="shimmer w-full rounded-xl px-5 py-3.5 text-sm font-semibold border border-edge disabled:opacity-50">
-        <span class="relative z-10">Run full analysis</span>
+              class="cta w-full rounded-xl px-5 py-3.5 text-sm font-semibold border border-edge disabled:opacity-50">
+        Run full analysis
       </button>
     </form>
 
     <div class="flex flex-wrap gap-2 justify-center mt-7">
       <button v-for="s in suggestions" :key="s" v-on:click="query=s; run()"
-              class="text-xs px-3 py-1.5 rounded-full border border-edge text-slate-400 hover:text-white hover:border-slate-600 transition">{{ s }}</button>
+              class="text-xs px-3 py-1.5 rounded-full border border-edge text-muted hover:text-fg hover:border-muted transition">{{ s }}</button>
     </div>
 
     <div class="grid grid-cols-3 gap-4 mt-16 text-left">
       <div v-for="f in features" :key="f.t" class="panel rounded-xl p-4">
         <div class="text-xs font-semibold text-blue-400 mb-1.5">{{ f.t }}</div>
-        <div class="text-xs text-slate-500 leading-relaxed">{{ f.d }}</div>
+        <div class="text-xs text-muted leading-relaxed">{{ f.d }}</div>
       </div>
     </div>
-    <p class="text-[11px] text-slate-600 mt-10 leading-relaxed">{{ disclaimerText }}
-      Dotted labels on a report explain the term and how FinLens uses it — or open <button type="button" class="underline hover:text-slate-400" v-on:click="glossaryOpen = true">Terms</button>.</p>
+    <p class="text-[11px] text-faint mt-10 leading-relaxed">{{ disclaimerText }}
+      Dotted labels on a report explain the term and how FinLens uses it — or open <button type="button" class="underline hover:text-muted" v-on:click="glossaryOpen = true">Terms</button>.</p>
   </section>
 
   <!-- ============ LOADING ============ -->
   <section v-if="loading" class="max-w-7xl mx-auto px-6 py-16">
     <div class="text-center mb-10">
-      <div class="text-sm text-slate-400 mb-2">{{ loadingStep }}</div>
+      <div class="text-sm text-muted mb-2">{{ loadingStep }}</div>
       <div class="w-56 h-0.5 bg-edge rounded-full mx-auto overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-700"
+        <div class="h-full bg-blue-500 rounded-full transition-all duration-700"
              :style="{ width: loadingPct + '%' }"></div>
       </div>
     </div>
@@ -196,15 +283,15 @@ tailwind.config = {
       <div class="font-semibold mb-2" :class="didYouMean.length ? 'text-amber-400' : 'text-red-400'">
         {{ didYouMean.length ? 'Did you mean…' : "Couldn't analyse that" }}
       </div>
-      <div class="text-sm text-slate-400 mb-5">{{ error }}</div>
+      <div class="text-sm text-muted mb-5">{{ error }}</div>
       <div v-if="didYouMean.length" class="flex flex-wrap gap-2 justify-center mb-5">
         <button v-for="s in didYouMean" :key="s.symbol" v-on:click="query = s.symbol; run()"
-                class="text-left px-3 py-2 rounded-lg border border-edge hover:border-blue-600 hover:bg-blue-950/20 transition">
-          <div class="text-xs font-mono text-blue-300">{{ s.symbol }}</div>
-          <div class="text-[10px] text-slate-500">{{ s.name }}</div>
+                class="text-left px-3 py-2 rounded-lg border border-edge hover:border-blue-600 hover:bg-blue-500/10 transition">
+          <div class="text-xs font-mono text-blue-400">{{ s.symbol }}</div>
+          <div class="text-[10px] text-muted">{{ s.name }}</div>
         </button>
       </div>
-      <button v-on:click="reset()" class="text-xs px-4 py-2 rounded-lg border border-edge hover:border-slate-600">Start over</button>
+      <button v-on:click="reset()" class="text-xs px-4 py-2 rounded-lg border border-edge hover:border-muted">Start over</button>
     </div>
   </section>
 
@@ -217,9 +304,9 @@ tailwind.config = {
         <div class="min-w-0">
           <div class="flex items-center gap-2.5 mb-1.5 flex-wrap">
             <h2 class="text-2xl font-bold tracking-tight">{{ result.company.name }}</h2>
-            <span class="text-xs font-mono px-2 py-0.5 rounded bg-white/5 border border-edge text-slate-400">{{ result.symbol }}</span>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-inset border border-edge text-muted">{{ result.symbol }}</span>
           </div>
-          <div class="text-xs text-slate-500">
+          <div class="text-xs text-muted">
             {{ result.company.sector || '—' }}<span v-if="result.company.industry"> · {{ result.company.industry }}</span>
             <span v-if="result.company.market_cap_cr"> · ₹{{ fmtCr(result.company.market_cap_cr) }} Cr <term-tip id="mcap" label="mcap"></term-tip></span>
           </div>
@@ -229,7 +316,7 @@ tailwind.config = {
           <div class="text-sm font-medium" :class="result.price.day_change_pct >= 0 ? 'text-emerald-400' : 'text-red-400'">
             {{ result.price.day_change_pct >= 0 ? '▲' : '▼' }} {{ num(Math.abs(result.price.day_change_pct)) }}%
           </div>
-          <div class="text-[11px] text-slate-600 mt-1" v-if="result.price.off_52w_high_pct != null">
+          <div class="text-[11px] text-faint mt-1" v-if="result.price.off_52w_high_pct != null">
             {{ num(result.price.off_52w_high_pct) }}% from <term-tip id="52whigh" label="52W high"></term-tip>
           </div>
         </div>
@@ -239,7 +326,7 @@ tailwind.config = {
     <!-- Overall + horizons -->
     <div class="grid lg:grid-cols-4 gap-5">
       <div class="rise panel rounded-2xl p-6 flex flex-col items-center justify-center text-center" style="animation-delay:.06s">
-        <div class="text-[11px] uppercase tracking-wider text-slate-500 mb-3">
+        <div class="text-[11px] uppercase tracking-wider text-muted mb-3">
           <term-tip id="overall" label="Overall"></term-tip>
         </div>
         <score-ring :score="result.overall.score" :size="128" :stroke="9"></score-ring>
@@ -254,12 +341,12 @@ tailwind.config = {
             <div class="h-full bar-fill rounded-full" :class="pctBg(result.overall.rank.percentile)"
                  :style="{ width: (mounted ? result.overall.rank.percentile : 0) + '%' }"></div>
           </div>
-          <div class="text-[10px] text-slate-600 mt-1.5 leading-relaxed">
+          <div class="text-[10px] text-faint mt-1.5 leading-relaxed">
             Beats {{ result.overall.rank.percentile }}% of {{ result.overall.rank.universe_size }} NIFTY-grade
             names (median {{ result.overall.rank.universe_median }}).
           </div>
         </div>
-        <div class="text-[10px] text-slate-600 mt-2 leading-relaxed">
+        <div class="text-[10px] text-faint mt-2 leading-relaxed">
           Blend of 20% <term-tip id="short" label="short"></term-tip>
           · 30% <term-tip id="swing" label="swing"></term-tip>
           · 50% <term-tip id="long" label="long"></term-tip>
@@ -271,7 +358,7 @@ tailwind.config = {
         <div class="flex items-start justify-between mb-3">
           <div>
             <div class="text-sm font-semibold"><term-tip :id="k" :label="h.label"></term-tip></div>
-            <div class="text-[11px] text-slate-500">{{ h.window }}</div>
+            <div class="text-[11px] text-muted">{{ h.window }}</div>
           </div>
           <score-ring :score="h.score" :size="62" :stroke="6" :compact="true"></score-ring>
         </div>
@@ -283,25 +370,25 @@ tailwind.config = {
             {{ h.rank.percentile }}th pct
           </span>
         </div>
-        <div class="text-[11px] text-slate-500 leading-relaxed mb-3">{{ h.thesis }}</div>
+        <div class="text-[11px] text-muted leading-relaxed mb-3">{{ h.thesis }}</div>
 
         <div class="flex items-center gap-1.5 mb-3">
-          <span class="text-[10px] text-slate-600"><term-tip id="confidence" label="Confidence"></term-tip></span>
+          <span class="text-[10px] text-faint"><term-tip id="confidence" label="Confidence"></term-tip></span>
           <div class="flex-1 h-1 bg-edge rounded-full overflow-hidden">
             <div class="h-full bar-fill rounded-full"
                  :class="h.confidence >= 72 ? 'bg-emerald-500' : h.confidence >= 48 ? 'bg-amber-500' : 'bg-red-500'"
                  :style="{ width: (mounted ? h.confidence : 0) + '%' }"></div>
           </div>
-          <span class="text-[10px] text-slate-500">{{ h.confidence_label }}</span>
+          <span class="text-[10px] text-muted">{{ h.confidence_label }}</span>
         </div>
 
         <div v-if="h.plan && h.plan.stop_loss" class="grid grid-cols-3 gap-1.5 text-center pt-3 border-t border-edge">
-          <div><div class="text-[9px] text-slate-600 uppercase"><term-tip id="stop" label="Stop"></term-tip></div><div class="text-[11px] font-mono text-red-400">₹{{ num(h.plan.stop_loss) }}</div></div>
-          <div><div class="text-[9px] text-slate-600 uppercase"><term-tip id="target" label="Target"></term-tip></div><div class="text-[11px] font-mono text-emerald-400">₹{{ num(h.plan.target) }}</div></div>
-          <div><div class="text-[9px] text-slate-600 uppercase"><term-tip id="rr" label="R:R"></term-tip></div><div class="text-[11px] font-mono">{{ h.plan.risk_reward ?? '—' }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="stop" label="Stop"></term-tip></div><div class="text-[11px] font-mono text-red-400">₹{{ num(h.plan.stop_loss) }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="target" label="Target"></term-tip></div><div class="text-[11px] font-mono text-emerald-400">₹{{ num(h.plan.target) }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="rr" label="R:R"></term-tip></div><div class="text-[11px] font-mono">{{ h.plan.risk_reward ?? '—' }}</div></div>
         </div>
         <div v-else-if="h.plan && h.plan.target" class="pt-3 border-t border-edge text-center">
-          <div class="text-[9px] text-slate-600 uppercase"><term-tip id="dcf" label="DCF fair value"></term-tip></div>
+          <div class="text-[9px] text-faint uppercase"><term-tip id="dcf" label="DCF fair value"></term-tip></div>
           <div class="text-[11px] font-mono">₹{{ num(h.plan.target) }} ({{ num(h.plan.reward_pct) }}%)</div>
         </div>
       </div>
@@ -312,7 +399,7 @@ tailwind.config = {
       <div class="rise panel rounded-2xl p-5 lg:col-span-2" style="animation-delay:.24s">
         <div class="flex items-center justify-between mb-4">
           <div class="text-sm font-semibold">Price &amp; Trend</div>
-          <div class="flex gap-3 text-[10px] text-slate-500">
+          <div class="flex gap-3 text-[10px] text-muted">
             <span class="flex items-center gap-1"><i class="w-3 h-0.5 bg-blue-400 inline-block"></i>Close</span>
             <span class="flex items-center gap-1"><i class="w-3 h-0.5 bg-amber-500 inline-block"></i><term-tip id="50dma" label="50-DMA"></term-tip></span>
             <span class="flex items-center gap-1"><i class="w-3 h-0.5 bg-violet-500 inline-block"></i><term-tip id="200dma" label="200-DMA"></term-tip></span>
@@ -321,7 +408,7 @@ tailwind.config = {
         <price-chart :series="result.technicals.series"></price-chart>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-edge">
           <div v-for="m in chartStats" :key="m.k">
-            <div class="text-[10px] text-slate-600 uppercase tracking-wide"><term-tip :id="m.id || m.k" :label="m.k"></term-tip></div>
+            <div class="text-[10px] text-faint uppercase tracking-wide"><term-tip :id="m.id || m.k" :label="m.k"></term-tip></div>
             <div class="text-sm font-mono" :class="m.cls">{{ m.v }}</div>
           </div>
         </div>
@@ -332,7 +419,7 @@ tailwind.config = {
         <div class="space-y-2.5">
           <div v-for="(p,k) in result.pillars" :key="k" class="cursor-pointer group" v-on:click="togglePillar(k)">
             <div class="flex items-center justify-between text-[11px] mb-1">
-              <span class="text-slate-400 group-hover:text-white transition"><term-tip :id="k" :label="p.label"></term-tip></span>
+              <span class="text-muted group-hover:text-fg transition"><term-tip :id="k" :label="p.label"></term-tip></span>
               <span class="font-mono" :class="scoreColor(p.score)">{{ p.score != null ? p.score.toFixed(0) : '—' }}</span>
             </div>
             <div class="h-1.5 bg-edge rounded-full overflow-hidden">
@@ -341,7 +428,7 @@ tailwind.config = {
             </div>
           </div>
         </div>
-        <div class="text-[10px] text-slate-600 mt-4 pt-3 border-t border-edge">Click a pillar to see its metrics. Dotted terms explain what they mean here.</div>
+        <div class="text-[10px] text-faint mt-4 pt-3 border-t border-edge">Click a pillar to see its metrics. Dotted terms explain what they mean here.</div>
       </div>
     </div>
 
@@ -350,57 +437,57 @@ tailwind.config = {
       <div class="rise panel rounded-2xl p-5" style="animation-delay:.32s">
         <div class="text-sm font-semibold mb-3 text-emerald-400">What's working</div>
         <ul class="space-y-2">
-          <li v-for="(p,i) in result.pros" :key="i" class="flex gap-2.5 text-xs text-slate-300 leading-relaxed">
+          <li v-for="(p,i) in result.pros" :key="i" class="flex gap-2.5 text-xs text-fg leading-relaxed">
             <span class="text-emerald-500 mt-0.5 shrink-0">▸</span><span>{{ p }}</span>
           </li>
-          <li v-if="!result.pros.length" class="text-xs text-slate-600">Nothing scored strongly enough to list.</li>
+          <li v-if="!result.pros.length" class="text-xs text-faint">Nothing scored strongly enough to list.</li>
         </ul>
       </div>
       <div class="rise panel rounded-2xl p-5" style="animation-delay:.34s">
         <div class="text-sm font-semibold mb-3 text-red-400">What's not</div>
         <ul class="space-y-2">
-          <li v-for="(c,i) in result.cons" :key="i" class="flex gap-2.5 text-xs text-slate-300 leading-relaxed">
+          <li v-for="(c,i) in result.cons" :key="i" class="flex gap-2.5 text-xs text-fg leading-relaxed">
             <span class="text-red-500 mt-0.5 shrink-0">▸</span><span>{{ c }}</span>
           </li>
-          <li v-if="!result.cons.length" class="text-xs text-slate-600">No material negatives flagged.</li>
+          <li v-if="!result.cons.length" class="text-xs text-faint">No material negatives flagged.</li>
         </ul>
       </div>
     </div>
 
     <!-- AI thesis -->
     <div class="rise panel rounded-2xl p-6" style="animation-delay:.38s"
-         :class="ai ? 'border-blue-900/40' : ''">
+         :class="ai ? 'border-blue-500/30' : ''">
       <div class="flex items-center gap-2 mb-4">
-        <div class="w-5 h-5 rounded bg-gradient-to-br from-blue-500 to-violet-600 grid place-items-center text-[10px] font-bold">AI</div>
+        <div class="w-5 h-5 rounded bg-blue-600 grid place-items-center text-[10px] font-bold text-white">AI</div>
         <div class="text-sm font-semibold">Analyst Thesis</div>
-        <span v-if="result.ai && result.ai.model" class="text-[10px] text-slate-600 font-mono">{{ result.ai.model }}</span>
+        <span v-if="result.ai && result.ai.model" class="text-[10px] text-faint font-mono">{{ result.ai.model }}</span>
       </div>
 
-      <div v-if="aiLoading" class="text-xs text-slate-500 bg-black/30 rounded-lg p-4 border border-edge">
+      <div v-if="aiLoading" class="text-xs text-muted bg-inset rounded-lg p-4 border border-edge">
         Writing the thesis from the numbers above…
       </div>
-      <div v-else-if="!ai" class="text-xs text-slate-500 bg-black/30 rounded-lg p-4 border border-edge">
+      <div v-else-if="!ai" class="text-xs text-muted bg-inset rounded-lg p-4 border border-edge">
         <div v-if="result.ai && result.ai.error" class="text-amber-400/90 mb-2">{{ result.ai.error }}</div>
         <div v-else>Quant is done. Generate a written thesis from these numbers only if you want one.</div>
-        <div class="mt-2 text-slate-600">The scores above are computed from filings and price data, and do not depend on the AI layer.</div>
+        <div class="mt-2 text-faint">The scores above are computed from filings and price data, and do not depend on the AI layer.</div>
         <button type="button" v-on:click="runThesis()" :disabled="!aiReady || aiLoading"
-                class="mt-4 shimmer rounded-lg px-4 py-2 text-xs font-semibold border border-edge disabled:opacity-40">
-          <span class="relative z-10">{{ aiReady ? 'Generate thesis' : 'AI not configured' }}</span>
+                class="mt-4 cta rounded-lg px-4 py-2 text-xs font-semibold border border-edge disabled:opacity-40">
+          {{ aiReady ? 'Generate thesis' : 'AI not configured' }}
         </button>
       </div>
 
       <div v-else-if="ai" class="space-y-5">
-        <div class="text-base font-medium text-white leading-relaxed">{{ ai.headline }}</div>
-        <p class="text-xs text-slate-400 leading-relaxed">{{ ai.business_summary }}</p>
+        <div class="text-base font-medium text-fg leading-relaxed">{{ ai.headline }}</div>
+        <p class="text-xs text-muted leading-relaxed">{{ ai.business_summary }}</p>
 
         <div class="grid md:grid-cols-2 gap-4">
-          <div class="bg-black/30 rounded-lg p-4 border border-edge">
-            <div class="text-[11px] font-semibold text-slate-300 mb-1.5">Business quality</div>
-            <p class="text-xs text-slate-400 leading-relaxed">{{ ai.quality_verdict }}</p>
+          <div class="bg-inset rounded-lg p-4 border border-edge">
+            <div class="text-[11px] font-semibold text-fg mb-1.5">Business quality</div>
+            <p class="text-xs text-muted leading-relaxed">{{ ai.quality_verdict }}</p>
           </div>
-          <div class="bg-black/30 rounded-lg p-4 border border-edge">
-            <div class="text-[11px] font-semibold text-slate-300 mb-1.5">Valuation</div>
-            <p class="text-xs text-slate-400 leading-relaxed">{{ ai.valuation_verdict }}</p>
+          <div class="bg-inset rounded-lg p-4 border border-edge">
+            <div class="text-[11px] font-semibold text-fg mb-1.5">Valuation</div>
+            <p class="text-xs text-muted leading-relaxed">{{ ai.valuation_verdict }}</p>
           </div>
         </div>
 
@@ -408,26 +495,26 @@ tailwind.config = {
           <div>
             <div class="text-[11px] font-semibold text-emerald-400 mb-2">Bull case</div>
             <ul class="space-y-1.5">
-              <li v-for="(b,i) in ai.bull_case" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-emerald-600">+</span>{{ b }}</li>
+              <li v-for="(b,i) in ai.bull_case" :key="i" class="text-xs text-muted flex gap-2"><span class="text-emerald-600">+</span>{{ b }}</li>
             </ul>
           </div>
           <div>
             <div class="text-[11px] font-semibold text-red-400 mb-2">Bear case</div>
             <ul class="space-y-1.5">
-              <li v-for="(b,i) in ai.bear_case" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-red-600">−</span>{{ b }}</li>
+              <li v-for="(b,i) in ai.bear_case" :key="i" class="text-xs text-muted flex gap-2"><span class="text-red-600">−</span>{{ b }}</li>
             </ul>
           </div>
         </div>
 
         <div class="grid md:grid-cols-3 gap-3">
-          <div v-for="c in ai.horizon_calls" :key="c.horizon" class="bg-black/30 rounded-lg p-3.5 border border-edge">
+          <div v-for="c in ai.horizon_calls" :key="c.horizon" class="bg-inset rounded-lg p-3.5 border border-edge">
             <div class="flex items-center justify-between mb-1.5">
               <span class="text-[11px] font-semibold capitalize">{{ c.horizon }}</span>
               <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(c.stance))">{{ c.stance }}</span>
             </div>
-            <p class="text-[11px] text-slate-400 leading-relaxed mb-2">{{ c.rationale }}</p>
-            <div class="text-[10px] text-slate-600 leading-relaxed pt-2 border-t border-edge">
-              <span class="text-slate-500">Flips if:</span> {{ c.what_would_change_it }}
+            <p class="text-[11px] text-muted leading-relaxed mb-2">{{ c.rationale }}</p>
+            <div class="text-[10px] text-faint leading-relaxed pt-2 border-t border-edge">
+              <span class="text-muted">Flips if:</span> {{ c.what_would_change_it }}
             </div>
           </div>
         </div>
@@ -435,21 +522,21 @@ tailwind.config = {
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <div class="text-[11px] font-semibold text-amber-400 mb-2">Key risks</div>
-            <ul class="space-y-1.5"><li v-for="(r,i) in ai.key_risks" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-amber-600">!</span>{{ r }}</li></ul>
+            <ul class="space-y-1.5"><li v-for="(r,i) in ai.key_risks" :key="i" class="text-xs text-muted flex gap-2"><span class="text-amber-600">!</span>{{ r }}</li></ul>
           </div>
           <div>
             <div class="text-[11px] font-semibold text-sky-400 mb-2">What to watch</div>
-            <ul class="space-y-1.5"><li v-for="(w,i) in ai.what_to_watch" :key="i" class="text-xs text-slate-400 flex gap-2"><span class="text-sky-600">◆</span>{{ w }}</li></ul>
+            <ul class="space-y-1.5"><li v-for="(w,i) in ai.what_to_watch" :key="i" class="text-xs text-muted flex gap-2"><span class="text-sky-600">◆</span>{{ w }}</li></ul>
           </div>
         </div>
 
-        <div class="bg-violet-950/20 border border-violet-900/40 rounded-lg p-4">
-          <div class="text-[11px] font-semibold text-violet-300 mb-1.5">Where the score may be wrong</div>
-          <p class="text-xs text-slate-400 leading-relaxed">{{ ai.contrarian_note }}</p>
+        <div class="note-violet rounded-lg p-4">
+          <div class="text-[11px] font-semibold text-violet-400 mb-1.5">Where the score may be wrong</div>
+          <p class="text-xs text-muted leading-relaxed">{{ ai.contrarian_note }}</p>
         </div>
 
-        <div v-if="ai.data_caveats && ai.data_caveats.length" class="text-[10px] text-slate-600">
-          <span class="text-slate-500">Data caveats:</span> {{ ai.data_caveats.join(' · ') }}
+        <div v-if="ai.data_caveats && ai.data_caveats.length" class="text-[10px] text-faint">
+          <span class="text-muted">Data caveats:</span> {{ ai.data_caveats.join(' · ') }}
         </div>
       </div>
     </div>
@@ -459,16 +546,16 @@ tailwind.config = {
       <div class="rise panel rounded-2xl p-5" style="animation-delay:.42s">
         <div class="text-sm font-semibold mb-4">Valuation &amp; DCF</div>
         <div class="grid grid-cols-2 gap-3 mb-4">
-          <div v-for="v in valuationStats" :key="v.k" class="bg-black/25 rounded-lg px-3 py-2.5 border border-edge">
-            <div class="text-[10px] text-slate-600 uppercase tracking-wide"><term-tip :id="v.id || v.k" :label="v.k"></term-tip></div>
+          <div v-for="v in valuationStats" :key="v.k" class="bg-inset rounded-lg px-3 py-2.5 border border-edge">
+            <div class="text-[10px] text-faint uppercase tracking-wide"><term-tip :id="v.id || v.k" :label="v.k"></term-tip></div>
             <div class="text-sm font-mono">{{ v.v }}</div>
           </div>
         </div>
-        <div v-if="dcf && dcf.skipped" class="text-[11px] text-slate-500 bg-black/25 rounded-lg p-3 border border-edge">
+        <div v-if="dcf && dcf.skipped" class="text-[11px] text-muted bg-inset rounded-lg p-3 border border-edge">
           <term-tip id="dcf" label="DCF"></term-tip> skipped — {{ dcf.skipped }}
         </div>
-        <div v-else-if="dcf" class="text-[11px] text-slate-500 bg-black/25 rounded-lg p-3 border border-edge leading-relaxed">
-          <span class="text-slate-400"><term-tip id="dcf" label="DCF"></term-tip> assumptions:</span>
+        <div v-else-if="dcf" class="text-[11px] text-muted bg-inset rounded-lg p-3 border border-edge leading-relaxed">
+          <span class="text-muted"><term-tip id="dcf" label="DCF"></term-tip> assumptions:</span>
           base <term-tip id="fcf" label="FCF"></term-tip> ₹{{ fmtCr(dcf.base_fcf_cr) }} Cr, growing {{ dcf.stage1_growth_pct }}% fading to
           <term-tip id="terminalgrowth" label="terminal growth"></term-tip> {{ dcf.terminal_growth_pct }}%,
           <term-tip id="discountrate" label="discounted"></term-tip> at {{ dcf.discount_rate_pct }}%
@@ -479,20 +566,20 @@ tailwind.config = {
       <div class="rise panel rounded-2xl p-5" style="animation-delay:.44s">
         <div class="text-sm font-semibold mb-4">Risk</div>
         <div class="grid grid-cols-2 gap-3 mb-4">
-          <div v-for="v in riskStats" :key="v.k" class="bg-black/25 rounded-lg px-3 py-2.5 border border-edge">
-            <div class="text-[10px] text-slate-600 uppercase tracking-wide"><term-tip :id="v.id || v.k" :label="v.k"></term-tip></div>
+          <div v-for="v in riskStats" :key="v.k" class="bg-inset rounded-lg px-3 py-2.5 border border-edge">
+            <div class="text-[10px] text-faint uppercase tracking-wide"><term-tip :id="v.id || v.k" :label="v.k"></term-tip></div>
             <div class="text-sm font-mono">{{ v.v }}</div>
           </div>
         </div>
         <div class="space-y-1.5">
           <div v-for="(f,i) in result.risk.red_flags" :key="i"
                class="text-[11px] px-3 py-2 rounded-lg border flex gap-2 leading-relaxed"
-               :class="f.severity==='high' ? 'bg-red-950/25 border-red-900/40 text-red-300'
-                     : f.severity==='medium' ? 'bg-amber-950/25 border-amber-900/40 text-amber-300'
-                     : 'bg-black/25 border-edge text-slate-500'">
+               :class="f.severity==='high' ? 'flag-high'
+                     : f.severity==='medium' ? 'flag-med'
+                     : 'bg-inset border-edge text-muted'">
             <span class="shrink-0 uppercase text-[9px] font-bold pt-0.5">{{ f.severity }}</span>{{ f.text }}
           </div>
-          <div v-if="!result.risk.red_flags.length" class="text-[11px] text-slate-600">No red flags triggered.</div>
+          <div v-if="!result.risk.red_flags.length" class="text-[11px] text-faint">No red flags triggered.</div>
         </div>
       </div>
     </div>
@@ -503,14 +590,14 @@ tailwind.config = {
         <div class="text-sm font-semibold mr-2">Metric detail</div>
         <button v-for="(p,k) in result.pillars" :key="k" v-on:click="activePillar=k"
                 class="text-[11px] px-2.5 py-1 rounded-md border transition"
-                :class="activePillar===k ? 'border-blue-600 bg-blue-950/40 text-blue-300' : 'border-edge text-slate-500 hover:text-slate-300'">
+                :class="activePillar===k ? 'tab-on' : 'border-edge text-muted hover:text-fg'">
           {{ p.label }}
         </button>
       </div>
       <div v-if="currentPillar">
         <div class="overflow-x-auto">
           <table class="w-full text-xs">
-            <thead><tr class="text-[10px] uppercase tracking-wide text-slate-600 border-b border-edge">
+            <thead><tr class="text-[10px] uppercase tracking-wide text-faint border-b border-edge">
               <th class="text-left py-2 font-medium"><term-tip id="metric" label="Metric"></term-tip></th>
               <th class="text-right py-2 font-medium">Value</th>
               <th class="text-right py-2 font-medium w-20"><term-tip id="metricscore" label="Score"></term-tip></th>
@@ -518,20 +605,20 @@ tailwind.config = {
             </tr></thead>
             <tbody>
               <tr v-for="m in currentPillar.metrics" :key="m.key" class="border-b border-edge/50">
-                <td class="py-2.5 text-slate-300"><term-tip :id="m.key" :label="m.label"></term-tip></td>
+                <td class="py-2.5 text-fg"><term-tip :id="m.key" :label="m.label"></term-tip></td>
                 <td class="py-2.5 text-right font-mono">{{ m.display }}</td>
                 <td class="py-2.5 text-right">
                   <span class="font-mono px-1.5 py-0.5 rounded text-[11px]" :class="verdictPill(m.verdict)">
                     {{ m.score != null ? m.score.toFixed(0) : '—' }}
                   </span>
                 </td>
-                <td class="py-2.5 pl-4 text-slate-500 hidden md:table-cell leading-relaxed">{{ m.note }}</td>
+                <td class="py-2.5 pl-4 text-muted hidden md:table-cell leading-relaxed">{{ m.note }}</td>
               </tr>
             </tbody>
           </table>
         </div>
         <div v-if="currentPillar.notes.length" class="mt-3 pt-3 border-t border-edge space-y-1">
-          <div v-for="(n,i) in currentPillar.notes" :key="i" class="text-[11px] text-slate-500">· {{ n }}</div>
+          <div v-for="(n,i) in currentPillar.notes" :key="i" class="text-[11px] text-muted">· {{ n }}</div>
         </div>
       </div>
     </div>
@@ -541,14 +628,14 @@ tailwind.config = {
       <div class="text-sm font-semibold mb-3">Recent news</div>
       <div class="space-y-2">
         <a v-for="(n,i) in result.news" :key="i" :href="n.url" target="_blank" rel="noopener"
-           class="block px-3 py-2.5 rounded-lg bg-black/25 border border-edge hover:border-slate-700 transition">
-          <div class="text-xs text-slate-300 leading-relaxed">{{ n.title }}</div>
-          <div class="text-[10px] text-slate-600 mt-1">{{ n.publisher }}</div>
+           class="block px-3 py-2.5 rounded-lg bg-inset border border-edge hover:border-muted transition">
+          <div class="text-xs text-fg leading-relaxed">{{ n.title }}</div>
+          <div class="text-[10px] text-faint mt-1">{{ n.publisher }}</div>
         </a>
       </div>
     </div>
 
-    <footer class="text-[11px] text-slate-600 leading-relaxed pt-4 pb-10 text-center">
+    <footer class="text-[11px] text-faint leading-relaxed pt-4 pb-10 text-center">
       {{ result.disclaimer }}
       <span v-if="result.data_gaps.length" class="block mt-1">Data gaps: {{ result.data_gaps.join(', ') }}.</span>
       <span class="block mt-1">Computed in {{ result.elapsed_ms }} ms.</span>
@@ -557,23 +644,23 @@ tailwind.config = {
 
   <div v-if="glossaryOpen" class="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-20 pb-8 glossary-scrim"
        v-on:click.self="glossaryOpen = false">
-    <div class="rounded-2xl w-full max-w-2xl max-h-[min(80vh,40rem)] overflow-hidden flex flex-col border border-edge shadow-2xl bg-[#0c0c12]">
+    <div class="rounded-2xl w-full max-w-2xl max-h-[min(80vh,40rem)] overflow-hidden flex flex-col border border-edge glossary-sheet">
       <div class="flex items-center gap-3 px-4 py-3 border-b border-edge">
         <input v-model="glossaryQuery" type="search" placeholder="Search terms — P/E, ROCE, RSI…"
-               class="flex-1 bg-black/50 rounded-lg px-3 py-2 text-sm outline-none placeholder-slate-600"
+               class="flex-1 bg-inset rounded-lg px-3 py-2 text-sm outline-none placeholder-faint border border-edge"
                autofocus>
-        <button type="button" class="text-[11px] px-2 py-1 rounded-md border border-edge text-slate-400 hover:text-white"
+        <button type="button" class="text-[11px] px-2 py-1 rounded-md border border-edge text-muted hover:text-fg"
                 v-on:click="glossaryOpen = false">Close</button>
       </div>
       <div class="overflow-y-auto px-4 py-3 space-y-3">
         <div v-for="e in glossaryHits" :key="e.title" class="border-b border-edge/60 pb-3 last:border-0">
-          <div class="text-sm font-semibold text-white mb-1.5">{{ e.title }}</div>
-          <div class="text-[9px] uppercase tracking-wider text-slate-600 mb-0.5">What it is</div>
-          <p class="text-[12px] text-slate-400 leading-relaxed mb-2">{{ e.what }}</p>
-          <div class="text-[9px] uppercase tracking-wider text-slate-600 mb-0.5">In this score</div>
-          <p class="text-[12px] text-slate-400 leading-relaxed">{{ e.here }}</p>
+          <div class="text-sm font-semibold text-fg mb-1.5">{{ e.title }}</div>
+          <div class="text-[9px] uppercase tracking-wider text-faint mb-0.5">What it is</div>
+          <p class="text-[12px] text-muted leading-relaxed mb-2">{{ e.what }}</p>
+          <div class="text-[9px] uppercase tracking-wider text-faint mb-0.5">In this score</div>
+          <p class="text-[12px] text-muted leading-relaxed">{{ e.here }}</p>
         </div>
-        <div v-if="!glossaryHits.length" class="text-xs text-slate-600 py-8 text-center">No terms match that.</div>
+        <div v-if="!glossaryHits.length" class="text-xs text-faint py-8 text-center">No terms match that.</div>
       </div>
     </div>
   </div>
@@ -657,7 +744,7 @@ const TickerSearch = {
       <input :value="modelValue" :placeholder="placeholder" :autofocus="!compact"
              autocomplete="off" spellcheck="false"
              :class="compact ? 'px-4 py-2 text-sm' : 'px-5 py-4 text-base'"
-             class="w-full bg-black/85 rounded-xl outline-none placeholder-slate-600"
+             class="w-full bg-inset rounded-xl outline-none placeholder-faint"
              @input="onInput" @keydown="onKey" @focus="open = hits.length > 0">
       <div v-if="open && hits.length" class="ticker-drop">
         <button type="button" v-for="(h,i) in hits" :key="h.symbol"
@@ -665,8 +752,8 @@ const TickerSearch = {
                 :class="i === active ? 'active' : ''"
                 @mousedown.prevent="choose(h)"
                 @mouseenter="active = i">
-          <span class="text-xs font-mono text-blue-300">{{ h.symbol }}</span>
-          <span class="text-[11px] text-slate-500 truncate">{{ h.name }}</span>
+          <span class="text-xs font-mono text-blue-400">{{ h.symbol }}</span>
+          <span class="text-[11px] text-muted truncate">{{ h.name }}</span>
         </button>
       </div>
     </div>`,
@@ -738,11 +825,11 @@ const TermTip = {
             @click="toggle" @keydown.enter.prevent="toggle" @keydown.space.prevent="toggle">{{ label }}</span>
       <teleport to="body">
         <div v-if="open && entry" ref="pop" class="term-pop" :style="popStyle" @click.stop>
-          <div class="text-[12px] font-semibold text-white mb-2">{{ entry.title }}</div>
+          <div class="text-[12px] font-semibold text-fg mb-2">{{ entry.title }}</div>
           <div class="kicker">What it is</div>
-          <p class="text-[11px] text-slate-400 leading-relaxed mb-2">{{ entry.what }}</p>
+          <p class="text-[11px] text-muted leading-relaxed mb-2">{{ entry.what }}</p>
           <div class="kicker">In this score</div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">{{ entry.here }}</p>
+          <p class="text-[11px] text-muted leading-relaxed">{{ entry.here }}</p>
         </div>
       </teleport>
     </span>`,
@@ -759,7 +846,7 @@ const ScoreRing = {
     offset() { return this.circ * (1 - (this.shown || 0) / 100); },
     color() {
       const s = this.score;
-      if (s == null) return '#3f3f52';
+      if (s == null) return 'rgb(var(--faint))';
       if (s >= 80) return '#10b981';
       if (s >= 66) return '#34d399';
       if (s >= 50) return '#f59e0b';
@@ -770,7 +857,7 @@ const ScoreRing = {
   template: `
     <div class="relative inline-grid place-items-center" :style="{width: size+'px', height: size+'px'}">
       <svg :width="size" :height="size" class="-rotate-90">
-        <circle :cx="size/2" :cy="size/2" :r="r" fill="none" stroke="#1c1c26" :stroke-width="stroke"/>
+        <circle :cx="size/2" :cy="size/2" :r="r" fill="none" stroke="rgb(var(--track))" :stroke-width="stroke"/>
         <circle class="ring-arc" :cx="size/2" :cy="size/2" :r="r" fill="none" :stroke="color"
                 :stroke-width="stroke" stroke-linecap="round"
                 :stroke-dasharray="circ" :stroke-dashoffset="offset"/>
@@ -779,7 +866,7 @@ const ScoreRing = {
         <div :class="compact ? 'text-lg' : 'text-3xl'" class="font-bold font-mono leading-none">
           {{ score != null ? score.toFixed(0) : '—' }}
         </div>
-        <div v-if="!compact" class="text-[9px] text-slate-600 uppercase tracking-wider mt-1">/ 100</div>
+        <div v-if="!compact" class="text-[9px] text-faint uppercase tracking-wider mt-1">/ 100</div>
       </div>
     </div>`,
 };
@@ -820,7 +907,7 @@ const PriceChart = {
     <div v-if="view" class="relative">
       <svg :viewBox="'0 0 ' + view.W + ' ' + view.H" class="w-full" preserveAspectRatio="none" style="height:200px">
         <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#3b82f6" stop-opacity=".22"/>
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity=".14"/>
           <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
         </linearGradient></defs>
         <path :d="view.area" fill="url(#ag)"/>
@@ -828,11 +915,11 @@ const PriceChart = {
         <path :d="view.sma50" fill="none" stroke="#f59e0b" stroke-width="1.2" opacity=".75"/>
         <path :d="view.close" fill="none" stroke="#60a5fa" stroke-width="1.8"/>
       </svg>
-      <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+      <div class="flex justify-between text-[10px] text-faint mt-1">
         <span>{{ view.first }}</span><span>₹{{ view.lo }} – ₹{{ view.hi }}</span><span>{{ view.last }}</span>
       </div>
     </div>
-    <div v-else class="h-[200px] grid place-items-center text-xs text-slate-600">No price history available.</div>`,
+    <div v-else class="h-[200px] grid place-items-center text-xs text-faint">No price history available.</div>`,
 };
 
 createApp({
@@ -842,6 +929,7 @@ createApp({
       query: '', result: null, loading: false, error: '', didYouMean: [], mounted: false,
       activePillar: 'growth', morphIndex: 0, loadingStep: '', loadingPct: 0,
       aiReady: false, aiLoading: false, glossaryOpen: false, glossaryQuery: '',
+      theme: 'dark',
       taglines: [
         'Fundamentals, valuation, technicals and filings — in one pass.',
         'Separate verdicts for short-term, swing and long-term horizons.',
@@ -907,17 +995,8 @@ createApp({
   },
   mounted() {
     this.mounted = true;
+    this.theme = document.documentElement.getAttribute('data-theme') || 'dark';
     setInterval(() => { this.morphIndex = (this.morphIndex + 1) % this.taglines.length; }, 3200);
-
-    const glow = document.getElementById('glow');
-    let gx = window.innerWidth / 2, gy = 220, tx = gx, ty = gy;
-    document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
-    const follow = () => {
-      gx += (tx - gx) * 0.06; gy += (ty - gy) * 0.06;   // damped follow, not a snap
-      glow.style.transform = `translate(${gx}px, ${gy}px) translate(-50%, -50%)`;
-      requestAnimationFrame(follow);
-    };
-    follow();
 
     fetch('/api/health').then(r => r.json()).then(d => { this.aiReady = !!(d.ai && d.ai.available); }).catch(() => {});
 
@@ -996,26 +1075,30 @@ createApp({
       }
     },
     reset() { this.result = null; this.error = ''; this.query = ''; this.aiLoading = false; history.replaceState(null, '', '/'); },
+    toggleTheme() {
+      this.theme = this.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', this.theme);
+      try { localStorage.setItem('finlens-theme', this.theme); } catch (_) {}
+    },
     togglePillar(k) { this.activePillar = k; document.querySelector('table')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); },
     num(v) { return v == null ? '—' : Number(v).toLocaleString('en-IN', { maximumFractionDigits: 2 }); },
     fmtCr(v) { return v == null ? '—' : Number(v).toLocaleString('en-IN', { maximumFractionDigits: 0 }); },
-    pctColor(p) { return p == null ? 'text-slate-600' : p >= 75 ? 'text-emerald-400' : p >= 45 ? 'text-amber-400' : 'text-red-400'; },
-    pctBg(p) { return p == null ? 'bg-slate-700' : p >= 75 ? 'bg-emerald-500' : p >= 45 ? 'bg-amber-500' : 'bg-red-500'; },
-    scoreColor(s) { return s == null ? 'text-slate-600' : s >= 66 ? 'text-emerald-400' : s >= 50 ? 'text-amber-400' : 'text-red-400'; },
-    scoreBg(s) { return s == null ? 'bg-slate-700' : s >= 66 ? 'bg-emerald-500' : s >= 50 ? 'bg-amber-500' : 'bg-red-500'; },
+    pctColor(p) { return p == null ? 'text-faint' : p >= 75 ? 'text-emerald-400' : p >= 45 ? 'text-amber-400' : 'text-red-400'; },
+    pctBg(p) { return p == null ? 'bg-edge' : p >= 75 ? 'bg-emerald-500' : p >= 45 ? 'bg-amber-500' : 'bg-red-500'; },
+    scoreColor(s) { return s == null ? 'text-faint' : s >= 66 ? 'text-emerald-400' : s >= 50 ? 'text-amber-400' : 'text-red-400'; },
+    scoreBg(s) { return s == null ? 'bg-edge' : s >= 66 ? 'bg-emerald-500' : s >= 50 ? 'bg-amber-500' : 'bg-red-500'; },
     verdictClass(c) {
       return {
-        'strong-buy': 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60',
-        'buy': 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50',
-        'hold': 'bg-amber-950/40 text-amber-300 border border-amber-900/50',
-        'reduce': 'bg-orange-950/40 text-orange-300 border border-orange-900/50',
-        'avoid': 'bg-red-950/40 text-red-300 border border-red-900/50',
-      }[c] || 'bg-slate-800/60 text-slate-400 border border-edge';
+        'strong-buy': 'v-strong-buy',
+        'buy': 'v-buy',
+        'hold': 'v-hold',
+        'reduce': 'v-reduce',
+        'avoid': 'v-avoid',
+      }[c] || 'v-neutral';
     },
     stanceClass(s) { return { 'Strong Buy': 'strong-buy', 'Buy': 'buy', 'Hold': 'hold', 'Reduce': 'reduce', 'Avoid': 'avoid' }[s] || 'hold'; },
     verdictPill(v) {
-      return { good: 'bg-emerald-950/60 text-emerald-400', ok: 'bg-amber-950/60 text-amber-400',
-               bad: 'bg-red-950/60 text-red-400' }[v] || 'bg-slate-800 text-slate-500';
+      return { good: 'pill-good', ok: 'pill-ok', bad: 'pill-bad' }[v] || 'pill-na';
     },
   },
 }).mount('#app');
