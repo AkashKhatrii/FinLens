@@ -49,16 +49,22 @@ tailwind.config = {
   }
   html[data-theme="light"] {
     color-scheme: light;
-    --ink: 244 244 246;
-    --panel: 255 255 255;
-    --edge: 226 226 232;
-    --fg: 22 22 26;
-    --muted: 92 92 104;
-    --faint: 138 138 150;
-    --inset: 236 236 240;
-    --track: 226 226 232;
-    --scrim: rgb(22 22 26 / 0.42);
-    --lift: 0 1px 2px rgb(22 22 26 / 0.05);
+    /* Classic white / grey / black clay. Page is near-white grey so #fff can highlight. */
+    --ink: 238 238 238;
+    --panel: 238 238 238;
+    --edge: 220 220 220;
+    --fg: 17 17 17;
+    --muted: 92 92 92;
+    --faint: 140 140 140;
+    --inset: 238 238 238;
+    --track: 220 220 220;
+    --scrim: rgb(0 0 0 / 0.42);
+    --neu-hi: #ffffff;
+    --neu-lo: #c8c8c8;
+    --neu-out: 9px 9px 18px var(--neu-lo), -9px -9px 18px var(--neu-hi);
+    --neu-out-sm: 5px 5px 10px var(--neu-lo), -5px -5px 10px var(--neu-hi);
+    --neu-in: inset 6px 6px 12px var(--neu-lo), inset -6px -6px 12px var(--neu-hi);
+    --lift: 9px 9px 18px var(--neu-lo), -9px -9px 18px var(--neu-hi);
   }
 
   html { scroll-behavior: smooth; }
@@ -68,7 +74,7 @@ tailwind.config = {
     color: rgb(var(--fg));
   }
   html, body, header, .panel, .ticker-drop, .term-pop, .glossary-sheet,
-  input, button, .theme-toggle {
+  input, button, .theme-toggle, .bg-inset {
     transition: background-color .22s ease, border-color .22s ease, color .18s ease, box-shadow .22s ease;
   }
 
@@ -183,6 +189,64 @@ tailwind.config = {
   .note-violet { background: rgb(139 92 246 / 0.10); border: 1px solid rgb(139 92 246 / 0.28); }
   .tab-on { border-color: rgb(37 99 235 / 0.7); background: rgb(37 99 235 / 0.12); color: #93c5fd; }
   html[data-theme="light"] .tab-on { color: #1d4ed8; }
+
+  /* Light-only neumorphism: raised chrome, inset fields. Dark is unchanged. */
+  html[data-theme="light"] header {
+    border-bottom-color: transparent;
+  }
+  html[data-theme="light"] .panel,
+  html[data-theme="light"] .cta,
+  html[data-theme="light"] .theme-toggle,
+  html[data-theme="light"] .ticker-drop,
+  html[data-theme="light"] .term-pop,
+  html[data-theme="light"] .glossary-sheet {
+    border-color: transparent;
+    background: rgb(var(--panel));
+    box-shadow: var(--neu-out);
+  }
+  html[data-theme="light"] .cta:hover,
+  html[data-theme="light"] .cta:active,
+  html[data-theme="light"] .theme-toggle:hover,
+  html[data-theme="light"] .theme-toggle:active {
+    background: rgb(var(--panel));
+    box-shadow: var(--neu-in);
+  }
+  html[data-theme="light"] .halo input,
+  html[data-theme="light"] .bg-inset,
+  html[data-theme="light"] .glossary-sheet input {
+    border-color: transparent;
+    background: rgb(var(--panel));
+    box-shadow: var(--neu-in);
+  }
+  html[data-theme="light"] .halo input:focus,
+  html[data-theme="light"] .glossary-sheet input:focus {
+    border-color: transparent;
+    box-shadow: var(--neu-in), 0 0 0 3px rgb(59 130 246 / 0.16);
+  }
+  html[data-theme="light"] header span.rounded-full.border,
+  html[data-theme="light"] header button.rounded-md,
+  html[data-theme="light"] section button.rounded-full {
+    border-color: transparent;
+    background: rgb(var(--panel));
+    box-shadow: var(--neu-out-sm);
+  }
+  html[data-theme="light"] section button.rounded-full:hover {
+    box-shadow: var(--neu-in);
+  }
+  html[data-theme="light"] .tab-on {
+    border-color: transparent;
+    box-shadow: var(--neu-in);
+  }
+  html[data-theme="light"] .h-1.bg-edge,
+  html[data-theme="light"] .h-1\.5.bg-edge,
+  html[data-theme="light"] .h-0\.5.bg-edge {
+    box-shadow: var(--neu-in);
+    background: rgb(var(--panel));
+  }
+  html[data-theme="light"] .skeleton {
+    box-shadow: var(--neu-in);
+    background: rgb(var(--panel));
+  }
 </style>
 </head>
 <body class="text-fg antialiased">
@@ -324,7 +388,7 @@ tailwind.config = {
     </div>
 
     <!-- Overall + horizons -->
-    <div class="grid lg:grid-cols-4 gap-5">
+    <div class="grid lg:grid-cols-3 gap-5">
       <div class="rise panel rounded-2xl p-6 flex flex-col items-center justify-center text-center" style="animation-delay:.06s">
         <div class="text-[11px] uppercase tracking-wider text-muted mb-3">
           <term-tip id="overall" label="Overall"></term-tip>
@@ -347,16 +411,17 @@ tailwind.config = {
           </div>
         </div>
         <div class="text-[10px] text-faint mt-2 leading-relaxed">
-          Blend of 20% <term-tip id="short" label="short"></term-tip>
-          · 30% <term-tip id="swing" label="swing"></term-tip>
-          · 50% <term-tip id="long" label="long"></term-tip>
+          Blend of 40% <term-tip id="swing" label="swing"></term-tip>
+          · 60% <term-tip id="long" label="long"></term-tip>
         </div>
       </div>
 
       <div v-for="(h,k,i) in result.horizons" :key="k"
-           class="rise panel rounded-2xl p-5" :style="{ animationDelay: (0.10 + i*0.05)+'s' }">
+           class="rise panel rounded-2xl p-5" :class="k === 'long' ? 'ring-1 ring-blue-500/25' : ''"
+           :style="{ animationDelay: (0.10 + i*0.05)+'s' }">
         <div class="flex items-start justify-between mb-3">
           <div>
+            <div v-if="k === 'long'" class="text-[10px] uppercase tracking-wider text-blue-400 mb-0.5">Primary horizon</div>
             <div class="text-sm font-semibold"><term-tip :id="k" :label="h.label"></term-tip></div>
             <div class="text-[11px] text-muted">{{ h.window }}</div>
           </div>
@@ -506,10 +571,12 @@ tailwind.config = {
           </div>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-3">
-          <div v-for="c in ai.horizon_calls" :key="c.horizon" class="bg-inset rounded-lg p-3.5 border border-edge">
+        <div class="grid md:grid-cols-2 gap-3">
+          <div v-for="c in ai.horizon_calls" :key="c.horizon"
+               class="bg-inset rounded-lg p-3.5 border border-edge"
+               :class="c.horizon === 'long' ? 'ring-1 ring-blue-500/20' : ''">
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-semibold capitalize">{{ c.horizon }}</span>
+              <span class="text-[11px] font-semibold capitalize">{{ c.horizon }}<span v-if="c.horizon === 'long'" class="ml-1.5 text-[9px] uppercase tracking-wider text-blue-400 font-medium">Primary</span></span>
               <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(c.stance))">{{ c.stance }}</span>
             </div>
             <p class="text-[11px] text-muted leading-relaxed mb-2">{{ c.rationale }}</p>
@@ -932,14 +999,14 @@ createApp({
       theme: 'dark',
       taglines: [
         'Fundamentals, valuation, technicals and filings — in one pass.',
-        'Separate verdicts for short-term, swing and long-term horizons.',
+        'Separate verdicts for swing and long-term horizons.',
         'Every score traced back to the number that produced it.',
         'Built for NSE and BSE listed companies.',
       ],
       suggestions: ['RELIANCE', 'TCS', 'HDFCBANK', 'ITC', 'TATASTEEL', 'DMART'],
       features: [
         { t: 'Statement-derived', d: 'ROE, ROCE, cash conversion and leverage computed from the filings, not scraped summary fields.' },
-        { t: 'Horizon-aware', d: 'The same evidence weighted three ways, because a good business can be a bad trade.' },
+        { t: 'Horizon-aware', d: 'The same evidence weighted two ways, because a good business can be a poor entry — and Long is the primary call.' },
         { t: 'Shows its work', d: 'Every pillar expands into the individual metrics, thresholds and scores behind it.' },
       ],
       disclaimerText: 'Research and education only — not investment advice. Data comes from a free third-party feed and may be delayed or wrong.',

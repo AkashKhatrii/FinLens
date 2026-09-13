@@ -1,6 +1,6 @@
 """Within-pillar metric weights.
 
-Horizon mix (short / swing / long) and verdict bands live in scoring.py and
+Horizon mix (swing / long) and verdict bands live in scoring.py and
 are not changed here. These numbers only decide how much each *displayed*
 metric moves its pillar.
 

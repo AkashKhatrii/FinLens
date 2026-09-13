@@ -2,9 +2,13 @@
 
 The core idea: the *same* evidence gets weighted differently depending on how
 long you intend to hold. A stock can be a great business at a bad chart
-(good long-term, poor short-term) or a strong breakout in a mediocre company
-(good swing, poor long-term). Collapsing that into one number is exactly the
-mistake this tries to avoid.
+(good long-term, poor swing) or a strong setup in a mediocre company
+(better swing, still a poor long). Collapsing that into one number is exactly
+the mistake this tries to avoid.
+
+User-facing horizons are Swing and Long. Long asks whether the company is
+worth owning; Swing asks whether the next few months are a reasonable entry.
+Short-term setup metrics still exist as a pillar and feed Swing.
 
 Weights are declarative and live here so they are easy to argue with and tune.
 Within-pillar metric overlap is handled separately in metric_weights.py.
@@ -20,16 +24,6 @@ from .common import Metric, Pillar
 # Each horizon's weights must cover the same pillar set; missing pillars are
 # renormalised away at scoring time.
 HORIZONS: dict[str, dict[str, Any]] = {
-    "short": {
-        "label": "Short Term",
-        "window": "Days to 3 weeks",
-        "thesis": "Trade the setup, not the company. Price, volume and event risk dominate.",
-        "weights": {
-            "technical_short": 0.40, "technical_trend": 0.20, "risk": 0.12,
-            "earnings": 0.10, "sentiment": 0.10, "valuation": 0.04,
-            "growth": 0.02, "profitability": 0.01, "health": 0.01,
-        },
-    },
     "swing": {
         "label": "Swing",
         "window": "1 to 3 months",
@@ -57,17 +51,6 @@ HORIZONS: dict[str, dict[str, Any]] = {
 # listed. 0 means the metric is shown on the report but does not move this
 # horizon. Pillar mix above is unchanged.
 HORIZON_FACTOR: dict[str, dict[str, float]] = {
-    "short": {
-        "rev_cagr": 0.0, "pat_cagr": 0.0,
-        "roe": 0.0, "roce": 0.0, "op_margin": 0.0, "net_margin": 0.0,
-        "debt_equity": 0.0, "net_debt_ebitda": 0.0, "interest_cover": 0.0,
-        "current_ratio": 0.0, "ocf_to_pat": 0.0, "fcf_margin": 0.0,
-        "dcf_upside": 0.0, "promoter_holding": 0.0,
-        "rev_yoy": 0.35, "pat_yoy": 0.35, "margin_trend": 0.25,
-        "pe": 0.5, "pe_vs_history": 0.5, "pb": 0.4, "ev_ebitda": 0.25,
-        "peg": 0.25, "earnings_yield_spread": 0.4, "dividend_yield": 0.15,
-        "institutional_holding": 0.35,
-    },
     "swing": {
         "rev_cagr": 0.55, "pat_cagr": 0.55,
         "dcf_upside": 0.5, "promoter_holding": 0.45,
@@ -119,7 +102,7 @@ def _horizon_pillar_coverage(pillar: Pillar, horizon: str) -> float:
 
 
 # Blend used for the single headline number, tilted toward the long view.
-OVERALL_BLEND = {"short": 0.20, "swing": 0.30, "long": 0.50}
+OVERALL_BLEND = {"swing": 0.40, "long": 0.60}
 
 VERDICT_BANDS = [
     (80, "Strong Buy", "strong-buy"),
@@ -233,11 +216,6 @@ def _plan(horizon: str, tech, val, price: float | None) -> dict[str, Any]:
     if not price:
         return {}
 
-    if horizon == "short":
-        stop = tech.suggested_stop
-        target = tech.resistance
-        return _levels(price, stop, target,
-                       "Entry on strength above the 20-DMA; ATR-based stop, first target at recent range high.")
     if horizon == "swing":
         # Whichever is lower: the ATR stop or the 50-DMA. Losing both is the exit.
         candidates = [x for x in (tech.suggested_stop, tech.sma50) if x]

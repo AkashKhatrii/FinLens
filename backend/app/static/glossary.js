@@ -12,20 +12,20 @@
   }
 
   put(["overall"], "Overall score",
-    "A single 0–100 headline made by blending the three holding-period scores.",
-    "FinLens weights long-term 50%, swing 30%, short-term 20%. It is not a fourth independent analysis.");
+    "A single 0–100 headline made by blending the two holding-period scores.",
+    "FinLens weights long-term 60% and swing 40%. Long is the primary investment horizon. It is not a third independent analysis.");
 
   put(["short", "shortterm", "short term"], "Short term",
-    "A holding period of days to about three weeks — a trade, not an investment.",
-    "Chart setup, trend, and risk dominate. Business quality barely counts. Buy here means the tape looks tradeable, not that the company is great.");
+    "FinLens no longer publishes a days-to-weeks trade score.",
+    "Near-term tape still feeds the Short-term setup pillar and Swing. Long ignores it so an oversold chart cannot rescue a poor business.");
 
   put(["swing"], "Swing",
     "A holding period of roughly 1–3 months, usually into the next results.",
-    "Trend, earnings momentum, and a bit of valuation matter. The idea is to ride an existing move, not to own the business forever.");
+    "Trend, setup, recent earnings, and valuation matter. A weak company should not look strong on Swing only because it is oversold.");
 
   put(["long", "longterm", "long term"], "Long term",
-    "A holding period of 1–3+ years — own the business.",
-    "Profitability, growth, valuation, and the balance sheet dominate. The chart is almost ignored.");
+    "The primary horizon: is this a good business worth owning for 1–3+ years at the current valuation?",
+    "Quality, growth, profitability, the balance sheet, cash, and valuation dominate. Chart setup is almost ignored.");
 
   put(["confidence"], "Confidence",
     "How much to trust that horizon’s score, separately from the score itself.",
@@ -49,7 +49,7 @@
 
   put(["technicalshort", "shorttermsetup"], "Short-term setup",
     "How the stock is behaving over days — stretched, washed out, or in play.",
-    "RSI, Bollinger %B, distance from the 20-day average, 1-week return, and volume. 40% of the short-term score, 0% of long-term.");
+    "RSI, Bollinger %B, distance from the 20-day average, 1-week return, and volume. Used by Swing; 0% of Long.");
 
   put(["technicaltrend", "trendrelativestrength", "trend & relative strength"], "Trend & relative strength",
     "Whether the medium-term trend is up and whether the stock is beating the index.",

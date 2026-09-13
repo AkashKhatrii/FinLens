@@ -16,14 +16,14 @@ UNIVERSE = ["RELIANCE","TCS","INFY","HDFCBANK","ICICIBANK","SBIN","BHARTIARTL","
             "BEL","POLYCAB","APOLLOHOSP","TVSMOTOR","VBL","CGPOWER"]
 
 out = {"generated": date.today().isoformat(), "universe_size": 0,
-       "overall": [], "short": [], "swing": [], "long": []}
+       "overall": [], "swing": [], "long": []}
 for sym in UNIVERSE:
     try:
         r = analyse(sym, use_ai=False)
         if r["overall"]["score"] is None:
             continue
         out["overall"].append(round(r["overall"]["score"], 2))
-        for k in ("short", "swing", "long"):
+        for k in ("swing", "long"):
             s = r["horizons"][k]["score"]
             if s is not None:
                 out[k].append(round(s, 2))
@@ -31,7 +31,7 @@ for sym in UNIVERSE:
     except Exception as exc:
         print(f"  skip {sym}: {type(exc).__name__}")
 
-for k in ("overall", "short", "swing", "long"):
+for k in ("overall", "swing", "long"):
     out[k].sort()
 out["universe_size"] = len(out["overall"])
 Path("app/benchmark.json").write_text(json.dumps(out, indent=1))

@@ -22,13 +22,6 @@ VALID_THESIS = {
     "what_to_watch": ["Next quarter TCV", "Attrition", "Large-deal pipeline"],
     "horizon_calls": [
         {
-            "horizon": "short",
-            "stance": "Hold",
-            "conviction": "Medium",
-            "rationale": "Range-bound vs 20-DMA.",
-            "what_would_change_it": "A close above recent highs.",
-        },
-        {
             "horizon": "swing",
             "stance": "Hold",
             "conviction": "Medium",

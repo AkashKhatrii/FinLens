@@ -14,7 +14,7 @@ Conviction = Literal["High", "Medium", "Low"]
 
 
 class HorizonCall(BaseModel):
-    horizon: Literal["short", "swing", "long"]
+    horizon: Literal["swing", "long"]
     stance: Stance = Field(description="Your call for this holding period.")
     conviction: Conviction
     rationale: str = Field(description="2-3 sentences. Cite specific numbers from the fact pack.")
@@ -42,7 +42,7 @@ class Thesis(BaseModel):
         description="3-5 concrete, checkable things: upcoming events, metrics, thresholds."
     )
     horizon_calls: list[HorizonCall] = Field(
-        description="Exactly three entries, one each for short, swing and long."
+        description="Exactly two entries, one each for swing and long."
     )
     contrarian_note: str = Field(
         description="Where the quantitative score is most likely to be wrong about this specific company, "
