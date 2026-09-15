@@ -47,11 +47,12 @@ VALUATION = {
 }
 
 TECH_SHORT = {
-    "rsi14": 1.4,
-    "pct_b": 0.5,
-    "vs_sma20": 0.7,
-    "ret_1w": 0.5,
-    "volume_ratio": 0.9,
+    "vs_sma20": 1.3,
+    "ret_1m": 1.0,
+    "rsi14": 0.8,
+    "volume_ratio": 0.7,
+    "pct_b": 0.4,
+    "ret_1w": 0.35,
 }
 
 TECH_TREND = {

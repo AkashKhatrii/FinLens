@@ -109,6 +109,8 @@ class TechnicalSnapshot:
     pct_b: float | None = None
     volume_ratio: float | None = None
     golden_cross: bool | None = None
+    sma50_slope_pct: float | None = None
+    sma200_slope_pct: float | None = None
     returns: dict[str, float | None] = field(default_factory=dict)
     relative_strength: dict[str, float | None] = field(default_factory=dict)
     support: float | None = None
@@ -159,6 +161,8 @@ def analyse(history: pd.DataFrame, benchmark: pd.DataFrame) -> tuple[TechnicalSn
 
     if snap.sma50 and snap.sma200:
         snap.golden_cross = snap.sma50 > snap.sma200
+    snap.sma50_slope_pct = _sma_slope_pct(close, 50)
+    snap.sma200_slope_pct = _sma_slope_pct(close, 200)
 
     if "Volume" in df and len(df) > 50:
         v20 = df["Volume"].tail(20).mean()
@@ -192,6 +196,16 @@ def analyse(history: pd.DataFrame, benchmark: pd.DataFrame) -> tuple[TechnicalSn
     return snap, short, trend
 
 
+def _sma_slope_pct(close: pd.Series, n: int, lookback: int = 15) -> float | None:
+    series = sma(close, n).dropna()
+    if len(series) <= lookback:
+        return None
+    start, end = float(series.iloc[-(lookback + 1)]), float(series.iloc[-1])
+    if start <= 0:
+        return None
+    return (end / start - 1) * 100
+
+
 def _last(s: pd.Series) -> float | None:
     s = s.dropna()
     if s.empty:
@@ -213,36 +227,40 @@ def _chart_series(df: pd.DataFrame, points: int = 180) -> dict[str, Any]:
 
 
 def _build_short(s: TechnicalSnapshot, p: Pillar) -> None:
-    # RSI is scored as a hill: extremes in both directions are penalised, but
-    # oversold is treated as less damaging than overbought for a buy decision.
+    from .swing_regime import classify_trend
+
+    trend = classify_trend(s)
     p.metrics.append(Metric(
         "rsi14", "RSI (14)", s.rsi14, "",
-        band(s.rsi14, [(15, 55), (30, 75), (45, 80), (55, 75), (70, 40), (80, 15), (90, 5)]),
-        _rsi_note(s.rsi14), weight=TECH_SHORT["rsi14"],
+        _rsi_score(s.rsi14, trend),
+        _rsi_note(s.rsi14, trend), weight=TECH_SHORT["rsi14"],
     ))
     p.metrics.append(Metric(
         "pct_b", "Bollinger %B", s.pct_b, "",
-        band(s.pct_b, [(-0.2, 45), (0.2, 70), (0.5, 75), (0.8, 55), (1.1, 25)]),
-        "Near the upper band — extended." if (s.pct_b or 0) > 0.9
-        else "Near the lower band — stretched to the downside." if (s.pct_b is not None and s.pct_b < 0.1)
-        else "Mid-channel.",
+        _pct_b_score(s.pct_b, trend),
+        _pct_b_note(s.pct_b, trend),
         weight=TECH_SHORT["pct_b"],
     ))
     above20 = ((s.price / s.sma20 - 1) * 100) if (s.price and s.sma20) else None
     p.metrics.append(Metric(
         "vs_sma20", "Price vs 20-DMA", above20, "%",
-        band(above20, [(-12, 15), (-5, 40), (0, 65), (4, 80), (10, 60), (18, 30)]),
+        band(above20, [(-12, 18), (-5, 42), (0, 72), (3, 84), (8, 72), (16, 64), (25, 50)]),
         f"Trading {above20:+.1f}% vs its 20-day average." if above20 is not None else "",
         weight=TECH_SHORT["vs_sma20"],
     ))
     p.metrics.append(Metric(
         "ret_1w", "1-Week Return", s.returns.get("1w"), "%",
-        band(s.returns.get("1w"), [(-10, 25), (-3, 45), (0, 60), (4, 75), (12, 55)]),
+        band(s.returns.get("1w"), [(-10, 28), (-3, 48), (0, 60), (4, 70), (12, 58)]),
         "", weight=TECH_SHORT["ret_1w"],
     ))
     p.metrics.append(Metric(
+        "ret_1m", "1-Month Return", s.returns.get("1m"), "%",
+        band(s.returns.get("1m"), [(-18, 18), (-8, 35), (0, 58), (5, 78), (14, 82), (28, 70)]),
+        "", weight=TECH_SHORT["ret_1m"],
+    ))
+    p.metrics.append(Metric(
         "volume_ratio", "Volume Trend (20d/50d)", s.volume_ratio, "x",
-        band(s.volume_ratio, [(0.5, 35), (0.8, 50), (1.0, 60), (1.4, 78), (2.5, 70)]),
+        band(s.volume_ratio, [(0.5, 38), (0.8, 52), (1.0, 62), (1.4, 74), (2.5, 68)]),
         "Volume expanding — participation confirming the move." if (s.volume_ratio or 0) > 1.2
         else "Volume thinning out." if (s.volume_ratio or 1) < 0.8 else "",
         weight=TECH_SHORT["volume_ratio"],
@@ -253,7 +271,7 @@ def _build_short(s: TechnicalSnapshot, p: Pillar) -> None:
         p.notes.append("MACD crossed below signal within the last week — momentum rolling over.")
     if s.suggested_stop and s.price:
         p.notes.append(
-            f"ATR-based stop ≈ ₹{s.suggested_stop:,.0f} "
+            f"ATR-based technical stop ≈ ₹{s.suggested_stop:,.0f} "
             f"({(s.price / s.suggested_stop - 1) * 100:.1f}% below spot)."
         )
 
@@ -307,13 +325,47 @@ def _build_trend(s: TechnicalSnapshot, p: Pillar) -> None:
         p.notes.append("50-DMA is below the 200-DMA (death-cross structure).")
 
 
-def _rsi_note(v: float | None) -> str:
+def _rsi_score(v: float | None, trend: str) -> float | None:
+    if trend == "Bullish":
+        return band(v, [(20, 38), (35, 68), (50, 84), (62, 78), (72, 68), (80, 56), (90, 38)])
+    if trend == "Bearish":
+        return band(v, [(15, 22), (30, 30), (45, 42), (60, 48), (75, 32)])
+    return band(v, [(20, 48), (30, 66), (50, 72), (70, 52), (85, 32)])
+
+
+def _rsi_note(v: float | None, trend: str = "Neutral") -> str:
     if v is None:
         return ""
+    if trend == "Bearish" and v <= 30:
+        return f"RSI {v:.0f} — oversold in a downtrend, not a buy signal by itself."
+    if trend == "Bullish" and v >= 75:
+        return f"RSI {v:.0f} — bullish trend, but the setup is extended."
+    if trend == "Bullish" and v >= 60:
+        return f"RSI {v:.0f} — momentum is still constructive inside the uptrend."
     if v >= 75:
-        return f"RSI {v:.0f} — overbought; poor risk/reward for a fresh entry."
-    if v >= 60:
-        return f"RSI {v:.0f} — strong momentum, not yet stretched."
+        return f"RSI {v:.0f} — stretched; wait for more than this print."
     if v <= 30:
-        return f"RSI {v:.0f} — oversold; bounce candidate but catching a falling knife is a real risk."
-    return f"RSI {v:.0f} — neutral."
+        return f"RSI {v:.0f} — oversold; only useful if trend or momentum also turns."
+    return f"RSI {v:.0f} — a setup reading, not a standalone verdict."
+
+
+def _pct_b_score(v: float | None, trend: str) -> float | None:
+    if trend == "Bullish":
+        return band(v, [(-0.1, 42), (0.2, 70), (0.5, 78), (0.8, 64), (1.05, 48)])
+    if trend == "Bearish":
+        return band(v, [(-0.1, 28), (0.2, 36), (0.5, 44), (0.85, 32)])
+    return band(v, [(-0.2, 48), (0.2, 68), (0.5, 72), (0.85, 52), (1.1, 32)])
+
+
+def _pct_b_note(v: float | None, trend: str) -> str:
+    if v is None:
+        return ""
+    if trend == "Bullish" and v > 0.9:
+        return "Near the upper band — extended inside an uptrend, not an automatic sell."
+    if trend == "Bearish" and v < 0.15:
+        return "Near the lower band in a downtrend — oversold, not automatically bullish."
+    if v > 0.9:
+        return "Near the upper band — extended."
+    if v < 0.1:
+        return "Near the lower band — stretched to the downside."
+    return "Mid-channel."

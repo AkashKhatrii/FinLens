@@ -205,8 +205,10 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
         "quant_scores": {
             "overall": r["overall"],
             "by_horizon": {
-                k: {"score": v["score"], "verdict": v["verdict"],
-                    "confidence": v["confidence"], "confidence_label": v["confidence_label"]}
+                k: {kk: v[kk] for kk in (
+                    "score", "verdict", "confidence", "confidence_label",
+                    "regime", "entry_quality", "swing_factors",
+                ) if kk in v}
                 for k, v in r["horizons"].items()
             },
         },
@@ -237,6 +239,15 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
         "rule_based_cons": r["cons"],
         "data_gaps": r["data_gaps"],
     }
+    swing = (r.get("horizons") or {}).get("swing") or {}
+    if swing.get("swing_factors") or swing.get("regime"):
+        pack["swing_setup"] = {
+            "score": swing.get("score"),
+            "verdict": swing.get("verdict"),
+            **(swing.get("swing_factors") or {}),
+            "regime": swing.get("regime"),
+            "entry_quality": swing.get("entry_quality"),
+        }
     bank_pack = fact_pack_bank_fundamentals(r.get("bank_metrics"))
     if bank_pack is not None:
         pack["bank_fundamentals"] = bank_pack

@@ -25,6 +25,22 @@ class HorizonCall(BaseModel):
     what_would_change_it: str = Field(
         description="The single concrete observation that would flip this call."
     )
+    agreement: Literal["aligned", "qualified", "disagrees"] | None = Field(
+        default=None,
+        description="Swing only. aligned = same call as Quant and no material contradiction "
+                    "(ordinary caveats stay aligned: moderate ADX, neutral volume, elevated beta/"
+                    "volatility, ordinary pullback/extension). qualified = same direction with "
+                    "material setup uncertainty. disagrees = stance changes the Swing direction "
+                    "and a material reason is given. Leave null on Long. Prefer aligned over "
+                    "qualified for ordinary caveats; prefer qualified over disagrees.",
+    )
+    qualification: str | None = Field(
+        default=None,
+        description="Swing only. If qualified or disagrees, the material reason. "
+                    "RSI, Bollinger, or PE alone is not a reason. Moderate ADX, neutral volume, "
+                    "high beta/volatility, high valuation, DCF, or ordinary extension are not "
+                    "standalone disagreement reasons.",
+    )
 
 
 class OpportunityView(BaseModel):

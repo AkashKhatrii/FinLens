@@ -60,15 +60,15 @@ class TestValuationFamily(unittest.TestCase):
 
 
 class TestTechnicalFamilies(unittest.TestCase):
-    def test_rsi_is_the_primary_short_oscillator(self):
+    def test_setup_is_led_by_20dma_and_one_month_momentum(self):
+        self.assertGreater(TECH_SHORT["vs_sma20"], TECH_SHORT["rsi14"])
+        self.assertGreater(TECH_SHORT["ret_1m"], TECH_SHORT["ret_1w"])
         self.assertGreater(TECH_SHORT["rsi14"], TECH_SHORT["pct_b"])
-        self.assertGreater(TECH_SHORT["rsi14"], TECH_SHORT["vs_sma20"])
-        self.assertGreater(TECH_SHORT["rsi14"], TECH_SHORT["ret_1w"])
 
-    def test_extension_companions_cannot_outvote_rsi(self):
+    def test_rsi_and_bollinger_cannot_outvote_setup_and_momentum(self):
         self.assertLessEqual(
-            TECH_SHORT["pct_b"] + TECH_SHORT["vs_sma20"] + TECH_SHORT["ret_1w"],
-            TECH_SHORT["rsi14"] + TECH_SHORT["volume_ratio"],
+            TECH_SHORT["rsi14"] + TECH_SHORT["pct_b"] + TECH_SHORT["ret_1w"],
+            TECH_SHORT["vs_sma20"] + TECH_SHORT["ret_1m"],
         )
 
     def test_200dma_and_3m_rs_are_the_primary_trend_signals(self):

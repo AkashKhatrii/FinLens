@@ -20,6 +20,7 @@ from statistics import pstdev
 from typing import Any
 
 from .common import Metric, Pillar
+from .swing_regime import classify_swing
 
 # Each horizon's weights must cover the same pillar set; missing pillars are
 # renormalised away at scoring time.
@@ -53,10 +54,13 @@ HORIZONS: dict[str, dict[str, Any]] = {
 HORIZON_FACTOR: dict[str, dict[str, float]] = {
     "swing": {
         "rev_cagr": 0.55, "pat_cagr": 0.55,
-        "dcf_upside": 0.5, "promoter_holding": 0.45,
+        "dcf_upside": 0.45, "promoter_holding": 0.45,
+        "pe": 0.45, "pe_vs_history": 0.45, "pb": 0.4, "ev_ebitda": 0.4,
+        "peg": 0.35, "earnings_yield_spread": 0.35, "dividend_yield": 0.35,
     },
     "long": {
         "rsi14": 0.0, "pct_b": 0.0, "vs_sma20": 0.0, "ret_1w": 0.0,
+        "ret_1m": 0.0,
         "volume_ratio": 0.0,
         "rs_3m": 0.2, "vs_sma50": 0.25,
         "q_rev_yoy": 0.25, "q_pat_yoy": 0.25,
@@ -127,6 +131,9 @@ class HorizonVerdict:
     drivers: list[dict[str, Any]] = field(default_factory=list)
     detractors: list[dict[str, Any]] = field(default_factory=list)
     plan: dict[str, Any] = field(default_factory=dict)
+    regime: str | None = None
+    entry_quality: str | None = None
+    swing_factors: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return dict(self.__dict__)
@@ -222,7 +229,8 @@ def _plan(horizon: str, tech, val, price: float | None) -> dict[str, Any]:
         stop = min(candidates) if candidates else None
         target = tech.resistance * 1.05 if tech.resistance else None
         return _levels(price, stop, target,
-                       "Hold while the 50-DMA holds; trail the stop after the next results print.")
+                       "Hold while the 50-DMA holds; trail the technical stop after the next results print. "
+                       "These are technical reference levels, not a fundamental price target.")
     fair = val.dcf_value
     return _levels(price, None, fair,
                    "Accumulate in tranches on weakness rather than in one lot; review annually against the thesis.")
@@ -265,6 +273,7 @@ def score_all(pillars: dict[str, Pillar], tech, val, price: float | None) -> dic
         conf, conf_label = _confidence(pillars, weights, key)
         drivers, detractors = _evidence(pillars, weights, key)
 
+        ctx = classify_swing(tech) if key == "swing" else None
         verdicts[key] = HorizonVerdict(
             key=key, label=spec["label"], window=spec["window"], thesis=spec["thesis"],
             score=round(score, 1) if score is not None else None,
@@ -272,6 +281,15 @@ def score_all(pillars: dict[str, Pillar], tech, val, price: float | None) -> dic
             confidence=conf, confidence_label=conf_label,
             drivers=drivers, detractors=detractors,
             plan=_plan(key, tech, val, price),
+            regime=None if ctx is None else ctx["regime"],
+            entry_quality=None if ctx is None else ctx["entry_quality"],
+            swing_factors=None if ctx is None else {
+                "trend": ctx["trend"],
+                "momentum": ctx["momentum"],
+                "relative_strength": ctx["relative_strength"],
+                "setup": ctx["setup"],
+                "volume": ctx["volume"],
+            },
         )
 
     blended_num = sum(OVERALL_BLEND[k] * v.score for k, v in verdicts.items() if v.score is not None)

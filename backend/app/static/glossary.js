@@ -69,7 +69,7 @@
 
   put(["technicalshort", "shorttermsetup"], "Short-term setup",
     "How the stock is behaving over days — stretched, washed out, or in play.",
-    "RSI, Bollinger %B, distance from the 20-day average, 1-week return, and volume. Used by Swing; 0% of Long.");
+    "RSI, Bollinger %B, distance from the 20-day average, 1-month return, 1-week return, and volume. Setup and extension, not a standalone buy/sell. Used by Swing; 0% of Long.");
 
   put(["technicaltrend", "trendrelativestrength", "trend & relative strength"], "Trend & relative strength",
     "Whether the medium-term trend is up and whether the stock is beating the index.",
@@ -274,11 +274,11 @@
 
   put(["rsi", "rsi14", "rsi (14)"], "RSI (14)",
     "Relative Strength Index — a 0–100 oscillator of recent up vs down days. Not ‘strength vs the index’.",
-    "Scored as a hill: mid-range is good for a buy; overbought (~70+) and oversold are both penalised, overbought more so.");
+    "Read against the trend. In an uptrend, 60–75 can still be healthy momentum; 75+ means extended, not an automatic sell. In a downtrend, RSI 25 is oversold — not a buy by itself.");
 
   put(["pctb", "bollingerb", "bollinger %b"], "Bollinger %B",
     "Where price sits inside a volatility band around the average. 0 = lower band, 1 = upper band.",
-    "Near 0.5 is mid-channel. Stuck above 1 is extended; below 0 is washed out. Used only in the short-term setup.");
+    "A setup/extension reading inside the trend. Near 1 in an uptrend means extended, not sell. Near 0 in a downtrend is oversold, not buy.");
 
   put(["vssma20", "pricevs20dma", "20dma", "20-dma"], "Price vs 20-DMA",
     "How far the price is from its 20-day moving average — a short trend line.",
@@ -286,7 +286,19 @@
 
   put(["ret1w", "1weekreturn"], "1-week return",
     "Price change over the last week.",
-    "Gentle strength scores better than a vertical spike. A crash week scores poorly for a short-term buy.");
+    "Noisy. A confirmation of 1–3 month momentum, not a dominant Swing vote.");
+
+  put(["ret1m", "1monthreturn"], "1-month return",
+    "Price change over the last ~21 sessions.",
+    "The preferred short-horizon momentum reading for Swing. Sustained 1–3 month strength matters more than one week.");
+
+  put(["regime", "technicalregime"], "Technical regime",
+    "A label for the current Swing setup: trend, pullback, extension, or breakdown.",
+    "Derived from several signals together. It explains the Swing score; it is not a second score.");
+
+  put(["entryquality", "entry", "attractive", "extended", "normal", "weak"], "Entry quality",
+    "Whether the current price is a reasonable place to act inside the Swing setup.",
+    "Separate from the Swing verdict. Buy + Extended means the trend is still up — do not chase. Attractive is a pullback in a bullish trend.");
 
   put(["volumeratio", "volumetrend20d50d"], "Volume trend",
     "Recent average volume versus a longer average — is participation picking up?",
@@ -356,17 +368,17 @@
     "Percent owned by mutual funds, insurers, FIIs, and similar.",
     "Some institutional ownership is a quality tell. It is a weak pillar — not a reason to buy by itself.");
 
-  put(["stop", "stoploss"], "Stop loss",
-    "A price where the short/swing thesis is wrong and you should exit.",
-    "Short term: ATR-based. Swing: the lower of that stop and the 50-DMA. Long term has no stop — you review the thesis, not a tick.");
+  put(["stop", "stoploss", "technicalstop"], "Technical stop",
+    "A chart reference level where the short/swing setup is invalid — not a guaranteed forecast or a fundamental price target.",
+    "ATR-based, or on Swing the lower of that level and the 50-DMA. Do not mix this with DCF fair value or analyst consensus targets.");
 
-  put(["target"], "Target",
-    "A first take-profit or fair-value level for that horizon.",
-    "Short: recent range high. Swing: a bit beyond resistance. Long: the DCF value, to accumulate toward, not a day-trade exit.");
+  put(["target", "technicaltarget"], "Technical target",
+    "A chart reference take-profit for Short/Swing, or DCF fair value on Long. Scenario level, not a guaranteed forecast.",
+    "Swing: a bit beyond resistance. Not an analyst consensus target and not DCF fair value. Long shows DCF fair value separately.");
 
-  put(["rr", "r:r", "riskreward"], "Risk / reward (R:R)",
-    "Upside to target divided by downside to the stop. 2 means you make ₹2 for every ₹1 you risk.",
-    "Only shown when both a stop and a target exist. Below 1 is a poor trade even if the score says Buy.");
+  put(["rr", "r:r", "riskreward"], "Risk / reward",
+    "Upside to the technical target divided by downside to the technical stop. 2 means you make ₹2 for every ₹1 you risk.",
+    "Only shown when both a technical stop and a technical target exist. Below 1 is a poor trade even if the score says Buy.");
 
   put(["yoy"], "YoY (year on year)",
     "This period versus the same period last year, so seasonality does not distort the comparison.",

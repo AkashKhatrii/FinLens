@@ -63,7 +63,7 @@ WEAK_FUNDAMENTALS = {
 }
 
 STRONG_SETUP = {
-    "rsi14": 92, "pct_b": 90, "vs_sma20": 90, "ret_1w": 90, "volume_ratio": 85,
+    "rsi14": 92, "pct_b": 90, "vs_sma20": 90, "ret_1w": 90, "ret_1m": 88, "volume_ratio": 85,
     "vs_sma50": 88, "vs_sma200": 85, "adx14": 80, "rs_3m": 90, "rs_1y": 82,
     "week52_position": 75,
 }
@@ -83,7 +83,7 @@ STRONG_COMPANY = {
 }
 
 WEAK_SETUP = {
-    "rsi14": 22, "pct_b": 25, "vs_sma20": 20, "ret_1w": 18, "volume_ratio": 30,
+    "rsi14": 22, "pct_b": 25, "vs_sma20": 20, "ret_1w": 18, "ret_1m": 20, "volume_ratio": 30,
     "vs_sma50": 28, "vs_sma200": 32, "adx14": 35, "rs_3m": 25, "rs_1y": 30,
     "week52_position": 28,
 }

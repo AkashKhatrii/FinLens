@@ -445,6 +445,15 @@ tailwind.config = {
             {{ h.rank.percentile }}th pct
           </span>
         </div>
+        <div v-if="k === 'swing' && (h.regime || h.entry_quality)" class="flex flex-wrap gap-1.5 mb-3">
+          <span v-if="h.regime" class="text-[10px] px-2 py-0.5 rounded bg-inset border border-edge text-muted">
+            <term-tip id="regime" :label="h.regime"></term-tip>
+          </span>
+          <span v-if="h.entry_quality" class="text-[10px] px-2 py-0.5 rounded bg-inset border border-edge"
+                :class="h.entry_quality === 'Extended' ? 'text-amber-400' : h.entry_quality === 'Attractive' ? 'text-emerald-400' : h.entry_quality === 'Weak' ? 'text-red-400' : 'text-muted'">
+            Entry: <term-tip id="entryquality" :label="h.entry_quality"></term-tip>
+          </span>
+        </div>
         <div class="text-[11px] text-muted leading-relaxed mb-3">{{ h.thesis }}</div>
 
         <div class="flex items-center gap-1.5 mb-3">
@@ -458,9 +467,9 @@ tailwind.config = {
         </div>
 
         <div v-if="h.plan && h.plan.stop_loss" class="grid grid-cols-3 gap-1.5 text-center pt-3 border-t border-edge">
-          <div><div class="text-[9px] text-faint uppercase"><term-tip id="stop" label="Stop"></term-tip></div><div class="text-[11px] font-mono text-red-400">₹{{ num(h.plan.stop_loss) }}</div></div>
-          <div><div class="text-[9px] text-faint uppercase"><term-tip id="target" label="Target"></term-tip></div><div class="text-[11px] font-mono text-emerald-400">₹{{ num(h.plan.target) }}</div></div>
-          <div><div class="text-[9px] text-faint uppercase"><term-tip id="rr" label="R:R"></term-tip></div><div class="text-[11px] font-mono">{{ h.plan.risk_reward ?? '—' }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="stop" label="Technical Stop"></term-tip></div><div class="text-[11px] font-mono text-red-400">₹{{ num(h.plan.stop_loss) }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="target" label="Technical Target"></term-tip></div><div class="text-[11px] font-mono text-emerald-400">₹{{ num(h.plan.target) }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="rr" label="Risk/Reward"></term-tip></div><div class="text-[11px] font-mono">{{ h.plan.risk_reward ?? '—' }}</div></div>
         </div>
         <div v-else-if="h.plan && h.plan.target" class="pt-3 border-t border-edge text-center">
           <div class="text-[9px] text-faint uppercase"><term-tip id="dcf" label="DCF fair value"></term-tip></div>
@@ -652,6 +661,9 @@ tailwind.config = {
               <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(c.stance))">{{ c.stance }}</span>
             </div>
             <p class="text-[11px] text-muted leading-relaxed mb-2">{{ c.rationale }}</p>
+            <div v-if="c.horizon === 'swing' && c.agreement" class="text-[10px] text-faint mb-2">
+              Quant agreement: {{ c.agreement }}<span v-if="c.qualification"> — {{ c.qualification }}</span>
+            </div>
             <div class="text-[10px] text-faint leading-relaxed pt-2 border-t border-edge">
               <span class="text-muted">Flips if:</span> {{ c.what_would_change_it }}
             </div>
