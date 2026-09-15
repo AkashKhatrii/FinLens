@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
+from typing import Iterator
 
 from dotenv import load_dotenv
 
@@ -75,12 +78,55 @@ PROVIDERS = {
 ANTHROPIC_MODEL = os.getenv("FINLENS_CLAUDE_MODEL", os.getenv("FINLENS_MODEL", "claude-opus-5"))
 
 
+def anthropic_api_key() -> str | None:
+    """Claude credentials: ANTHROPIC_API_KEY, else CLAUDE_API_KEY (Cursor / Claude Code)."""
+    for name in ("ANTHROPIC_API_KEY", "CLAUDE_API_KEY"):
+        val = (os.getenv(name) or "").strip()
+        if val:
+            return val
+    return None
+
+
+def anthropic_workspace_id() -> str | None:
+    val = (os.getenv("ANTHROPIC_WORKSPACE_ID") or "").strip()
+    return val or None
+
+_provider_override: ContextVar[str | None] = ContextVar(
+    "finlens_provider_override", default=None,
+)
+
+
+def resolve_provider(requested: str | None = None) -> str:
+    """Map a UI/API choice onto a known provider. Unknown values fall back to .env."""
+    raw = (requested or "").strip().lower()
+    if raw in PROVIDERS:
+        return raw
+    env = (os.getenv("FINLENS_PROVIDER") or "deepseek").strip().lower()
+    return env if env in PROVIDERS else "deepseek"
+
+
 def provider_key() -> str:
-    raw = (os.getenv("FINLENS_PROVIDER") or "deepseek").strip().lower()
-    return raw if raw in PROVIDERS else "deepseek"
+    override = _provider_override.get()
+    if override in PROVIDERS:
+        return override
+    return resolve_provider()
 
 
 def provider_model(key: str | None = None) -> str:
     key = key or provider_key()
     spec = PROVIDERS[key]
     return os.getenv(spec["model_env"], spec["default_model"])
+
+
+@contextmanager
+def using_provider(requested: str | None) -> Iterator[str]:
+    """Use this provider for the current request (thesis + bank KPI extraction)."""
+    if requested is None or not str(requested).strip():
+        yield provider_key()
+        return
+    key = resolve_provider(requested)
+    token = _provider_override.set(key)
+    try:
+        yield key
+    finally:
+        _provider_override.reset(token)

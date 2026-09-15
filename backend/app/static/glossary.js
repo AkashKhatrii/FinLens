@@ -27,6 +27,26 @@
     "The primary horizon: is this a good business worth owning for 1–3+ years at the current valuation?",
     "Quality, growth, profitability, the balance sheet, cash, and valuation dominate. Chart setup is almost ignored.");
 
+  put(["opportunity", "investmentview", "investment view"], "Opportunity",
+    "A long-term forward-looking AI judgment: is there a credible path to significant shareholder value over 3–5+ years? Not a third horizon, not a numeric score, and not an entry-price signal.",
+    "Shown only in the Analyst Thesis. Short and Long scores are unchanged. A proven company with unproven optionality is still Established, not Emerging.");
+
+  put(["establishedopportunity", "established opportunity", "strongopportunity", "strong opportunity"], "Established Opportunity",
+    "The current business is already proven, and there is a credible multi-year path to continued value creation. Extra unproven initiatives (EV, new categories, expansion) are optionality, not a reason to call the company Emerging.",
+    "A proven compounder can still be Established Opportunity even if the short-term chart is weak. It is not a score and does not raise the quantitative Long rating.");
+
+  put(["emergingopportunity", "emerging opportunity", "earlyopportunity", "early opportunity"], "Emerging Opportunity",
+    "The current business is not yet sufficiently proven. The investor is betting that the company itself becomes materially stronger over several years.",
+    "The Long rating can stay Hold. That is not a contradiction. Do not use Emerging merely because one future initiative is unproven.");
+
+  put(["opportunitywatch", "watch"], "Watch",
+    "An interesting long-term possibility exists, but the evidence is not strong enough yet to make that investment bet.",
+    "Do not stretch a Watch into Emerging Opportunity. Do not use a weak chart or a high multiple as the whole story.");
+
+  put(["noopportunity", "no opportunity"], "No Opportunity",
+    "No sufficiently credible long-term path to attractive value creation on the available evidence.",
+    "A falling price, a low P/E, or an oversold RSI is not a thesis. This is an AI judgment, not a quantitative Avoid.");
+
   put(["confidence"], "Confidence",
     "How much to trust that horizon’s score, separately from the score itself.",
     "High when most of the weighted data exists and the pillars agree. Missing inputs or pillars that contradict each other lower confidence, not the score.");
@@ -109,7 +129,84 @@
 
   put(["roce", "returnoncapitalemployed"], "Return on capital employed (ROCE)",
     "Profit versus all capital in the business, debt included — not just equity.",
-    "Compared in the note to a ~12% cost of capital. If ROCE is above that, growth is usually value-accretive. Same weight as ROE.");
+    "Compared in the note to a ~12% cost of capital. If ROCE is above that, growth is usually value-accretive. Same weight as ROE. Not scored for banks.");
+
+  put(["loangrowth"], "Loan growth",
+    "Year-on-year growth in a bank’s end-of-period loans or advances.",
+    "A bank growth signal. Average or quarter-on-quarter growth is not substituted. Missing means the figure was not resolved, not zero.");
+
+  put(["depositgrowth"], "Deposit growth",
+    "Year-on-year growth in a bank’s end-of-period deposits.",
+    "Bank-level total deposits. CASA deposit growth is a different metric and is not used here.");
+
+  put(["niigrowth"], "NII growth",
+    "Year-on-year growth in net interest income.",
+    "QoQ NII growth is not used as a fallback. Scored on the growth pillar for banks.");
+
+  put(["casatrend"], "CASA trend",
+    "The change in CASA deposits or ratio — a trend, not the CASA ratio itself.",
+    "Kept separate from the CASA ratio. Used as a secondary bank growth signal.");
+
+  put(["casa"], "CASA",
+    "Current-account and savings-account deposits as a percent of total deposits.",
+    "The ratio, not the growth rate. CASA trend is a different metric.");
+
+  put(["nim", "netinterestmargin"], "Net interest margin (NIM)",
+    "The spread a bank earns on its interest-bearing assets.",
+    "Overall / whole-bank NIM. Domestic-only NIM is not substituted. A bank profitability signal.");
+
+  put(["roa", "returnonassets"], "Return on assets (RoA)",
+    "Profit as a percent of assets — how hard the balance sheet is working.",
+    "Bank-level RoA, including return on average assets when that is the disclosed headline. Not a segment RoA.");
+
+  put(["costincome", "cost / income", "costtoincome"], "Cost / income",
+    "Operating expenses as a percent of income — how expensive the bank is to run.",
+    "Lower is better. Cost-to-assets is a different ratio and is not mapped here.");
+
+  put(["gnpa", "grossnpa"], "Gross NPA (GNPA)",
+    "Gross non-performing assets as a percent of advances.",
+    "Headline bank-wide GNPA. Ex-agri or other sub-series are not used. Lower is better.");
+
+  put(["nnpa", "netnpa"], "Net NPA (NNPA)",
+    "Net non-performing assets after provisions, as a percent of advances.",
+    "Headline NNPA, not a prior-period or segment figure. Lower is better. Weighted below GNPA so the two do not double-count.");
+
+  put(["pcr", "provisioncoverageratio"], "Provision coverage ratio (PCR)",
+    "How much of the NPA book is already provided for.",
+    "Headline PCR. Specific PCR or PCR including write-offs/AUCA is not substituted.");
+
+  put(["creditcost"], "Credit cost",
+    "Provisions charged through the P&L as a percent of assets or advances.",
+    "Headline credit cost. Net-of-recoveries is not used when a distinct headline exists. Lower is better.");
+
+  put(["slippages"], "Slippages",
+    "Fresh additions to NPAs in the current period.",
+    "Bank-level slippages. Segment figures and combined recoveries lines are not used.");
+
+  put(["restructuredloans"], "Restructured loans",
+    "Advances that have been restructured, as disclosed by the bank.",
+    "Not inferred from SMA, stressed assets, or GNPA. Missing is skipped, not treated as zero.");
+
+  put(["smaorstressedassets"], "SMA / stressed assets",
+    "Special mention accounts or other disclosed stressed assets.",
+    "Kept separate from restructured loans. Missing is skipped.");
+
+  put(["cet1", "commonequitytier1"], "Common Equity Tier 1 (CET1)",
+    "The highest-quality capital a bank holds, as a percent of risk-weighted assets.",
+    "Not AT1, Tier 1, Tier 2, or CAR. Weighted above CAR so the two capital ratios do not double-count.");
+
+  put(["car", "crar", "capitaladequacyratio"], "Capital adequacy (CAR / CRAR)",
+    "Total capital as a percent of risk-weighted assets.",
+    "Headline CAR/CRAR. AT1 and tier slices are not treated as CAR.");
+
+  put(["writeoffs", "write-offs"], "Write-offs",
+    "Advances written off in the period, as the bank disclosed them.",
+    "Shown when available. Not scored automatically — write-offs need context to interpret.");
+
+  put(["recoveries"], "Recoveries",
+    "Recoveries from written-off or non-performing accounts, as disclosed.",
+    "Shown when available. Not scored automatically — recoveries can be lumpy and context-dependent.");
+
 
   put(["debtequity", "debt / equity"], "Debt / equity",
     "How much the company owes relative to what shareholders own.",
@@ -149,7 +246,11 @@
 
   put(["pb", "p/b", "price / book", "pricebook"], "Price / book",
     "Price divided by accounting book value per share.",
-    "More useful for banks and holding companies than for asset-light software. Negative book value is not scored as a bargain.");
+    "For industrial companies, lower is cheaper on generic bands. For banks, FinLens scores P/B against the bank’s own history when a 5-year median exists — not 0.6x = cheap and 18x = expensive. Negative book value is not scored as a bargain.");
+
+  put(["pbmedian5y", "pricetobookmedian5y", "5-year median p/b"], "5-year median P/B",
+    "The typical price-to-book this stock has traded at, reconstructed from book value and the share price on each statement date.",
+    "The scored bank P/B signal is how far today’s multiple sits from this median. If the history cannot be built, P/B is shown but not scored.");
 
   put(["evebitda", "ev / ebitda"], "EV / EBITDA",
     "Enterprise value (market cap plus net debt) divided by operating earnings before depreciation.",

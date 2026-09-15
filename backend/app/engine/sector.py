@@ -13,6 +13,10 @@ PROFILE_DEFAULT = "default"
 
 BANK_SUPPRESS = frozenset({
     "op_margin",
+    "net_margin",
+    "margin_trend",
+    "roce",
+    "debt_equity",
     "interest_cover",
     "current_ratio",
     "net_debt_ebitda",
@@ -51,6 +55,7 @@ def apply_profile(pillar: Pillar, profile: str) -> None:
         if m.key not in BANK_SUPPRESS:
             continue
         m.score = None
+        m.weight = 0.0
         if m.key == "promoter_holding" and m.note:
             if _BANK_NOTE not in m.note:
                 m.note = m.note.rstrip(".") + ". " + _BANK_NOTE

@@ -167,11 +167,13 @@ tailwind.config = {
   .v-hold { background: rgb(245 158 11 / 0.12); color: #fbbf24; border: 1px solid rgb(245 158 11 / 0.28); }
   .v-reduce { background: rgb(251 146 60 / 0.12); color: #fb923c; border: 1px solid rgb(251 146 60 / 0.28); }
   .v-avoid { background: rgb(239 68 68 / 0.12); color: #f87171; border: 1px solid rgb(239 68 68 / 0.28); }
+  .v-early { background: rgb(56 189 248 / 0.12); color: #38bdf8; border: 1px solid rgb(56 189 248 / 0.30); }
   .v-neutral { background: rgb(var(--inset)); color: rgb(var(--muted)); border: 1px solid rgb(var(--edge)); }
   html[data-theme="light"] .v-strong-buy, html[data-theme="light"] .v-buy { color: #047857; }
   html[data-theme="light"] .v-hold { color: #b45309; }
   html[data-theme="light"] .v-reduce { color: #c2410c; }
   html[data-theme="light"] .v-avoid { color: #b91c1c; }
+  html[data-theme="light"] .v-early { color: #0369a1; }
 
   .pill-good { background: rgb(16 185 129 / 0.14); color: #34d399; }
   .pill-ok { background: rgb(245 158 11 / 0.14); color: #fbbf24; }
@@ -274,10 +276,18 @@ tailwind.config = {
       <div class="flex items-center gap-3 text-[11px] text-muted shrink-0">
         <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 v-on:click="glossaryOpen = true">Terms</button>
-        <span class="hidden md:flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full" :class="aiReady ? 'bg-emerald-400' : 'bg-amber-400'"></span>
-          {{ aiReady ? 'AI ready' : 'Quant only' }}
-        </span>
+        <label class="hidden sm:flex items-center gap-2">
+          <select v-model="aiProvider" aria-label="AI provider"
+                  class="bg-inset border border-edge rounded-md px-2 py-1 text-[11px] text-fg outline-none">
+            <option v-for="p in aiProviders" :key="p.key" :value="p.key" :disabled="!p.available">
+              {{ p.label }}{{ p.available ? '' : ' (no key)' }}
+            </option>
+          </select>
+          <span class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full" :class="aiReady ? 'bg-emerald-400' : 'bg-amber-400'"></span>
+            {{ aiReady ? 'ready' : 'no key' }}
+          </span>
+        </label>
         <button type="button" class="theme-toggle" v-on:click="toggleTheme"
                 :aria-label="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
                 :title="theme === 'dark' ? 'Light mode' : 'Dark mode'">
@@ -497,6 +507,30 @@ tailwind.config = {
       </div>
     </div>
 
+    <!-- Bank fundamentals (canonical KPIs only; missing metrics are omitted) -->
+    <div v-if="result.bank_metrics && result.bank_metrics.groups && result.bank_metrics.groups.length"
+         class="rise panel rounded-2xl p-5" style="animation-delay:.30s">
+      <div class="flex items-baseline justify-between gap-3 mb-4">
+        <div class="text-sm font-semibold">Bank Fundamentals</div>
+        <div v-if="result.bank_metrics.period" class="text-[10px] text-faint">{{ result.bank_metrics.period }}</div>
+      </div>
+      <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div v-for="g in result.bank_metrics.groups" :key="g.key">
+          <div class="text-[11px] font-semibold uppercase tracking-wide text-muted mb-2">{{ g.label }}</div>
+          <div class="space-y-1.5">
+            <div v-for="m in g.metrics" :key="m.key"
+                 class="flex items-baseline justify-between gap-3 bg-inset rounded-lg px-3 py-2.5 border border-edge">
+              <div class="min-w-0">
+                <div class="text-[11px] text-fg"><term-tip :id="m.key" :label="m.label"></term-tip></div>
+                <div v-if="m.source" class="text-[10px] text-faint truncate">{{ m.source }}</div>
+              </div>
+              <div class="text-sm font-mono shrink-0">{{ m.display }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Pros / Cons -->
     <div class="grid lg:grid-cols-2 gap-5">
       <div class="rise panel rounded-2xl p-5" style="animation-delay:.32s">
@@ -543,6 +577,44 @@ tailwind.config = {
 
       <div v-else-if="ai" class="space-y-5">
         <div class="text-base font-medium text-fg leading-relaxed">{{ ai.headline }}</div>
+
+        <div v-if="ai.opportunity" class="space-y-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-muted">
+            <term-tip id="opportunity" label="Investment View"></term-tip>
+          </div>
+          <div class="text-[10px] text-faint leading-relaxed">
+            Short is the near-term stock. Long is what is currently proven.
+            Opportunity is long-term forward-looking potential — not an entry signal.
+          </div>
+          <div class="grid md:grid-cols-3 gap-3">
+            <div class="bg-inset rounded-lg p-3.5 border border-edge">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-semibold">Short</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(investmentShort.stance))">{{ investmentShort.stance }}</span>
+              </div>
+            </div>
+            <div class="bg-inset rounded-lg p-3.5 border border-edge ring-1 ring-blue-500/20">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-semibold">Long</span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(investmentLong.stance))">{{ investmentLong.stance }}</span>
+              </div>
+            </div>
+            <div class="bg-inset rounded-lg p-3.5 border border-edge">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-semibold"><term-tip id="opportunity" label="Opportunity"></term-tip></span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(opportunityClass(ai.opportunity.category))">{{ ai.opportunity.category }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-inset rounded-lg p-3.5 border border-edge space-y-2">
+            <p class="text-xs text-muted leading-relaxed">{{ ai.opportunity.rationale }}</p>
+            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">The bet:</span> {{ ai.opportunity.the_bet }}</div>
+            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">Needs to happen:</span> {{ ai.opportunity.needs_to_happen }}</div>
+            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">Breaks if:</span> {{ (ai.opportunity.thesis_breakers || []).join(' · ') }}</div>
+            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">Risk:</span> {{ ai.opportunity.risk_level }} — a long-term thesis, not a quantitative score</div>
+          </div>
+        </div>
+
         <p class="text-xs text-muted leading-relaxed">{{ ai.business_summary }}</p>
 
         <div class="grid md:grid-cols-2 gap-4">
@@ -576,7 +648,7 @@ tailwind.config = {
                class="bg-inset rounded-lg p-3.5 border border-edge"
                :class="c.horizon === 'long' ? 'ring-1 ring-blue-500/20' : ''">
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-semibold capitalize">{{ c.horizon }}<span v-if="c.horizon === 'long'" class="ml-1.5 text-[9px] uppercase tracking-wider text-blue-400 font-medium">Primary</span></span>
+              <span class="text-[11px] font-semibold">{{ c.horizon === 'swing' ? 'Short' : 'Long' }}<span v-if="c.horizon === 'long'" class="ml-1.5 text-[9px] uppercase tracking-wider text-blue-400 font-medium">Primary</span></span>
               <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(c.stance))">{{ c.stance }}</span>
             </div>
             <p class="text-[11px] text-muted leading-relaxed mb-2">{{ c.rationale }}</p>
@@ -995,7 +1067,14 @@ createApp({
     return {
       query: '', result: null, loading: false, error: '', didYouMean: [], mounted: false,
       activePillar: 'growth', morphIndex: 0, loadingStep: '', loadingPct: 0,
-      aiReady: false, aiLoading: false, glossaryOpen: false, glossaryQuery: '',
+      aiLoading: false, glossaryOpen: false, glossaryQuery: '',
+      aiProvider: (function () {
+        try { return localStorage.getItem('finlens-ai-provider') || 'deepseek'; } catch (_) { return 'deepseek'; }
+      })(),
+      aiProviders: [
+        { key: 'deepseek', label: 'DeepSeek', available: false, model: '', reason: '' },
+        { key: 'claude', label: 'Claude', available: false, model: '', reason: '' },
+      ],
       theme: 'dark',
       taglines: [
         'Fundamentals, valuation, technicals and filings — in one pass.',
@@ -1014,6 +1093,14 @@ createApp({
   },
   computed: {
     ai() { return this.result && this.result.ai && this.result.ai.thesis ? this.result.ai.thesis : null; },
+    selectedAi() { return (this.aiProviders || []).find(p => p.key === this.aiProvider) || null; },
+    aiReady() { return !!(this.selectedAi && this.selectedAi.available); },
+    investmentShort() {
+      return ((this.ai && this.ai.horizon_calls) || []).find(c => c.horizon === 'swing') || {};
+    },
+    investmentLong() {
+      return ((this.ai && this.ai.horizon_calls) || []).find(c => c.horizon === 'long') || {};
+    },
     currentPillar() { return this.result ? this.result.pillars[this.activePillar] : null; },
     dcf() { return this.result ? this.result.valuation.dcf_assumptions : null; },
     chartStats() {
@@ -1059,13 +1146,25 @@ createApp({
   },
   watch: {
     glossaryOpen(v) { if (v) this.glossaryQuery = ''; },
+    aiProvider(v) {
+      try { localStorage.setItem('finlens-ai-provider', v); } catch (_) {}
+    },
   },
   mounted() {
     this.mounted = true;
     this.theme = document.documentElement.getAttribute('data-theme') || 'dark';
     setInterval(() => { this.morphIndex = (this.morphIndex + 1) % this.taglines.length; }, 3200);
 
-    fetch('/api/health').then(r => r.json()).then(d => { this.aiReady = !!(d.ai && d.ai.available); }).catch(() => {});
+    fetch('/api/health').then(r => r.json()).then(d => {
+      const catalog = (d.ai && d.ai.providers) || [];
+      if (catalog.length) this.aiProviders = catalog;
+      const available = this.aiProviders.filter(p => p.available).map(p => p.key);
+      if (available.includes(this.aiProvider)) return;
+      const fallback = (d.ai && d.ai.default && available.includes(d.ai.default))
+        ? d.ai.default
+        : available[0];
+      if (fallback) this.aiProvider = fallback;
+    }).catch(() => {});
 
     const q = new URLSearchParams(location.search).get('q');
     if (q) { this.query = q; this.run(); }
@@ -1085,7 +1184,7 @@ createApp({
       this.loading = true; this.aiLoading = false; this.error = ''; this.didYouMean = []; this.result = null;
       this.stepThrough();
       try {
-        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=false`);
+        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=false&provider=${encodeURIComponent(this.aiProvider)}`);
         const data = await res.json();
         if (!res.ok) {
           // 404s carry {message, suggestions}; other errors carry a plain string.
@@ -1109,6 +1208,7 @@ createApp({
     stepThrough() {
       const steps = [
         'Resolving ticker…', 'Pulling filings and price history…',
+        'Reading official bank presentations…',
         'Computing ratios from the statements…', 'Running valuation and DCF…',
         'Scoring technicals and risk…',
       ];
@@ -1127,7 +1227,7 @@ createApp({
       if (!q) return;
       this.aiLoading = true;
       try {
-        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=true`);
+        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=true&provider=${encodeURIComponent(this.aiProvider)}`);
         const data = await res.json();
         if (!res.ok) {
           const d = data.detail;
@@ -1161,9 +1261,18 @@ createApp({
         'hold': 'v-hold',
         'reduce': 'v-reduce',
         'avoid': 'v-avoid',
+        'early': 'v-early',
       }[c] || 'v-neutral';
     },
     stanceClass(s) { return { 'Strong Buy': 'strong-buy', 'Buy': 'buy', 'Hold': 'hold', 'Reduce': 'reduce', 'Avoid': 'avoid' }[s] || 'hold'; },
+    opportunityClass(cat) {
+      return {
+        'Established Opportunity': 'buy',
+        'Emerging Opportunity': 'early',
+        'Watch': 'hold',
+        'No Opportunity': 'avoid',
+      }[cat] || 'hold';
+    },
     verdictPill(v) {
       return { good: 'pill-good', ok: 'pill-ok', bad: 'pill-bad' }[v] || 'pill-na';
     },

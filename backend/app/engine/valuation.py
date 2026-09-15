@@ -1,9 +1,12 @@
-"""Valuation engine: multiples, own-history P/E band, and a two-stage DCF.
+"""Valuation engine: multiples, own-history bands, and a two-stage DCF.
 
-The most useful single output here is not the absolute P/E but the P/E *relative
-to the company's own history* - "expensive" only means anything against a
-reference. We reconstruct that band by pairing each annual EPS with the share
-price on that statement date.
+The most useful single output here is not the absolute P/E but the multiple
+*relative to the company's own history*. We reconstruct P/E (and, for banks,
+P/B) by pairing each annual EPS or book value with the share price on that
+statement date.
+
+Banks do not use industrial P/B bands, EV/EBITDA, or FCF DCF. Non-bank
+behavior is unchanged.
 """
 from __future__ import annotations
 
@@ -14,11 +17,23 @@ from typing import Any
 import pandas as pd
 
 from ..config import MARKETS
+from ..providers.bank_metrics import BankMetrics
 from ..providers.base import StockBundle, latest, pick_row
+from .bank_scoring import score_bank_metric
 from .common import Metric, Pillar, band, cagr, safe_div
 from .fundamentals import FundamentalFacts
 from .metric_weights import VALUATION
 from .sector import PROFILE_BANK, apply_profile, classify
+
+# Shared own-history relative bands (current / median - 1, in percent).
+# 0% = in line with the company's own history (neutral 60).
+_OWN_HISTORY_REL_BANDS = [(-45, 94), (-20, 80), (0, 60), (20, 38), (50, 16), (100, 4)]
+_INDUSTRIAL_PB_BANDS = [(0.6, 92), (1.5, 76), (3, 56), (6, 34), (10, 14), (18, 4)]
+
+# Historical P/B is the bank P/B vote. Canonical ROE may nudge that vote
+# slightly; it is not a second profitability metric.
+_BANK_PB_HISTORY_WEIGHT = 0.85
+_BANK_PB_ROE_WEIGHT = 0.15
 
 
 @dataclass
@@ -27,6 +42,8 @@ class ValuationFacts:
     pe_median_5y: float | None = None
     pe_history: list[dict[str, Any]] = field(default_factory=list)
     pb: float | None = None
+    pb_median_5y: float | None = None
+    pb_history: list[dict[str, Any]] = field(default_factory=list)
     ev_ebitda: float | None = None
     ps: float | None = None
     peg: float | None = None
@@ -84,7 +101,101 @@ def _pe_band(bundle: StockBundle) -> tuple[list[dict[str, Any]], float | None]:
     return points, (median(pes) if len(pes) >= 2 else None)
 
 
-def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tuple[ValuationFacts, Pillar]:
+def _pb_band(bundle: StockBundle) -> tuple[list[dict[str, Any]], float | None]:
+    """Historical P/B from book value per share paired with the price on that date."""
+    bal = bundle.statements.balance_annual
+    equity_row = pick_row(
+        bal, "Stockholders Equity", "Common Stock Equity",
+        "Total Equity Gross Minority Interest",
+    )
+    shares_row = pick_row(bal, "Ordinary Shares Number", "Share Issued")
+    if equity_row is None or shares_row is None or bundle.history is None or bundle.history.empty:
+        return [], None
+
+    points: list[dict[str, Any]] = []
+    for col in bal.columns[:6]:
+        try:
+            equity = float(equity_row.get(col))
+            shares = float(shares_row.get(col))
+        except (TypeError, ValueError):
+            continue
+        if equity != equity or shares != shares or equity <= 0 or shares <= 0:
+            continue
+        bps = equity / shares
+        px = _price_on(bundle.history, col)
+        if not px:
+            continue
+        points.append({
+            "date": str(col)[:10],
+            "book_value_ps": round(bps, 2),
+            "price": round(px, 2),
+            "pb": round(px / bps, 2),
+        })
+
+    pbs = [p["pb"] for p in points]
+    return points, (median(pbs) if len(pbs) >= 2 else None)
+
+
+def _positive_number(value: Any) -> float | None:
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return None
+    if v != v or v in (float("inf"), float("-inf")) or v <= 0:
+        return None
+    return v
+
+
+def _canonical_roe(bank_metrics: BankMetrics | None) -> float | None:
+    if bank_metrics is None or bank_metrics.roe is None:
+        return None
+    return _positive_number(bank_metrics.roe.value)
+
+
+def _bank_pb_score(
+    pb: float | None,
+    median: float | None,
+    roe: float | None,
+) -> tuple[float | None, str]:
+    """Own-history P/B for banks. Industrial 'lower P/B is cheaper' bands are not used."""
+    if pb is None:
+        return None, ""
+    if median is None:
+        return None, (
+            "No own-history P/B median — industrial P/B bands are not used for banks, "
+            "so this multiple is shown but not scored."
+        )
+    rel = (pb / median - 1) * 100
+    hist = band(rel, _OWN_HISTORY_REL_BANDS)
+    vs = "below" if rel < 0 else "above" if rel > 0 else "in line with"
+    note = (
+        f"Trading {abs(rel):.0f}% {vs} its own 5-year median P/B of {median:.2f}x."
+        if rel != 0 else
+        f"In line with its own 5-year median P/B of {median:.2f}x."
+    )
+    if hist is None:
+        return None, note
+    roe_part = score_bank_metric("roe", roe) if roe is not None else None
+    if roe_part is None:
+        return hist, note
+    blended = (
+        _BANK_PB_HISTORY_WEIGHT * hist
+        + _BANK_PB_ROE_WEIGHT * roe_part
+    )
+    note += (
+        f" ROE {roe:.1f}% is a small valuation context "
+        f"({int(_BANK_PB_ROE_WEIGHT * 100)}% of this P/B score), "
+        "not a second profitability vote."
+    )
+    return blended, note
+
+
+def analyse(
+    bundle: StockBundle,
+    f: FundamentalFacts,
+    beta: float | None,
+    bank_metrics: BankMetrics | None = None,
+) -> tuple[ValuationFacts, Pillar]:
     cfg = MARKETS[bundle.market]
     v = ValuationFacts()
     p = Pillar("valuation", "Valuation")
@@ -96,6 +207,8 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
     v.pe = info.get("trailingPE") or safe_div(price, eps)
     v.pe_history, v.pe_median_5y = _pe_band(bundle)
     v.pb = info.get("priceToBook") or safe_div(price, f.book_value_ps)
+    v.pb_history, reconstructed_pb_median = _pb_band(bundle)
+    v.pb_median_5y = reconstructed_pb_median or _positive_number(info.get("priceToBookMedian5Y"))
     v.ev_ebitda = info.get("enterpriseToEbitda")
     v.ps = safe_div(mcap, f.revenue)
     v.bond_yield = cfg["risk_free_rate"] * 100
@@ -156,15 +269,23 @@ def analyse(bundle: StockBundle, f: FundamentalFacts, beta: float | None) -> tup
         rel = (v.pe / v.pe_median_5y - 1) * 100
         p.metrics.append(Metric(
             "pe_vs_history", "P/E vs Own 5Y Median", rel, "%",
-            band(rel, [(-45, 94), (-20, 80), (0, 60), (20, 38), (50, 16), (100, 4)]),
+            band(rel, _OWN_HISTORY_REL_BANDS),
             (f"Trading {abs(rel):.0f}% {'below' if rel < 0 else 'above'} its own "
              f"5-year median P/E of {v.pe_median_5y:.1f}x."),
             weight=VALUATION["pe_vs_history"], higher_is_better=False,
         ))
+    if profile == PROFILE_BANK:
+        pb_score, pb_note = _bank_pb_score(v.pb, v.pb_median_5y, _canonical_roe(bank_metrics))
+        pb_peer = v.pb_median_5y
+    else:
+        pb_score = band(v.pb, _INDUSTRIAL_PB_BANDS)
+        pb_note = ""
+        pb_peer = None
     p.metrics.append(Metric(
         "pb", "Price / Book", v.pb, "x",
-        band(v.pb, [(0.6, 92), (1.5, 76), (3, 56), (6, 34), (10, 14), (18, 4)]),
-        "", weight=VALUATION["pb"], higher_is_better=False,
+        pb_score,
+        pb_note, weight=VALUATION["pb"], higher_is_better=False,
+        peer=pb_peer,
     ))
     p.metrics.append(Metric(
         "ev_ebitda", "EV / EBITDA", v.ev_ebitda, "x",

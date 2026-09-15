@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from . import cache
 from .analysis import UnknownSymbol, analyse, resolve
 from .ai import analyst
-from .config import MARKETS
+from .config import MARKETS, using_provider
 from .providers import nse_symbols
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
@@ -69,7 +69,7 @@ def jsonable(obj: Any) -> Any:
 def health() -> dict[str, Any]:
     return {
         "status": "ok",
-        "ai": analyst.status(),
+        "ai": analyst.provider_catalog(),
         "markets": list(MARKETS.keys()),
     }
 
@@ -102,9 +102,11 @@ def api_analyse(
     q: str = Query(..., min_length=1, description="Ticker or company name, e.g. TCS"),
     market: str = Query("IN"),
     ai: bool = Query(False, description="Include the AI-generated thesis. Off by default; the UI requests it on demand."),
+    provider: str | None = Query(None, description="AI provider for this request: deepseek or claude."),
 ) -> JSONResponse:
     try:
-        result = analyse(q, market=market, use_ai=ai)
+        with using_provider(provider):
+            result = analyse(q, market=market, use_ai=ai)
     except UnknownSymbol as exc:
         raise HTTPException(
             status_code=404,

@@ -15,6 +15,11 @@ METRIC_KEYS = [
     "beta", "volatility", "max_drawdown", "liquidity",
     "beat_rate", "avg_surprise",
     "analyst_rating", "analyst_upside", "promoter_holding", "institutional_holding",
+    "loan_growth", "deposit_growth", "nii_growth", "casa_trend", "casa",
+    "nim", "roa", "cost_income",
+    "gnpa", "nnpa", "pcr", "credit_cost", "slippages",
+    "restructured_loans", "sma_or_stressed_assets", "cet1", "car",
+    "writeoffs", "recoveries",
 ]
 
 UI_LABELS = [
@@ -25,6 +30,8 @@ UI_LABELS = [
     "1M", "1Y", "P/E", "5Y median P/E", "P/B", "EV/EBITDA", "PEG",
     "Div yield", "DCF value", "Beta", "Volatility", "Max drawdown",
     "Turnover/day", "Strong Buy", "Buy", "Hold", "Reduce", "Avoid",
+    "Investment View", "Opportunity", "Established Opportunity", "Emerging Opportunity",
+    "Watch", "No Opportunity",
     "mcap", "52W high", "Score", "Metric",
 ]
 

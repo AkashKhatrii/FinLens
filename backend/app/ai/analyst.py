@@ -18,7 +18,16 @@ import openai
 from openai import OpenAI
 from pydantic import ValidationError
 
-from ..config import AI_ENABLED, PROVIDERS, provider_key, provider_model
+from ..config import (
+    AI_ENABLED,
+    ANTHROPIC_EFFORT,
+    PROVIDERS,
+    anthropic_api_key,
+    anthropic_workspace_id,
+    provider_key,
+    provider_model,
+    resolve_provider,
+)
 from .prompts import SYSTEM_PROMPT, build_json_user_prompt, build_user_prompt
 from .schemas import Thesis
 
@@ -41,7 +50,14 @@ def _get_anthropic_client() -> anthropic.Anthropic | None:
     global _anthropic_client
     if _anthropic_client is None:
         try:
-            _anthropic_client = anthropic.Anthropic()
+            kwargs: dict[str, Any] = {}
+            key = anthropic_api_key()
+            if key:
+                kwargs["api_key"] = key
+            workspace = anthropic_workspace_id()
+            if workspace:
+                kwargs["default_headers"] = {"anthropic-workspace-id": workspace}
+            _anthropic_client = anthropic.Anthropic(**kwargs)
         except Exception as exc:
             log.warning("Anthropic client unavailable: %s", exc)
             return None
@@ -49,7 +65,7 @@ def _get_anthropic_client() -> anthropic.Anthropic | None:
 
 
 def _claude_has_credentials() -> bool:
-    if os.getenv("ANTHROPIC_API_KEY") or os.getenv("ANTHROPIC_AUTH_TOKEN"):
+    if anthropic_api_key() or os.getenv("ANTHROPIC_AUTH_TOKEN"):
         return True
     client = _get_anthropic_client()
     if client is not None and (getattr(client, "api_key", None) or getattr(client, "auth_token", None)):
@@ -68,7 +84,35 @@ def _openai_client(spec: dict[str, Any]) -> OpenAI:
     return _openai_clients[key]
 
 
-def status() -> dict[str, Any]:
+def _status_for(key: str) -> dict[str, Any]:
+    spec = PROVIDERS[key]
+    model = provider_model(key)
+    if not AI_ENABLED:
+        return {
+            "available": False,
+            "reason": "AI disabled via FINLENS_AI=off.",
+            "provider": key,
+            "model": None,
+            "label": spec["label"],
+        }
+    if spec["kind"] == "anthropic":
+        if _get_anthropic_client() is None:
+            return {"available": False, "reason": "Anthropic SDK could not be initialised.",
+                    "provider": key, "model": None, "label": spec["label"]}
+        if not _claude_has_credentials():
+            return {"available": False, "reason": NO_CLAUDE, "provider": key, "model": None,
+                    "label": spec["label"]}
+        return {"available": True, "reason": "", "provider": key, "model": model, "label": spec["label"]}
+    if not os.getenv(spec["api_key_env"]):
+        reason = NO_DEEPSEEK if key == "deepseek" else (
+            f"No {spec['label']} credentials found. Set {spec['api_key_env']} in backend/.env."
+        )
+        return {"available": False, "reason": reason, "provider": key, "model": None,
+                "label": spec["label"]}
+    return {"available": True, "reason": "", "provider": key, "model": model, "label": spec["label"]}
+
+
+def status(provider: str | None = None) -> dict[str, Any]:
     if not AI_ENABLED:
         return {
             "available": False,
@@ -76,26 +120,42 @@ def status() -> dict[str, Any]:
             "provider": None,
             "model": None,
         }
-    key = provider_key()
-    spec = PROVIDERS[key]
-    model = provider_model(key)
-    if spec["kind"] == "anthropic":
-        if _get_anthropic_client() is None:
-            return {"available": False, "reason": "Anthropic SDK could not be initialised.",
-                    "provider": key, "model": None}
-        if not _claude_has_credentials():
-            return {"available": False, "reason": NO_CLAUDE, "provider": key, "model": None}
-        return {"available": True, "reason": "", "provider": key, "model": model, "label": spec["label"]}
-    if not os.getenv(spec["api_key_env"]):
-        reason = NO_DEEPSEEK if key == "deepseek" else (
-            f"No {spec['label']} credentials found. Set {spec['api_key_env']} in backend/.env."
-        )
-        return {"available": False, "reason": reason, "provider": key, "model": None}
-    return {"available": True, "reason": "", "provider": key, "model": model, "label": spec["label"]}
+    key = resolve_provider(provider) if provider else provider_key()
+    return _status_for(key)
+
+
+def provider_catalog() -> dict[str, Any]:
+    current = status()
+    listing = [
+        {
+            "key": key,
+            "label": spec["label"],
+            "available": item["available"],
+            "model": item.get("model"),
+            "reason": item.get("reason") or "",
+        }
+        for key, spec in PROVIDERS.items()
+        for item in (_status_for(key),)
+    ]
+    return {**current, "default": resolve_provider(), "providers": listing}
 
 
 def available() -> bool:
     return bool(status()["available"])
+
+
+def _claude_parse_options(max_tokens: int = 8192) -> dict[str, Any]:
+    """Opus 5 thinks by default; that can stall a thesis for minutes.
+
+    Thinking can only be turned off at effort high or below.
+    """
+    effort = ANTHROPIC_EFFORT if ANTHROPIC_EFFORT in {"low", "medium", "high"} else "high"
+    return {
+        "max_tokens": max_tokens,
+        "thinking": {"type": "disabled"},
+        "output_config": {"effort": effort},
+        "timeout": 120.0,
+    }
 
 
 def generate_thesis(fact_pack: dict[str, Any], ticker: str, name: str) -> dict[str, Any] | None:
@@ -214,7 +274,6 @@ def _claude_thesis(payload: str, ticker: str, name: str, model: str) -> dict[str
     try:
         response = client.messages.parse(
             model=model,
-            max_tokens=16000,
             system=[{
                 "type": "text",
                 "text": SYSTEM_PROMPT,
@@ -222,15 +281,21 @@ def _claude_thesis(payload: str, ticker: str, name: str, model: str) -> dict[str
             }],
             messages=[{"role": "user", "content": build_user_prompt(payload, ticker, name)}],
             output_format=Thesis,
+            **_claude_parse_options(),
         )
     except anthropic.AuthenticationError:
-        log.warning("Anthropic credentials rejected - returning quant-only analysis.")
-        return None
+        log.warning("Anthropic credentials rejected.")
+        return {"error": "Claude credentials were rejected. Check ANTHROPIC_API_KEY in backend/.env."}
     except anthropic.RateLimitError as exc:
         log.warning("Rate limited by Anthropic: %s", exc)
         return {"error": "Rate limited by the AI provider. The quantitative analysis below is unaffected."}
+    except anthropic.APITimeoutError:
+        log.warning("Anthropic request timed out.")
+        return {"error": "Claude timed out. Try again, or switch back to DeepSeek."}
     except anthropic.APIStatusError as exc:
         log.warning("Anthropic API error %s: %s", exc.status_code, exc.message)
+        if exc.status_code == 400 and "workspace" in (exc.message or "").lower():
+            return {"error": "This Claude API key needs a workspace ID. Set ANTHROPIC_WORKSPACE_ID in backend/.env, or create a workspace-scoped key in the Anthropic console."}
         return {"error": f"AI provider returned {exc.status_code}."}
     except anthropic.APIConnectionError:
         log.warning("Network error reaching Anthropic.")

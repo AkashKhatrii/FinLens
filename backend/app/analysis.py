@@ -12,6 +12,11 @@ from typing import Any
 from .ai import analyst
 from .config import MARKETS
 from .engine import fundamentals, percentile, qualitative, scoring, technicals, valuation
+from .engine.bank_presentation import fact_pack_bank_fundamentals, public_bank_metrics
+from .engine.bank_scoring import apply_bank_metrics
+from .engine.sector import PROFILE_BANK, classify
+from .providers.bank_metrics import BankMetrics
+from .providers.bank_metrics_loader import load_canonical_bank_metrics
 from .providers.yf_provider import YFinanceProvider
 
 log = logging.getLogger(__name__)
@@ -55,7 +60,26 @@ def resolve(query: str, market: str = "IN") -> str:
     return _resolve_or_raise(_provider(market), query)
 
 
-def analyse(query: str, market: str = "IN", use_ai: bool = True) -> dict[str, Any]:
+def _bank_metrics_for_analysis(
+    symbol: str,
+    sector: str | None,
+    industry: str | None,
+    provided: BankMetrics | None,
+) -> BankMetrics | None:
+    """Use caller-supplied metrics, else load official KPIs for classified banks."""
+    if provided is not None:
+        return provided
+    if classify(sector, industry) != PROFILE_BANK:
+        return None
+    return load_canonical_bank_metrics(symbol)
+
+
+def analyse(
+    query: str,
+    market: str = "IN",
+    use_ai: bool = True,
+    bank_metrics: BankMetrics | None = None,
+) -> dict[str, Any]:
     started = time.time()
     provider = _provider(market)
 
@@ -64,9 +88,16 @@ def analyse(query: str, market: str = "IN", use_ai: bool = True) -> dict[str, An
     if bundle.quote.price is None:
         raise UnknownSymbol(f"No price data available for '{symbol}'.")
 
+    profile = classify(bundle.quote.sector, bundle.quote.industry)
+    bank_metrics = _bank_metrics_for_analysis(
+        symbol, bundle.quote.sector, bundle.quote.industry, bank_metrics,
+    )
+
     fund_facts, growth_p, profit_p, health_p = fundamentals.analyse(bundle)
     risk_facts, risk_p = qualitative.risk_analyse(bundle, fund_facts)
-    val_facts, val_p = valuation.analyse(bundle, fund_facts, risk_facts.beta)
+    val_facts, val_p = valuation.analyse(
+        bundle, fund_facts, risk_facts.beta, bank_metrics=bank_metrics,
+    )
     tech_snap, tech_short_p, tech_trend_p = technicals.analyse(bundle.history, bundle.benchmark_history)
     earn_facts, earn_p = qualitative.earnings_analyse(bundle)
     sent_p = qualitative.sentiment_analyse(bundle, val_facts.analyst_upside_pct)
@@ -76,8 +107,12 @@ def analyse(query: str, market: str = "IN", use_ai: bool = True) -> dict[str, An
                            tech_short_p, tech_trend_p, earn_p, sent_p, risk_p)
     }
 
+    apply_bank_metrics(pillars, bank_metrics, profile)
+
     scores = scoring.score_all(pillars, tech_snap, val_facts, bundle.quote.price)
     pros_cons = scoring.build_pros_cons(pillars, risk_facts.red_flags)
+
+    public_banks = public_bank_metrics(bank_metrics) if profile == PROFILE_BANK else None
 
     cfg = MARKETS[market]
     result: dict[str, Any] = {
@@ -133,6 +168,10 @@ def analyse(query: str, market: str = "IN", use_ai: bool = True) -> dict[str, An
         "data_gaps": sorted(set(bundle.gaps)),
         "disclaimer": DISCLAIMER,
     }
+    if public_banks is not None:
+        result["bank_metrics"] = public_banks
+    elif profile == PROFILE_BANK:
+        result["data_gaps"] = sorted(set(result["data_gaps"] + ["bank fundamentals"]))
 
     if not use_ai:
         result["ai"] = None
@@ -160,7 +199,7 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
     nothing the model can reason about.
     """
     tech = {k: v for k, v in r["technicals"].items() if k != "series"}
-    return {
+    pack = {
         "company": r["company"],
         "price": r["price"],
         "quant_scores": {
@@ -198,3 +237,7 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
         "rule_based_cons": r["cons"],
         "data_gaps": r["data_gaps"],
     }
+    bank_pack = fact_pack_bank_fundamentals(r.get("bank_metrics"))
+    if bank_pack is not None:
+        pack["bank_fundamentals"] = bank_pack
+    return pack

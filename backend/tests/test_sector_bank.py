@@ -188,20 +188,20 @@ class TestBankMetricSuppression(unittest.TestCase):
     def test_suppressed_metrics_return_score_none_and_keep_values(self):
         profit = Pillar("profitability", "Profitability", metrics=[
             Metric("op_margin", "Operating Margin", 8.0, "%", score=10.0, weight=1.3),
-            Metric("net_margin", "Net Margin", 20.0, "%", score=87.0, weight=0.6),
+            Metric("roe", "RoE", 20.0, "%", score=87.0, weight=1.1),
         ])
         apply_profile(profit, "bank")
         op = _metric(profit, "op_margin")
-        net = _metric(profit, "net_margin")
+        roe = _metric(profit, "roe")
         self.assertIsNone(op.score)
         self.assertEqual(op.value, 8.0)
-        self.assertEqual(net.score, 87.0)
-        self.assertEqual(net.value, 20.0)
+        self.assertEqual(roe.score, 87.0)
+        self.assertEqual(roe.value, 20.0)
 
     def test_suppressed_metrics_cannot_influence_pillar_scores(self):
         profit = Pillar("profitability", "Profitability", metrics=[
             Metric("op_margin", "Operating Margin", 8.0, "%", score=10.0, weight=1.3),
-            Metric("net_margin", "Net Margin", 20.0, "%", score=87.0, weight=0.6),
+            Metric("roe", "RoE", 20.0, "%", score=87.0, weight=1.1),
         ])
         contaminated = profit.score
         apply_profile(profit, "bank")
@@ -306,6 +306,10 @@ class TestBankSuppressSet(unittest.TestCase):
     def test_suppress_set_is_exactly_the_agreed_keys(self):
         self.assertEqual(BANK_SUPPRESS, frozenset({
             "op_margin",
+            "net_margin",
+            "margin_trend",
+            "roce",
+            "debt_equity",
             "interest_cover",
             "current_ratio",
             "net_debt_ebitda",

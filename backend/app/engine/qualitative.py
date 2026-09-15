@@ -113,7 +113,7 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
                     "paid-up capital and reserves. Equity-based ratios are not meaningful.",
         })
     de = safe_div(f.total_debt, f.equity) if (f.equity and f.equity > 0) else None
-    if de is not None and de > 2:
+    if not is_bank and de is not None and de > 2:
         r.red_flags.append({"severity": "high",
                             "text": f"Debt is {de:.1f}x equity — balance sheet is stretched."})
     op_m, net_m = safe_div(f.ebit, f.revenue), safe_div(f.net_income, f.revenue)
