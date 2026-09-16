@@ -329,5 +329,110 @@ class TestSwingAgreementDiscipline(unittest.TestCase):
         self.assertIn('label="Risk/Reward"', html)
 
 
+class TestSwingAiIndependencePrompt(unittest.TestCase):
+    """Quant is evidence; AI forms its own Swing view without score thresholds."""
+
+    def setUp(self):
+        self.text = SYSTEM_PROMPT
+        self.lower = SYSTEM_PROMPT.lower()
+        self.swing = SYSTEM_PROMPT.split("**Long: 1–3+ years**")[0].lower()
+
+    def test_quant_is_evidence_not_an_instruction(self):
+        self.assertIn("not instructions", self.swing)
+        self.assertIn("not the ai's prior answer", self.swing)
+        self.assertIn("important evidence", self.swing)
+
+    def test_ai_must_independently_form_swing_view(self):
+        self.assertIn("own honest swing", self.swing)
+        self.assertIn("complete fact pack", self.swing)
+        self.assertIn("independently interpret", self.swing)
+
+    def test_ai_should_normally_agree_when_evidence_is_coherent(self):
+        self.assertIn("when ai should agree with quant", self.swing)
+        self.assertIn("often reasonably be buy", self.swing)
+        self.assertIn("often reasonably be hold", self.swing)
+        self.assertIn("often reasonably be reduce", self.swing)
+        self.assertIn("not because the prompt requires agreement", self.swing)
+
+    def test_ai_may_disagree_on_material_contradiction(self):
+        self.assertIn("when ai may disagree with quant", self.swing)
+        self.assertIn("specific, material, evidence-based reason", self.swing)
+        self.assertIn("what evidence makes the quant swing conclusion materially incomplete", self.swing)
+
+    def test_no_arbitrary_quant_score_threshold(self):
+        self.assertIn("no arbitrary numerical threshold", self.swing)
+        self.assertIn("ai cannot disagree above x score", self.swing)
+        self.assertIn("ai must agree above x score", self.swing)
+        self.assertIn("does not prohibit disagreement", self.swing)
+
+    def test_high_rsi_alone_cannot_force_hold(self):
+        self.assertIn("high rsi in a strong uptrend is not automatically bearish", self.swing)
+        self.assertIn("rsi being high", self.swing)
+
+    def test_low_rsi_alone_cannot_force_buy(self):
+        self.assertIn("low rsi in a downtrend is not automatically bullish", self.swing)
+        self.assertIn("rsi being low", self.swing)
+
+    def test_high_pe_alone_cannot_force_hold(self):
+        self.assertIn("high p/e is valuation context, not automatically a reason to reject a swing buy", self.swing)
+
+    def test_dcf_below_price_alone_cannot_force_hold(self):
+        self.assertIn("dcf below the current price is not automatically a reason to reject a swing buy", self.swing)
+
+    def test_moderate_adx_or_neutral_volume_cannot_force_disagreement(self):
+        self.assertIn("moderate adx or neutral volume should normally affect conviction", self.swing)
+        self.assertIn("rather than force a different stance", self.swing)
+        self.assertIn("should not automatically cause an ai disagreement", self.swing)
+
+    def test_confidence_can_differ_without_changing_direction(self):
+        self.assertIn("may reduce its confidence without changing its swing stance", self.swing)
+        self.assertIn("do not convert every uncertainty into hold", self.swing)
+        self.assertIn("if it only reduces conviction, keep the directional stance", self.swing)
+
+    def test_agreement_semantics(self):
+        self.assertIn("`aligned` does not require identical confidence", self.swing)
+        self.assertIn("quant buy / high confidence + ai buy / medium confidence can still be `aligned`", self.swing)
+        self.assertIn("quant buy + ai hold because of a material upcoming event can be `disagrees`", self.swing)
+        self.assertIn("should not automatically produce `qualified`", self.swing)
+
+    def test_unsupported_peer_claims_are_prohibited(self):
+        self.assertIn("best-in-class", self.lower)
+        self.assertIn("near best-in-class", self.lower)
+        self.assertIn("do not infer peer superiority", self.lower)
+        self.assertIn("pnb's currently reported asset-quality metrics are strong", self.lower)
+
+    def test_cannot_invent_precise_future_thresholds(self):
+        self.assertIn("nim must stay above 2.50%", self.lower)
+        self.assertIn("credit cost must remain below 0.40%", self.lower)
+        self.assertIn("do not manufacture precise future thresholds", self.lower)
+        self.assertIn("long buy would require credit costs to remain controlled", self.lower)
+
+    def test_company_guidance_may_be_used_when_explicit(self):
+        self.assertIn("management's stated guidance is x", self.lower)
+        self.assertIn("do not turn ai's own judgment into a fabricated company target", self.lower)
+
+    def test_news_must_not_be_presented_as_certain_outcomes(self):
+        self.assertIn("reuters reported that pnb expects", self.lower)
+        self.assertIn("do not present an expected future outcome as a fact", self.lower)
+        self.assertIn("pnb will deliver faster fy28 growth", self.lower)
+
+    def test_long_remains_independent(self):
+        long_block = self.text.split("**Long: 1–3+ years**")[1].split("## Opportunity")[0].lower()
+        self.assertIn("is this a good company/business worth owning", long_block)
+        self.assertIn("a weak short-term chart should not by itself invalidate", long_block)
+        self.assertIn("not driven by rsi, bollinger, moving averages, or short-term price action", self.lower)
+
+    def test_opportunity_remains_independent_and_long_term(self):
+        self.assertIn("Do not use short-term price trends, technical indicators, or entry timing to determine Opportunity.", self.text)
+        self.assertIn("not a third horizon", self.lower)
+        self.assertIn("do not use swing technicals to justify opportunity", self.lower)
+
+    def test_bank_specific_evidence_rules_remain(self):
+        self.assertIn("bank_fundamentals", self.lower)
+        self.assertIn("should not automatically override a technical swing setup", self.lower)
+        self.assertIn("one quarter of bank kpi data is not automatically a trend", self.lower)
+        self.assertIn("missing bank kpi data is not evidence of weakness", self.lower)
+
+
 if __name__ == "__main__":
     unittest.main()
