@@ -259,21 +259,26 @@ tailwind.config = {
   <header class="border-b border-edge sticky top-0 z-30 bg-ink">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
       <div class="flex items-center gap-3 shrink-0">
-        <div class="w-8 h-8 rounded-lg bg-blue-600 grid place-items-center text-sm font-bold text-white">F</div>
-        <span class="text-[17px] font-semibold tracking-tight letter-pullup">
-          <span v-for="(ch,i) in 'FinLens'" :key="i" :style="{ animationDelay: (i*0.05)+'s' }"
-                :class="i>=3 ? 'text-blue-400 font-normal' : ''">{{ ch }}</span>
-        </span>
+        <button type="button" class="flex items-center gap-3" v-on:click="openHome()">
+          <div class="w-8 h-8 rounded-lg bg-blue-600 grid place-items-center text-sm font-bold text-white">F</div>
+          <span class="text-[17px] font-semibold tracking-tight letter-pullup">
+            <span v-for="(ch,i) in 'FinLens'" :key="i" :style="{ animationDelay: (i*0.05)+'s' }"
+                  :class="i>=3 ? 'text-blue-400 font-normal' : ''">{{ ch }}</span>
+          </span>
+        </button>
         <span class="hidden sm:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-muted">NSE / BSE</span>
       </div>
 
       <!-- compact search once results are shown -->
-      <form v-if="result" class="flex-1 max-w-md" v-on:submit.prevent="run()">
+      <form v-if="view === 'analyse' && result" class="flex-1 max-w-md" v-on:submit.prevent="run()">
         <ticker-search v-model="query" placeholder="Analyse another company…" compact
                        @submit="run()" @pick="pickTicker"></ticker-search>
       </form>
 
       <div class="flex items-center gap-3 text-[11px] text-muted shrink-0">
+        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+                :class="view !== 'analyse' ? 'tab-on' : ''"
+                v-on:click="openTradebook()">Tradebook</button>
         <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 v-on:click="glossaryOpen = true">Terms</button>
         <label class="hidden sm:flex items-center gap-2">
@@ -304,7 +309,7 @@ tailwind.config = {
   </header>
 
   <!-- ============ HERO / SEARCH ============ -->
-  <section v-if="!result && !loading && !error" class="max-w-3xl mx-auto px-6 pt-24 pb-16 text-center">
+  <section v-if="view === 'analyse' && !result && !loading && !error" class="max-w-3xl mx-auto px-6 pt-24 pb-16 text-center">
     <h1 class="text-5xl font-bold tracking-tight mb-5 leading-tight">
       Know what a stock is<br>
       <span class="text-blue-400">actually worth</span>
@@ -338,7 +343,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ LOADING ============ -->
-  <section v-if="loading" class="max-w-7xl mx-auto px-6 py-16">
+  <section v-if="view === 'analyse' && loading" class="max-w-7xl mx-auto px-6 py-16">
     <div class="text-center mb-10">
       <div class="text-sm text-muted mb-2">{{ loadingStep }}</div>
       <div class="w-56 h-0.5 bg-edge rounded-full mx-auto overflow-hidden">
@@ -352,7 +357,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ ERROR ============ -->
-  <section v-if="error" class="max-w-xl mx-auto px-6 py-20 text-center">
+  <section v-if="view === 'analyse' && error" class="max-w-xl mx-auto px-6 py-20 text-center">
     <div class="panel rounded-xl p-7" :class="didYouMean.length ? 'border-amber-900/50' : 'border-red-900/50'">
       <div class="font-semibold mb-2" :class="didYouMean.length ? 'text-amber-400' : 'text-red-400'">
         {{ didYouMean.length ? 'Did you mean…' : "Couldn't analyse that" }}
@@ -370,7 +375,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ RESULTS ============ -->
-  <main v-if="result" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
+  <main v-if="view === 'analyse' && result" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
 
     <!-- Company header -->
     <div class="rise panel rounded-2xl p-6" style="animation-delay:.02s">
@@ -392,6 +397,13 @@ tailwind.config = {
           </div>
           <div class="text-[11px] text-faint mt-1" v-if="result.price.off_52w_high_pct != null">
             {{ num(result.price.off_52w_high_pct) }}% from <term-tip id="52whigh" label="52W high"></term-tip>
+          </div>
+          <button type="button" class="mt-3 cta rounded-lg px-3 py-1.5 text-[11px] font-semibold border border-edge disabled:opacity-40"
+                  :disabled="tradebookSaving" v-on:click="addToTradebook()">
+            {{ tradebookSaving ? 'Recording…' : 'Add to Tradebook' }}
+          </button>
+          <div v-if="tradebookMessage" class="text-[10px] mt-1.5" :class="tradebookMessage === 'Recommendation recorded' ? 'text-emerald-400' : 'text-amber-400'">
+            {{ tradebookMessage }}
           </div>
         </div>
       </div>
@@ -793,6 +805,232 @@ tailwind.config = {
     </footer>
   </main>
 
+  <!-- ============ TRADEBOOK LIST ============ -->
+  <section v-if="view === 'tradebook'" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <div class="text-2xl font-bold tracking-tight">Tradebook</div>
+        <div class="text-[12px] text-muted mt-0.5">Recommendation Journal</div>
+        <div v-if="tradebookLastRefreshed" class="text-[10px] text-faint mt-1">
+          Last refreshed: {{ fmtStampTime(tradebookLastRefreshed) }}
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]"
+                :class="!tradebookShowHistory ? 'tab-on' : 'text-muted'"
+                v-on:click="tradebookShowHistory = false; loadTradebook()">Active</button>
+        <button type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]"
+                :class="tradebookShowHistory ? 'tab-on' : 'text-muted'"
+                v-on:click="tradebookShowHistory = true; loadTradebook()">History</button>
+        <button type="button" class="cta rounded-lg px-3 py-1.5 text-[11px] font-semibold border border-edge disabled:opacity-40"
+                :disabled="tradebookRefreshing || tradebookShowHistory"
+                v-on:click="refreshTradebookPrices()">
+          {{ tradebookRefreshing ? 'Refreshing…' : 'Refresh Prices' }}
+        </button>
+      </div>
+    </div>
+    <div v-if="tradebookPriceMessage" class="text-[11px] text-muted">{{ tradebookPriceMessage }}</div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="panel rounded-xl px-3 py-3">
+        <div class="text-[10px] text-faint uppercase">Recommendations</div>
+        <div class="text-lg font-mono mt-1">{{ tradebookSummary.total }}</div>
+      </div>
+      <div class="panel rounded-xl px-3 py-3">
+        <div class="text-[10px] text-faint uppercase">Swing Buys</div>
+        <div class="text-lg font-mono mt-1">{{ tradebookSummary.swing_buys }}</div>
+      </div>
+      <div class="panel rounded-xl px-3 py-3">
+        <div class="text-[10px] text-faint uppercase">Swing Holds</div>
+        <div class="text-lg font-mono mt-1">{{ tradebookSummary.swing_holds }}</div>
+      </div>
+      <div class="panel rounded-xl px-3 py-3">
+        <div class="text-[10px] text-faint uppercase">Swing Reduces</div>
+        <div class="text-lg font-mono mt-1">{{ tradebookSummary.swing_reduces }}</div>
+      </div>
+      <div class="panel rounded-xl px-3 py-3">
+        <div class="text-[10px] text-faint uppercase">AI Aligned</div>
+        <div class="text-lg font-mono mt-1">{{ tradebookSummary.ai_aligned }}</div>
+      </div>
+      <div class="panel rounded-xl px-3 py-3">
+        <div class="text-[10px] text-faint uppercase">AI Disagreed</div>
+        <div class="text-lg font-mono mt-1">{{ tradebookSummary.ai_disagreed }}</div>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <input v-model="tradebookFilterQ" type="search" placeholder="Ticker or company"
+             class="bg-inset border border-edge rounded-lg px-3 py-2 text-xs outline-none placeholder-faint"
+             v-on:input="loadTradebook()">
+      <select v-model="tradebookFilterSwing" class="bg-inset border border-edge rounded-lg px-2 py-2 text-xs outline-none"
+              v-on:change="loadTradebook()">
+        <option value="">All Swing</option>
+        <option>Buy</option>
+        <option>Hold</option>
+        <option>Reduce</option>
+        <option>Avoid</option>
+        <option>Strong Buy</option>
+      </select>
+      <select v-model="tradebookFilterAgreement" class="bg-inset border border-edge rounded-lg px-2 py-2 text-xs outline-none"
+              v-on:change="loadTradebook()">
+        <option value="">All AI agreement</option>
+        <option value="aligned">aligned</option>
+        <option value="qualified">qualified</option>
+        <option value="disagrees">disagrees</option>
+      </select>
+    </div>
+    <div v-if="!tradebookRows.length" class="panel rounded-2xl p-10 text-center text-sm text-muted">
+      No recommendations recorded yet.
+    </div>
+    <div v-else class="space-y-3">
+      <div v-for="row in tradebookRows" :key="row.id"
+           class="panel rounded-2xl p-4 cursor-pointer hover:border-muted transition"
+           v-on:click="openSnapshot(row.id)">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold truncate">{{ row.company_name || row.ticker }}</div>
+            <div class="text-[10px] font-mono text-blue-400">{{ row.ticker }}</div>
+            <div class="text-[10px] text-faint mt-0.5">{{ fmtStamp(row.created_at) }}</div>
+          </div>
+          <div class="flex flex-wrap gap-2" v-on:click.stop>
+            <button type="button" class="px-2 py-1 rounded-md border border-edge text-[11px] hover:text-fg"
+                    v-on:click="viewAnalysis(row.ticker)">View Analysis</button>
+            <button v-if="row.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px] hover:text-fg"
+                    v-on:click="askTradebookAction('remove', row)">Remove</button>
+            <button v-if="row.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px] hover:text-fg"
+                    v-on:click="askTradebookAction('sell', row)">Sell</button>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-3 mt-3 text-[11px]">
+          <div>
+            <div class="text-[10px] uppercase text-faint">Recommended</div>
+            <div class="font-mono">₹{{ num(row.snapshot_price) }}</div>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase text-faint">Current</div>
+            <div class="font-mono">{{ row.current_price == null ? 'Price unavailable' : ('₹' + num(row.current_price)) }}</div>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase text-faint">Change since recommendation</div>
+            <div class="font-mono" :class="row.percentage_change == null ? 'text-muted' : (row.percentage_change >= 0 ? 'text-emerald-400' : 'text-red-400')">
+              {{ fmtPriceChange(row) }}
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-1.5 mt-3 items-center">
+          <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(row.swing_verdict))">{{ row.swing_verdict || '—' }} {{ row.swing_score != null ? row.swing_score : '' }}</span>
+          <span class="text-[11px] text-muted">{{ row.ai_available ? ((row.ai_swing_verdict || '—') + (row.ai_agreement ? ' · ' + row.ai_agreement : '')) : '—' }}</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(row.long_verdict))">{{ row.long_verdict || '—' }} {{ row.long_score != null ? row.long_score : '' }}</span>
+          <span class="text-[11px] text-muted truncate">{{ row.opportunity_category || '—' }}</span>
+          <span class="text-[11px] text-muted">{{ row.swing_regime || '—' }} · {{ row.swing_entry_quality || '—' }}</span>
+          <span v-if="row.is_active === false" class="text-[10px] text-faint">{{ row.removal_reason === 'sold' ? 'Sold' : 'Removed' }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRADEBOOK DETAIL ============ -->
+  <section v-if="view === 'snapshot' && snapshot" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <button type="button" class="text-[11px] text-muted hover:text-fg" v-on:click="openTradebook()">← Tradebook</button>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]" v-on:click="viewAnalysis(snapshot.ticker)">View Analysis</button>
+        <button v-if="snapshot.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]" v-on:click="askTradebookAction('remove', snapshot)">Remove</button>
+        <button v-if="snapshot.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]" v-on:click="askTradebookAction('sell', snapshot)">Sell</button>
+      </div>
+    </div>
+    <div class="panel rounded-2xl p-6">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div class="text-2xl font-bold tracking-tight">{{ snapshot.company_name }}</div>
+          <div class="text-xs font-mono text-blue-400 mt-1">{{ snapshot.ticker }} · {{ snapshot.exchange || '—' }}</div>
+          <div class="text-[11px] text-muted mt-1">{{ fmtStamp(snapshot.created_at) }}</div>
+          <div v-if="snapshot.is_active === false" class="text-[11px] text-faint mt-1">{{ snapshot.removal_reason === 'sold' ? 'Sold' : 'Removed' }}</div>
+        </div>
+        <div class="text-right space-y-2">
+          <div>
+            <div class="text-[10px] uppercase text-faint">Price at recommendation</div>
+            <div class="text-2xl font-mono">₹{{ num(snapshot.snapshot_price) }}</div>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase text-faint">Current</div>
+            <div class="text-lg font-mono">{{ snapshot.current_price == null ? 'Price unavailable' : ('₹' + num(snapshot.current_price)) }}</div>
+          </div>
+          <div class="text-[11px] font-mono" :class="snapshot.percentage_change == null ? 'text-muted' : (snapshot.percentage_change >= 0 ? 'text-emerald-400' : 'text-red-400')">
+            {{ fmtPriceChange(snapshot) }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="panel rounded-2xl p-5">
+        <div class="text-[11px] uppercase text-muted mb-2">Swing</div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-2xl font-mono">{{ snapshot.swing_score != null ? snapshot.swing_score : '—' }}</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(snapshot.swing_verdict))">{{ snapshot.swing_verdict }}</span>
+        </div>
+        <div class="text-[11px] text-muted">Confidence {{ snapshot.swing_confidence != null ? snapshot.swing_confidence : '—' }}</div>
+        <div class="text-[11px] text-muted mt-1">{{ snapshot.swing_regime || '—' }} · Entry {{ snapshot.swing_entry_quality || '—' }}</div>
+      </div>
+      <div class="panel rounded-2xl p-5">
+        <div class="text-[11px] uppercase text-muted mb-2">Long</div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-2xl font-mono">{{ snapshot.long_score != null ? snapshot.long_score : '—' }}</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(snapshot.long_verdict))">{{ snapshot.long_verdict }}</span>
+        </div>
+        <div class="text-[11px] text-muted">Confidence {{ snapshot.long_confidence != null ? snapshot.long_confidence : '—' }}</div>
+      </div>
+      <div class="panel rounded-2xl p-5">
+        <div class="text-[11px] uppercase text-muted mb-2">Opportunity</div>
+        <div class="text-sm font-semibold">{{ snapshot.opportunity_category || 'Unavailable' }}</div>
+        <div class="text-[11px] text-muted mt-1">Risk {{ snapshot.opportunity_risk || '—' }}</div>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-3 panel rounded-2xl p-5">
+      <div><div class="text-[10px] text-faint uppercase">Technical Stop</div><div class="font-mono text-sm">{{ snapshot.technical_stop != null ? ('₹' + num(snapshot.technical_stop)) : '—' }}</div></div>
+      <div><div class="text-[10px] text-faint uppercase">Technical Target</div><div class="font-mono text-sm">{{ snapshot.technical_target != null ? ('₹' + num(snapshot.technical_target)) : '—' }}</div></div>
+      <div><div class="text-[10px] text-faint uppercase">Risk/Reward</div><div class="font-mono text-sm">{{ snapshot.risk_reward != null ? snapshot.risk_reward : '—' }}</div></div>
+    </div>
+    <div class="panel rounded-2xl p-5 space-y-2">
+      <div class="text-sm font-semibold">Opportunity detail</div>
+      <div class="text-[11px] text-muted"><span class="text-fg">The bet:</span> {{ snapshot.opportunity_bet || '—' }}</div>
+      <div class="text-[11px] text-muted"><span class="text-fg">Needs to happen:</span> {{ snapshot.opportunity_needs_to_happen || '—' }}</div>
+      <div class="text-[11px] text-muted"><span class="text-fg">Breaks if:</span> {{ (snapshot.opportunity_thesis_breakers || []).join(' · ') || '—' }}</div>
+    </div>
+    <div class="panel rounded-2xl p-5 space-y-2">
+      <div class="text-sm font-semibold">AI at recording</div>
+      <div v-if="!snapshot.ai_available" class="text-[11px] text-muted">AI was not available when this was recorded.</div>
+      <template v-else>
+        <div class="text-[11px] text-muted">{{ snapshot.ai_provider }} · {{ snapshot.ai_model }}</div>
+        <div class="flex gap-2 items-center">
+          <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(snapshot.ai_swing_verdict))">{{ snapshot.ai_swing_verdict }}</span>
+          <span class="text-[11px] text-muted">{{ snapshot.ai_agreement || '—' }}</span>
+        </div>
+        <p class="text-xs text-muted leading-relaxed">{{ snapshot.ai_reasoning }}</p>
+        <div class="text-[10px] text-faint">Flips if: {{ snapshot.ai_flips_if }}</div>
+      </template>
+    </div>
+    <div class="panel rounded-2xl p-5">
+      <div class="text-sm font-semibold mb-3">Quant evidence</div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        <div v-for="(v,k) in snapshot.quant_evidence" :key="k" class="bg-inset rounded-lg px-3 py-2 border border-edge">
+          <div class="text-[10px] text-faint uppercase">{{ k }}</div>
+          <div class="text-[11px] font-mono truncate">{{ v == null ? '—' : (typeof v === 'object' ? JSON.stringify(v) : v) }}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div v-if="tradebookConfirm" class="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-24 pb-8 glossary-scrim"
+       v-on:click.self="tradebookConfirm = null">
+    <div class="rounded-2xl w-full max-w-md border border-edge glossary-sheet p-5">
+      <div class="text-sm font-semibold mb-2">{{ tradebookConfirm.title }}</div>
+      <p class="text-[12px] text-muted leading-relaxed mb-4">{{ tradebookConfirm.body }}</p>
+      <div class="flex justify-end gap-2">
+        <button type="button" class="px-3 py-1.5 rounded-md border border-edge text-[11px]" v-on:click="tradebookConfirm = null">Cancel</button>
+        <button type="button" class="cta rounded-md px-3 py-1.5 text-[11px] font-semibold border border-edge" v-on:click="confirmTradebookAction()">{{ tradebookConfirm.ok }}</button>
+      </div>
+    </div>
+  </div>
+
   <div v-if="glossaryOpen" class="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-20 pb-8 glossary-scrim"
        v-on:click.self="glossaryOpen = false">
     <div class="rounded-2xl w-full max-w-2xl max-h-[min(80vh,40rem)] overflow-hidden flex flex-col border border-edge glossary-sheet">
@@ -1080,6 +1318,13 @@ createApp({
       query: '', result: null, loading: false, error: '', didYouMean: [], mounted: false,
       activePillar: 'growth', morphIndex: 0, loadingStep: '', loadingPct: 0,
       aiLoading: false, glossaryOpen: false, glossaryQuery: '',
+      view: 'analyse',
+      tradebookSaving: false, tradebookMessage: '',
+      tradebookRows: [], tradebookSummary: { total: 0, swing_buys: 0, swing_holds: 0, swing_reduces: 0, ai_aligned: 0, ai_disagreed: 0 },
+      tradebookFilterQ: '', tradebookFilterSwing: '', tradebookFilterAgreement: '',
+      tradebookRefreshing: false, tradebookLastRefreshed: null, tradebookPriceMessage: '',
+      tradebookShowHistory: false, tradebookConfirm: null,
+      snapshot: null,
       aiProvider: (function () {
         try { return localStorage.getItem('finlens-ai-provider') || 'deepseek'; } catch (_) { return 'deepseek'; }
       })(),
@@ -1178,8 +1423,15 @@ createApp({
       if (fallback) this.aiProvider = fallback;
     }).catch(() => {});
 
-    const q = new URLSearchParams(location.search).get('q');
-    if (q) { this.query = q; this.run(); }
+    const params = new URLSearchParams(location.search);
+    if (params.has('tradebook')) {
+      const id = params.get('tradebook');
+      if (id) this.openSnapshot(id);
+      else this.openTradebook();
+    } else {
+      const q = params.get('q');
+      if (q) { this.query = q; this.run(); }
+    }
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this.glossaryOpen = false;
@@ -1190,10 +1442,147 @@ createApp({
       this.query = hit.symbol;
       this.run();
     },
+    openHome() {
+      this.view = 'analyse';
+      this.snapshot = null;
+      this.error = '';
+      this.result = null;
+      this.tradebookMessage = '';
+      history.replaceState(null, '', '/');
+    },
+    async openTradebook() {
+      this.view = 'tradebook';
+      this.snapshot = null;
+      this.error = '';
+      history.replaceState(null, '', '?tradebook');
+      await this.loadTradebook();
+    },
+    async loadTradebook() {
+      const params = new URLSearchParams();
+      if (this.tradebookFilterQ.trim()) params.set('q', this.tradebookFilterQ.trim());
+      if (this.tradebookFilterSwing) params.set('swing', this.tradebookFilterSwing);
+      if (this.tradebookFilterAgreement) params.set('agreement', this.tradebookFilterAgreement);
+      params.set('active', this.tradebookShowHistory ? 'false' : 'true');
+      const qs = params.toString();
+      const res = await fetch('/api/tradebook' + (qs ? '?' + qs : ''));
+      const data = await res.json();
+      this.tradebookRows = data.snapshots || [];
+      this.tradebookSummary = data.summary || this.tradebookSummary;
+      this.tradebookLastRefreshed = data.last_refreshed || this.tradebookLastRefreshed;
+    },
+    async refreshTradebookPrices() {
+      if (this.tradebookRefreshing) return;
+      this.tradebookRefreshing = true;
+      this.tradebookPriceMessage = '';
+      try {
+        const res = await fetch('/api/tradebook/refresh-prices', { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Refresh failed');
+        this.tradebookRows = data.snapshots || [];
+        this.tradebookSummary = data.summary || this.tradebookSummary;
+        this.tradebookLastRefreshed = data.last_refreshed;
+        const n = data.unavailable || 0;
+        this.tradebookPriceMessage = n ? ('Prices refreshed. ' + n + ' stock' + (n === 1 ? '' : 's') + ' unavailable.') : 'Prices refreshed.';
+      } catch (e) {
+        this.tradebookPriceMessage = e.message;
+      } finally {
+        this.tradebookRefreshing = false;
+      }
+    },
+    viewAnalysis(ticker) {
+      if (!ticker) return;
+      this.query = ticker;
+      this.snapshot = null;
+      this.tradebookConfirm = null;
+      this.run();
+    },
+    askTradebookAction(kind, row) {
+      const ticker = row.ticker || 'this stock';
+      if (kind === 'sell') {
+        this.tradebookConfirm = {
+          kind, id: row.id, ticker,
+          title: 'Mark ' + ticker + ' as sold?',
+          body: 'This removes it from the active Tradebook. The original FinLens recommendation will remain in your journal.',
+          ok: 'Mark as sold',
+        };
+      } else {
+        this.tradebookConfirm = {
+          kind, id: row.id, ticker,
+          title: 'Remove ' + ticker + ' from Tradebook?',
+          body: 'This removes it from your active Tradebook. The historical recommendation will remain saved.',
+          ok: 'Remove',
+        };
+      }
+    },
+    async confirmTradebookAction() {
+      const action = this.tradebookConfirm;
+      if (!action) return;
+      const path = action.kind === 'sell' ? '/sell' : '/remove';
+      try {
+        const res = await fetch('/api/tradebook/' + encodeURIComponent(action.id) + path, { method: 'POST' });
+        if (!res.ok) throw new Error('Could not update Tradebook');
+        this.tradebookConfirm = null;
+        if (this.view === 'snapshot') this.openTradebook();
+        else await this.loadTradebook();
+      } catch (e) {
+        this.tradebookPriceMessage = e.message;
+        this.tradebookConfirm = null;
+      }
+    },
+    fmtPriceChange(row) {
+      if (!row || row.current_price == null || row.price_change == null) return 'Price unavailable';
+      const sign = row.price_change >= 0 ? '+' : '-';
+      const pct = Math.abs(Number(row.percentage_change)).toFixed(2);
+      return sign + '₹' + this.num(Math.abs(row.price_change)) + ' (' + sign + pct + '%)';
+    },
+    fmtStampTime(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return d.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    },
+    async openSnapshot(id) {
+      const res = await fetch('/api/tradebook/' + encodeURIComponent(id));
+      if (!res.ok) return;
+      this.snapshot = await res.json();
+      this.view = 'snapshot';
+      this.error = '';
+      history.replaceState(null, '', '?tradebook=' + encodeURIComponent(id));
+    },
+    async addToTradebook() {
+      if (!this.result || this.tradebookSaving) return;
+      this.tradebookSaving = true;
+      this.tradebookMessage = '';
+      try {
+        const res = await fetch('/api/tradebook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.result),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          const d = data.detail;
+          throw new Error(typeof d === 'string' ? d : 'Could not record recommendation');
+        }
+        this.tradebookMessage = 'Recommendation recorded';
+      } catch (e) {
+        this.tradebookMessage = e.message;
+      } finally {
+        this.tradebookSaving = false;
+      }
+    },
+    fmtStamp(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return d.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    },
     async run() {
       const q = this.query.trim();
       if (!q || this.loading) return;
+      this.view = 'analyse';
       this.loading = true; this.aiLoading = false; this.error = ''; this.didYouMean = []; this.result = null;
+      this.tradebookMessage = '';
       this.stepThrough();
       try {
         const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=false&provider=${encodeURIComponent(this.aiProvider)}`);
@@ -1253,7 +1642,7 @@ createApp({
         this.aiLoading = false;
       }
     },
-    reset() { this.result = null; this.error = ''; this.query = ''; this.aiLoading = false; history.replaceState(null, '', '/'); },
+    reset() { this.result = null; this.error = ''; this.query = ''; this.aiLoading = false; this.tradebookMessage = ''; this.view = 'analyse'; history.replaceState(null, '', '/'); },
     toggleTheme() {
       this.theme = this.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', this.theme);

@@ -16,6 +16,17 @@ from .analysis import UnknownSymbol, analyse, resolve
 from .ai import analyst
 from .config import MARKETS, using_provider
 from .providers import nse_symbols
+from .tradebook import (
+    apply_current_prices,
+    close_snapshot,
+    get_snapshot,
+    last_refreshed_at,
+    list_snapshots,
+    save_snapshot,
+    snapshot_from_analysis,
+    summarize,
+)
+from .tradebook.prices import fetch_last_prices
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("finlens")
@@ -121,6 +132,73 @@ def api_analyse(
 @app.post("/api/cache/clear")
 def api_cache_clear(namespace: str | None = None) -> dict[str, Any]:
     return {"cleared": cache.clear(namespace)}
+
+
+@app.post("/api/tradebook")
+def api_tradebook_create(analysis: dict[str, Any]) -> JSONResponse:
+    """Record the supplied analysis. Does not fetch data, score, or call the AI."""
+    try:
+        snap = snapshot_from_analysis(analysis)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return JSONResponse(content=jsonable(save_snapshot(snap)))
+
+
+@app.get("/api/tradebook")
+def api_tradebook_list(
+    q: str | None = Query(None, max_length=80),
+    swing: str | None = Query(None),
+    agreement: str | None = Query(None),
+    active: bool = Query(True),
+) -> dict[str, Any]:
+    rows = list_snapshots(q=q, swing=swing, agreement=agreement, active=active)
+    return {
+        "snapshots": jsonable(rows),
+        "summary": summarize(rows),
+        "last_refreshed": last_refreshed_at(rows),
+    }
+
+
+@app.post("/api/tradebook/refresh-prices")
+def api_tradebook_refresh_prices() -> dict[str, Any]:
+    """Refresh market prices only. Does not analyse, score, or call the AI."""
+    from datetime import datetime, timezone
+
+    active = list_snapshots(active=True)
+    tickers = [row.get("ticker") for row in active if row.get("ticker")]
+    quotes = fetch_last_prices(tickers)
+    as_of = datetime.now(timezone.utc).isoformat()
+    rows, unavailable = apply_current_prices(quotes, as_of)
+    return {
+        "snapshots": jsonable(rows),
+        "summary": summarize(rows),
+        "last_refreshed": last_refreshed_at(rows) or as_of,
+        "unavailable": unavailable,
+    }
+
+
+@app.post("/api/tradebook/{snapshot_id}/remove")
+def api_tradebook_remove(snapshot_id: str) -> JSONResponse:
+    snap = close_snapshot(snapshot_id, "removed")
+    if snap is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found.")
+    return JSONResponse(content=jsonable(snap))
+
+
+@app.post("/api/tradebook/{snapshot_id}/sell")
+def api_tradebook_sell(snapshot_id: str) -> JSONResponse:
+    snap = close_snapshot(snapshot_id, "sold")
+    if snap is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found.")
+    return JSONResponse(content=jsonable(snap))
+
+
+@app.get("/api/tradebook/{snapshot_id}")
+def api_tradebook_get(snapshot_id: str) -> JSONResponse:
+    snap = get_snapshot(snapshot_id)
+    if snap is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found.")
+    return JSONResponse(content=jsonable(snap))
 
 
 @app.get("/glossary.js")

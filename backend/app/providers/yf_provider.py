@@ -296,6 +296,40 @@ class YFinanceProvider:
             float_shares=info.get("floatShares"),
         )
 
+    def last_prices(self, symbols: list[str]) -> dict[str, float | None]:
+        """Latest close for many tickers. No statements, news, or scoring."""
+        out: dict[str, float | None] = {sym: None for sym in symbols}
+        yahoo_for: dict[str, str] = {}
+        for sym in symbols:
+            yahoo_for[self._yahoo_symbol(sym)] = sym
+        if not yahoo_for:
+            return out
+        try:
+            df = yf.download(
+                list(yahoo_for.keys()),
+                period="5d",
+                interval="1d",
+                auto_adjust=True,
+                progress=False,
+                threads=True,
+                group_by="ticker",
+            )
+        except Exception as exc:
+            log.warning("last_prices download failed: %s", exc)
+            return out
+        single = len(yahoo_for) == 1
+        for ysym, orig in yahoo_for.items():
+            out[orig] = _last_close(df, ysym, single)
+        return out
+
+    def _yahoo_symbol(self, symbol: str) -> str:
+        raw = (symbol or "").strip().upper()
+        suffixes = tuple(sfx.upper() for sfx in self.cfg["suffixes"] if sfx)
+        if any(raw.endswith(sfx) for sfx in suffixes):
+            return raw
+        suffix = next((s for s in self.cfg["suffixes"] if s), "")
+        return f"{raw}{suffix}"
+
     @staticmethod
     def _build_analysts(info: dict[str, Any]) -> AnalystView:
         return AnalystView(
@@ -305,3 +339,30 @@ class YFinanceProvider:
             recommendation=(info.get("recommendationKey") or "").replace("_", " "),
             analyst_count=info.get("numberOfAnalystOpinions"),
         )
+
+
+def _last_close(df: pd.DataFrame, yahoo_symbol: str, single: bool) -> float | None:
+    if df is None or getattr(df, "empty", True):
+        return None
+    try:
+        series = None
+        if single and "Close" in df.columns and not isinstance(df.columns, pd.MultiIndex):
+            series = df["Close"]
+        elif isinstance(df.columns, pd.MultiIndex):
+            level0 = set(df.columns.get_level_values(0))
+            if yahoo_symbol in level0:
+                block = df[yahoo_symbol]
+                series = block["Close"] if "Close" in block.columns else None
+            elif "Close" in level0:
+                series = df["Close"][yahoo_symbol]
+        if series is None:
+            return None
+        closes = series.dropna()
+        if closes.empty:
+            return None
+        value = float(closes.iloc[-1])
+        if value != value:
+            return None
+        return value
+    except Exception:
+        return None
