@@ -68,18 +68,25 @@ Do not map a combined line item such as upgrades and recoveries onto a single re
 Extract bank-level figures, not subsidiary or group-company figures, unless the document is only about that entity.
 
 Do not choose between multiple legitimate interpretations unless the document context clearly identifies the requested metric. When ambiguous, return the competing candidates rather than guessing.
+
+Report each amount in the unit the document uses. Preserve crore, lakh crore, million, billion, and trillion as written. Do not assume a numeric value from the document is already in ₹ billion.
 """
 
 Basis = Literal["yoy", "qoq", "point_in_time"]
 Scope = Literal["standalone", "consolidated"]
 Measurement = Literal["average", "end_of_period"]
-Unit = Literal["percent", "%", "bps", "₹ bn"]
 
 
 class BankKpiCandidate(BaseModel):
     metric: str = Field(description="Normalized BankMetrics key such as gnpa or nim.")
     value: float
-    unit: str = Field(description="percent, %, bps, or ₹ bn")
+    unit: str = Field(
+        description=(
+            "The document's own unit: percent, %, bps, crore, ₹ crore, million, "
+            "billion, ₹ bn, lakh crore, or trillion. Do not convert. Do not assume "
+            "a rupee amount is already in ₹ billion."
+        )
+    )
     period: str | None = Field(default=None, description="e.g. Q1 FY27, or null if unknown")
     basis: Basis | None = None
     measurement: Measurement | None = Field(
@@ -124,6 +131,9 @@ def build_kpi_user_prompt(
         f"{allowed}\n\n"
         "Represent percentages as percentage points (1.42% → value 1.42, unit percent), "
         "not as 0.0142.\n"
+        "For rupee amounts (write-offs, recoveries, rupee slippages), copy the document unit "
+        "(crore, million, billion, lakh crore). Do not convert and do not label a crore "
+        "figure as ₹ bn.\n"
         "If a time series is oldest-to-newest, the current period is the last value.\n"
         "Do not return duplicate candidates that have the same metric, value, unit, period, "
         "basis, and measurement.\n"

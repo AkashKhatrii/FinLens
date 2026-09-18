@@ -12,6 +12,7 @@ from typing import Any
 from .ai import analyst
 from .config import MARKETS
 from .engine import fundamentals, percentile, qualitative, scoring, technicals, valuation
+from .engine.accumulation import accumulation_from_analysis, public_accumulation_from_ai
 from .engine.bank_presentation import fact_pack_bank_fundamentals, public_bank_metrics
 from .engine.bank_scoring import apply_bank_metrics
 from .engine.sector import PROFILE_BANK, classify
@@ -173,6 +174,8 @@ def analyse(
     elif profile == PROFILE_BANK:
         result["data_gaps"] = sorted(set(result["data_gaps"] + ["bank fundamentals"]))
 
+    result["deterministic_accumulation"] = accumulation_from_analysis(result)
+
     if not use_ai:
         result["ai"] = None
     else:
@@ -187,6 +190,16 @@ def analyse(
             if ai:
                 ai["latency_ms"] = int((time.time() - ai_started) * 1000)
             result["ai"] = ai
+            thesis = (ai or {}).get("thesis") or {}
+            opportunity = thesis.get("opportunity") or {}
+            result["deterministic_accumulation"] = accumulation_from_analysis(
+                result,
+                opportunity_category=opportunity.get("category"),
+                thesis_breakers=opportunity.get("thesis_breakers"),
+            )
+            public = public_accumulation_from_ai(thesis.get("accumulation"))
+            if public:
+                result["accumulation"] = public
 
     result["elapsed_ms"] = int((time.time() - started) * 1000)
     return result
@@ -251,4 +264,19 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
     bank_pack = fact_pack_bank_fundamentals(r.get("bank_metrics"))
     if bank_pack is not None:
         pack["bank_fundamentals"] = bank_pack
+    next_earnings = (r.get("earnings") or {}).get("next_date")
+    if next_earnings:
+        pack["upcoming_events"] = {
+            "next_earnings": next_earnings,
+            "note": (
+                "Known event. Describe it factually as a near-term catalyst/risk for a "
+                "short-dated position. Do not describe this as 'no immediate event risk'."
+            ),
+        }
+    det = r.get("deterministic_accumulation") or {}
+    if det.get("state") or det.get("label"):
+        pack["deterministic_accumulation"] = {
+            "state": det.get("label") or det.get("state"),
+            "usage": "debug_context_only",
+        }
     return pack

@@ -184,11 +184,9 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
         band(q_pat_yoy, [(-35, 8), (-10, 28), (0, 48), (12, 70), (25, 88), (45, 95)]),
         "", weight=GROWTH["q_pat_yoy"],
     ))
-    if f.revenue_series and f.profit_series and rev_cagr is not None and pat_cagr is not None:
-        if pat_cagr > rev_cagr + 3:
-            growth.notes.append("Profit is compounding faster than revenue — operating leverage is working.")
-        elif pat_cagr < rev_cagr - 3:
-            growth.notes.append("Profit is growing slower than revenue — margins are being squeezed.")
+    leverage = operating_leverage_note(rev_cagr, pat_cagr, f.margin_series, f.profit_series)
+    if leverage:
+        growth.notes.append(leverage)
 
     # --- profitability -------------------------------------------------------
     op_margin = safe_div(f.ebit, f.revenue)
@@ -334,6 +332,46 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     apply_profile(profit, profile)
     apply_profile(health, profile)
     return f, growth, profit, health
+
+
+def operating_leverage_note(
+    rev_cagr: float | None,
+    pat_cagr: float | None,
+    margin_series: list[float],
+    profit_series: list[float],
+) -> str | None:
+    """Describe operating leverage only when margin trajectory supports it.
+
+    A higher profit CAGR than revenue CAGR is not sufficient: a depressed base,
+    one unusual year, or declining margins can produce the same CAGR gap.
+    """
+    if rev_cagr is None or pat_cagr is None:
+        return None
+    if _depressed_profit_base(profit_series):
+        return None
+    trend = trend_slope_pct(margin_series or [])
+    if trend is None:
+        return None
+    if pat_cagr > rev_cagr + 3 and trend > 1:
+        return (
+            "Margins have expanded as the business grew — operating leverage is "
+            "visible in the supplied results."
+        )
+    if pat_cagr < rev_cagr - 3 and trend < -1:
+        return (
+            "Margins have been squeezed as revenue grew — profit growth is not "
+            "evidence of operating leverage."
+        )
+    return None
+
+
+def _depressed_profit_base(profit_series: list[float]) -> bool:
+    if not profit_series or len(profit_series) < 2:
+        return False
+    latest, oldest = profit_series[0], profit_series[-1]
+    if oldest <= 0 or latest <= 0:
+        return True
+    return oldest < 0.2 * latest
 
 
 def _growth_note(label: str, v: float | None) -> str:

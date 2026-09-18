@@ -446,6 +446,7 @@ tailwind.config = {
             <div v-if="k === 'long'" class="text-[10px] uppercase tracking-wider text-blue-400 mb-0.5">Primary horizon</div>
             <div class="text-sm font-semibold"><term-tip :id="k" :label="h.label"></term-tip></div>
             <div class="text-[11px] text-muted">{{ h.window }}</div>
+            <div class="text-[10px] text-faint mt-0.5">Model score</div>
           </div>
           <score-ring :score="h.score" :size="62" :stroke="6" :compact="true"></score-ring>
         </div>
@@ -486,6 +487,43 @@ tailwind.config = {
         <div v-else-if="h.plan && h.plan.target" class="pt-3 border-t border-edge text-center">
           <div class="text-[9px] text-faint uppercase"><term-tip id="dcf" label="DCF fair value"></term-tip></div>
           <div class="text-[11px] font-mono">₹{{ num(h.plan.target) }} ({{ num(h.plan.reward_pct) }}%)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accumulation (qualitative wealth-creation layer; not a horizon score) -->
+    <div v-if="result.accumulation" class="rise panel rounded-2xl p-5" style="animation-delay:.20s">
+      <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+        <div>
+          <div class="text-[11px] uppercase tracking-wider text-muted mb-1">
+            <term-tip id="accumulation" label="Accumulation"></term-tip>
+          </div>
+          <div class="text-[10px] text-faint leading-relaxed max-w-2xl">
+            Long Hold does not mean do not buy any shares. Accumulation asks whether gradual long-term position building is reasonable even when a full-size Long Buy is not.
+          </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-md text-xs font-semibold" :class="verdictClass(accumulationClass(accumulationLabel(result.accumulation)))">
+          {{ accumulationLabel(result.accumulation) }}
+        </span>
+      </div>
+      <p class="text-xs text-muted leading-relaxed mb-4">{{ result.accumulation.rationale }}</p>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <div class="text-[11px] font-semibold mb-2">{{ accumulationWhyHeading(accumulationLabel(result.accumulation)) }}</div>
+          <ul v-if="(result.accumulation.accumulation_reasons || []).length" class="space-y-1.5">
+            <li v-for="(r,i) in result.accumulation.accumulation_reasons" :key="i" class="text-[11px] text-muted leading-relaxed">{{ r }}</li>
+          </ul>
+        </div>
+        <div v-if="result.accumulation.approach || (result.accumulation.monitor_conditions || []).length">
+          <div class="text-[11px] font-semibold mb-2">{{ result.accumulation.approach ? 'Approach' : 'What to monitor' }}</div>
+          <p v-if="result.accumulation.approach" class="text-[11px] text-muted leading-relaxed">{{ result.accumulation.approach }}</p>
+          <ul v-else class="space-y-1.5">
+            <li v-for="(r,i) in result.accumulation.monitor_conditions" :key="i" class="text-[11px] text-muted leading-relaxed">{{ r }}</li>
+          </ul>
+        </div>
+        <div v-if="result.accumulation.context">
+          <div class="text-[11px] font-semibold mb-2">Accumulation context</div>
+          <p class="text-[11px] text-muted leading-relaxed">{{ result.accumulation.context }}</p>
         </div>
       </div>
     </div>
@@ -543,6 +581,7 @@ tailwind.config = {
                  class="flex items-baseline justify-between gap-3 bg-inset rounded-lg px-3 py-2.5 border border-edge">
               <div class="min-w-0">
                 <div class="text-[11px] text-fg"><term-tip :id="m.key" :label="m.label"></term-tip></div>
+                <div v-if="m.basis" class="text-[10px] text-faint truncate">{{ m.basis }}</div>
                 <div v-if="m.source" class="text-[10px] text-faint truncate">{{ m.source }}</div>
               </div>
               <div class="text-sm font-mono shrink-0">{{ m.display }}</div>
@@ -607,7 +646,7 @@ tailwind.config = {
             Short is the near-term stock. Long is what is currently proven.
             Opportunity is long-term forward-looking potential — not an entry signal.
           </div>
-          <div class="grid md:grid-cols-3 gap-3">
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
             <div class="bg-inset rounded-lg p-3.5 border border-edge">
               <div class="flex items-center justify-between gap-2">
                 <span class="text-[11px] font-semibold">Short</span>
@@ -624,6 +663,12 @@ tailwind.config = {
               <div class="flex items-center justify-between gap-2">
                 <span class="text-[11px] font-semibold"><term-tip id="opportunity" label="Opportunity"></term-tip></span>
                 <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(opportunityClass(ai.opportunity.category))">{{ ai.opportunity.category }}</span>
+              </div>
+            </div>
+            <div class="bg-inset rounded-lg p-3.5 border border-edge" v-if="result.accumulation">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-semibold"><term-tip id="accumulation" label="Accumulation"></term-tip></span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(accumulationClass(accumulationLabel(result.accumulation)))">{{ accumulationLabel(result.accumulation) }}</span>
               </div>
             </div>
           </div>
@@ -669,12 +714,12 @@ tailwind.config = {
                class="bg-inset rounded-lg p-3.5 border border-edge"
                :class="c.horizon === 'long' ? 'ring-1 ring-blue-500/20' : ''">
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-semibold">{{ c.horizon === 'swing' ? 'Short' : 'Long' }}<span v-if="c.horizon === 'long'" class="ml-1.5 text-[9px] uppercase tracking-wider text-blue-400 font-medium">Primary</span></span>
+              <span class="text-[11px] font-semibold">{{ c.horizon === 'swing' ? 'Short' : 'Long' }}<span v-if="c.horizon === 'long'" class="ml-1.5 text-[9px] uppercase tracking-wider text-blue-400 font-medium">Primary</span><span class="ml-1.5 text-[9px] uppercase tracking-wider text-faint font-medium">AI view</span></span>
               <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(c.stance))">{{ c.stance }}</span>
             </div>
             <p class="text-[11px] text-muted leading-relaxed mb-2">{{ c.rationale }}</p>
             <div v-if="c.horizon === 'swing' && c.agreement" class="text-[10px] text-faint mb-2">
-              Quant agreement: {{ c.agreement }}<span v-if="c.qualification"> — {{ c.qualification }}</span>
+              Model agreement: {{ c.agreement }}<span v-if="c.qualification"> — {{ c.qualification }}</span>
             </div>
             <div class="text-[10px] text-faint leading-relaxed pt-2 border-t border-edge">
               <span class="text-muted">Flips if:</span> {{ c.what_would_change_it }}
@@ -1635,7 +1680,11 @@ createApp({
           const msg = (d && typeof d === 'object') ? (d.message || 'Thesis failed') : (d || 'Thesis failed');
           throw new Error(msg);
         }
-        this.result = { ...this.result, ai: data.ai || { error: 'No thesis returned.' } };
+        this.result = {
+          ...this.result,
+          ai: data.ai || { error: 'No thesis returned.' },
+          accumulation: data.accumulation || null,
+        };
       } catch (e) {
         this.result = { ...this.result, ai: { error: e.message } };
       } finally {
@@ -1673,6 +1722,26 @@ createApp({
         'Watch': 'hold',
         'No Opportunity': 'avoid',
       }[cat] || 'hold';
+    },
+    accumulationClass(label) {
+      return {
+        'Accumulate': 'buy',
+        'Accumulate Gradually': 'early',
+        'Watch for Accumulation': 'hold',
+        'Do Not Accumulate': 'avoid',
+      }[label] || 'hold';
+    },
+    accumulationLabel(acc) {
+      if (!acc) return '';
+      return acc.label || acc.state || '';
+    },
+    accumulationWhyHeading(label) {
+      return {
+        'Accumulate': 'Why accumulate?',
+        'Accumulate Gradually': 'Why accumulate gradually?',
+        'Watch for Accumulation': 'Why wait?',
+        'Do Not Accumulate': 'Why not accumulate?',
+      }[label] || 'Why accumulate?';
     },
     verdictPill(v) {
       return { good: 'pill-good', ok: 'pill-ok', bad: 'pill-bad' }[v] || 'pill-na';

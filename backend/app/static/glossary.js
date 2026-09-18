@@ -25,7 +25,7 @@
 
   put(["long", "longterm", "long term"], "Long term",
     "The primary horizon: is this a good business worth owning for 1–3+ years at the current valuation?",
-    "Quality, growth, profitability, the balance sheet, cash, and valuation dominate. Chart setup is almost ignored.");
+    "The score cards are the quantitative model. The Analyst Thesis Long stance is the AI interpretation of the same evidence. They can differ. Quality, growth, profitability, the balance sheet, cash, and valuation dominate the model score.");
 
   put(["opportunity", "investmentview", "investment view"], "Opportunity",
     "A long-term forward-looking AI judgment: is there a credible path to significant shareholder value over 3–5+ years? Not a third horizon, not a numeric score, and not an entry-price signal.",
@@ -46,6 +46,26 @@
   put(["noopportunity", "no opportunity"], "No Opportunity",
     "No sufficiently credible long-term path to attractive value creation on the available evidence.",
     "A falling price, a low P/E, or an oversold RSI is not a thesis. This is an AI judgment, not a quantitative Avoid.");
+
+  put(["accumulation"], "Accumulation",
+    "A qualitative wealth-creation layer: is this a company worth gradually building a long-term position in, even if today is not a full Long Buy?",
+    "Not a fourth horizon, not a score, and not a trading signal. Long Hold does not mean do not buy any shares. A falling price is not by itself a reason to accumulate.");
+
+  put(["accumulate"], "Accumulate",
+    "The long-term thesis is strong enough that gradually building exposure is reasonable.",
+    "Still not a recommendation to buy a large amount in one go, and not driven by RSI or a recent decline.");
+
+  put(["accumulategradually", "accumulate gradually"], "Accumulate Gradually",
+    "There is a credible long-term case for building exposure, but valuation, uncertainty, or trajectory argues for a measured approach.",
+    "This is an AI qualitative judgment, not a mechanical pairing with Long Hold or Established Opportunity.");
+
+  put(["watchforaccumulation", "watch for accumulation"], "Watch for Accumulation",
+    "The company may be interesting for long-term ownership, but an unresolved investment question currently makes gradual position building premature.",
+    "Monitor the unresolved evidence before starting or materially increasing a position. Not an automatic consequence of Emerging Opportunity.");
+
+  put(["donotaccumulate", "do not accumulate"], "Do Not Accumulate",
+    "Current evidence does not support building a long-term position.",
+    "A cheap multiple or a strong short-term chart cannot override a weak long-term thesis.");
 
   put(["confidence"], "Confidence",
     "How much to trust that horizon’s score, separately from the score itself.",

@@ -5,8 +5,15 @@ resolution_reason.
 """
 from __future__ import annotations
 
+import re
+
 from .common import Metric
-from ..providers.bank_metrics import BankMetric, BankMetrics
+from ..providers.bank_metrics import (
+    BankMetric,
+    BankMetrics,
+    MEASUREMENT_AVERAGE,
+    MEASUREMENT_EOP,
+)
 
 BANK_PUBLIC_LABELS = {
     "gnpa": "GNPA",
@@ -79,7 +86,12 @@ def fact_pack_bank_fundamentals(public: dict | None) -> dict | None:
         "note": BANK_FACT_PACK_NOTE,
         "period": public.get("period"),
         "groups": {
-            group["label"]: {item["label"]: item["display"] for item in group["metrics"]}
+            group["label"]: {
+                item["label"]: (
+                    f"{item['display']} ({item['basis']})" if item.get("basis") else item["display"]
+                )
+                for item in group["metrics"]
+            }
             for group in public["groups"]
         },
     }
@@ -111,6 +123,45 @@ def _public_item(key: str, canonical: BankMetric | None) -> dict | None:
         "display": format_bank_display(canonical.value, unit),
         "period": canonical.period,
     }
+    basis = public_metric_basis(canonical)
+    if basis:
+        item["basis"] = basis
     if canonical.provenance and canonical.provenance.source_title:
         item["source"] = canonical.provenance.source_title
     return item
+
+
+_BASIS_PATTERNS = (
+    (r"excl(?:uding|\.)?\s*(?:two|technical\s+write)", "excluding technical write-offs"),
+    (r"incl(?:uding|\.)?\s*(?:two|auca|write)", "including write-offs"),
+    (r"\bspecific\b", "specific"),
+    (r"ex[-\s]?agri|excluding\s+agri", "excluding agri"),
+    (r"\bdomestic\b", "domestic"),
+    (r"net\s+of\s+recover", "net of recoveries"),
+)
+
+
+def public_metric_basis(canonical: BankMetric) -> str | None:
+    """Concise definition/basis for the canonical KPI. None when the headline is unambiguous."""
+    parts: list[str] = []
+    if canonical.measurement == MEASUREMENT_AVERAGE:
+        parts.append("average")
+    elif canonical.measurement == MEASUREMENT_EOP:
+        parts.append("end-of-period")
+    haystack = ""
+    if canonical.provenance:
+        haystack = f"{canonical.provenance.raw_label} {canonical.provenance.excerpt}"
+    for pattern, label in _BASIS_PATTERNS:
+        if re.search(pattern, haystack, re.I):
+            parts.append(label)
+            break
+    if not parts:
+        return None
+    # De-duplicate while preserving order.
+    seen: set[str] = set()
+    ordered = []
+    for part in parts:
+        if part not in seen:
+            seen.add(part)
+            ordered.append(part)
+    return ", ".join(ordered)

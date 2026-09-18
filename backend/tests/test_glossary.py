@@ -33,6 +33,8 @@ UI_LABELS = [
     "Turnover/day", "Strong Buy", "Buy", "Hold", "Reduce", "Avoid",
     "Investment View", "Opportunity", "Established Opportunity", "Emerging Opportunity",
     "Watch", "No Opportunity",
+    "Accumulation", "Accumulate", "Accumulate Gradually", "Watch for Accumulation",
+    "Do Not Accumulate",
     "regime", "entryquality",
     "mcap", "52W high", "Score", "Metric",
 ]

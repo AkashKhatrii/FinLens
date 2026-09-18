@@ -6,6 +6,7 @@ extraction candidates or ticker names.
 """
 from __future__ import annotations
 
+from .bank_presentation import format_bank_display
 from .common import Metric, Pillar, band
 from .sector import PROFILE_BANK
 from ..providers.bank_metrics import BankMetric, BankMetrics
@@ -129,8 +130,8 @@ def _metric_from_canonical(key: str, canonical: BankMetric | None, weight: float
     unit = canonical.unit if canonical is not None and canonical.unit else "%"
     score = score_bank_metric(key, value, unit)
     note = ""
-    if canonical is not None and canonical.provenance and canonical.provenance.excerpt:
-        note = canonical.provenance.excerpt[:160]
+    if canonical is not None and canonical.value is not None:
+        note = f"{BANK_LABELS[key]} is {format_bank_display(canonical.value, unit)}."
     return Metric(
         key=key,
         label=BANK_LABELS[key],

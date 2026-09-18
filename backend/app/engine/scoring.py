@@ -20,6 +20,7 @@ from statistics import pstdev
 from typing import Any
 
 from .common import Metric, Pillar
+from .explanations import investor_facing_bullet, is_clean_investor_text
 from .swing_regime import classify_swing
 
 # Each horizon's weights must cover the same pillar set; missing pillars are
@@ -321,15 +322,15 @@ def build_pros_cons(pillars: dict[str, Pillar], red_flags: list[dict[str, str]])
 
     for m, p in sorted(ranked, key=lambda t: -t[0].score):
         if m.score >= 70 and len(pros) < 7:
-            text = m.note or f"{m.label} of {m.display} is strong."
-            if text not in seen:
+            text = investor_facing_bullet(m)
+            if text and text not in seen:
                 pros.append(text)
                 seen.add(text)
 
     for m, p in sorted(ranked, key=lambda t: t[0].score):
         if m.score <= 40 and len(cons) < 7:
-            text = m.note or f"{m.label} of {m.display} is weak."
-            if text not in seen:
+            text = investor_facing_bullet(m)
+            if text and text not in seen:
                 cons.append(text)
                 seen.add(text)
 
@@ -340,12 +341,14 @@ def build_pros_cons(pillars: dict[str, Pillar], red_flags: list[dict[str, str]])
 
     for p in pillars.values():
         for note in p.notes:
+            if not is_clean_investor_text(note):
+                continue
             low = note.lower()
             if any(w in low for w in ("risk", "unreliable", "not available", "unavailable", "squeez", "rolling over", "thin")):
                 if note not in seen and len(cons) < 10:
                     cons.append(note)
                     seen.add(note)
-            elif any(w in low for w in ("intact", "working", "outperform", "confirming", "trigger")):
+            elif any(w in low for w in ("intact", "working", "outperform", "confirming", "trigger", "operating leverage")):
                 if note not in seen and len(pros) < 10:
                     pros.append(note)
                     seen.add(note)

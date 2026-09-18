@@ -69,6 +69,7 @@ class RawFact:
     confidence: float | None = None
     uncertain: bool = False
     series: str | None = None
+    source_unit: str | None = None
 
 
 @dataclass(frozen=True)

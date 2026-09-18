@@ -87,7 +87,54 @@ _UNIT_ALIASES = {
     "rs_bn": "₹ bn",
     "₹ bn": "₹ bn",
     "inr billion": "₹ bn",
+    "billion": "billion",
+    "bn": "billion",
+    "₹ billion": "billion",
+    "rs billion": "billion",
+    "inr bn": "₹ bn",
+    "crore": "crore",
+    "crores": "crore",
+    "cr": "crore",
+    "₹ cr": "crore",
+    "₹ crore": "crore",
+    "rs crore": "crore",
+    "rs. crore": "crore",
+    "inr crore": "crore",
+    "lakh crore": "lakh crore",
+    "lac crore": "lakh crore",
+    "lakh crores": "lakh crore",
+    "million": "million",
+    "mn": "million",
+    "mio": "million",
+    "₹ mn": "million",
+    "₹ million": "million",
+    "trillion": "trillion",
+    "tn": "trillion",
+    "₹ tn": "trillion",
+    "lakh": "lakh",
+    "lac": "lakh",
+    "lakhs": "lakh",
 }
+
+# Convert a source amount into canonical ₹ billion.
+_TO_INR_BN = {
+    "₹ bn": 1.0,
+    "billion": 1.0,
+    "crore": 0.01,
+    "lakh crore": 1000.0,
+    "million": 0.001,
+    "trillion": 1000.0,
+    "lakh": 0.0001,
+}
+
+_EVIDENCE_UNIT_PATTERNS = (
+    (re.compile(r"lakh\s*crores?|lac\s*crores?", re.I), "lakh crore"),
+    (re.compile(r"crores?|\bcr\.?\b", re.I), "crore"),
+    (re.compile(r"trillions?|\btn\b", re.I), "trillion"),
+    (re.compile(r"billions?|\bbn\b", re.I), "billion"),
+    (re.compile(r"millions?|\bmn\b|\bmio\b", re.I), "million"),
+    (re.compile(r"lakhs?|\blacs?\b", re.I), "lakh"),
+)
 
 _BASIS_ALIASES = {
     "yoy": COMPARISON_YOY,
@@ -194,6 +241,44 @@ def normalize_unit(unit: str | None) -> str | None:
         return None
     blob = re.sub(r"\s+", " ", str(unit).strip().lower())
     return _UNIT_ALIASES.get(blob)
+
+
+def canonical_amount_value(value: float, unit: str | None) -> float:
+    """Convert a monetary bank KPI into canonical ₹ billion."""
+    source = _amount_source(unit)
+    if source is None:
+        raise ValueError(f"unsupported amount unit {unit!r}")
+    return float(value) * _TO_INR_BN[source]
+
+
+def infer_amount_unit(declared: str | None, evidence: str, value: float) -> str | None:
+    """Prefer the unit written next to the number over a declared schema unit."""
+    from_evidence = _unit_near_value(evidence, value)
+    if from_evidence:
+        return from_evidence
+    return _amount_source(declared)
+
+
+def _amount_source(unit: str | None) -> str | None:
+    if unit is None:
+        return None
+    blob = re.sub(r"\s+", " ", str(unit).strip().lower())
+    mapped = _UNIT_ALIASES.get(blob, blob)
+    if mapped == "₹ bn":
+        return "billion"
+    if mapped in _TO_INR_BN:
+        return mapped
+    return None
+
+
+def _unit_near_value(evidence: str, value: float) -> str | None:
+    blob = (evidence or "").replace(",", "")
+    match = _value_token_re(value).search(blob)
+    haystack = blob[max(0, match.start() - 12): match.end() + 28] if match else blob
+    for pattern, unit in _EVIDENCE_UNIT_PATTERNS:
+        if pattern.search(haystack):
+            return unit
+    return None
 
 
 def normalize_basis(basis: str | None) -> str | None:
@@ -313,12 +398,19 @@ def validate_ai_candidates(
         key = _remap_metric_key(key, evidence, raw_label, basis)
         if basis is None:
             basis = COMPARISON_YOY if key in _GROWTH_KEYS else COMPARISON_PIT
+        stored_unit = unit or "%"
+        stored_value = value
+        source_unit = None
+        if key in _AMOUNT_KEYS and stored_unit not in {"%", "bps"}:
+            source_unit = infer_amount_unit(stored_unit, evidence, value)
+            stored_value = canonical_amount_value(value, source_unit or stored_unit)
+            stored_unit = "₹ bn"
         result.facts.append(
             RawFact(
                 key=key or "",
                 raw_label=raw_label,
-                value=value,
-                unit=unit or "%",
+                value=stored_value,
+                unit=stored_unit,
                 period=normalize_period_label(item.get("period")),
                 comparison=basis,
                 measurement=_resolve_measurement(item, evidence, raw_label, value),
@@ -328,6 +420,7 @@ def validate_ai_candidates(
                 confidence=_as_confidence(item.get("confidence")),
                 uncertain=bool(item.get("uncertain")),
                 series=_resolve_series(key or "", item, evidence, raw_label, value),
+                source_unit=source_unit,
             )
         )
     return result
