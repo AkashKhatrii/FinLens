@@ -277,7 +277,10 @@ tailwind.config = {
 
       <div class="flex items-center gap-3 text-[11px] text-muted shrink-0">
         <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
-                :class="view !== 'analyse' ? 'tab-on' : ''"
+                :class="view === 'nifty' ? 'tab-on' : ''"
+                v-on:click="openNifty50()">Nifty</button>
+        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+                :class="(view === 'tradebook' || view === 'snapshot') ? 'tab-on' : ''"
                 v-on:click="openTradebook()">Tradebook</button>
         <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 v-on:click="glossaryOpen = true">Terms</button>
@@ -850,6 +853,83 @@ tailwind.config = {
     </footer>
   </main>
 
+  <!-- ============ NIFTY QUANT ============ -->
+  <section v-if="view === 'nifty'" class="max-w-7xl mx-auto px-6 py-6 space-y-4">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight">{{ niftyIndexName }} Quant</h1>
+        <div class="text-[11px] text-muted mt-1">
+          <span v-if="niftyLowestN">50 lowest Overall scores from the current Nifty 500 universe.</span>
+          <span v-else>{{ niftyRows.length || niftyExpected }} current constituents · Quantitative analysis only</span>
+        </div>
+        <div class="text-[11px] text-faint mt-1">Updated: {{ niftyUpdatedLabel }}</div>
+      </div>
+      <div class="flex flex-wrap items-center gap-1 text-[11px]">
+        <button type="button" class="px-2 py-1 rounded-md border border-edge"
+                :class="niftyIndex === 'NIFTY50' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
+                v-on:click="selectNiftyIndex('NIFTY50')">Nifty 50</button>
+        <button type="button" class="px-2 py-1 rounded-md border border-edge"
+                :class="niftyIndex === 'NIFTY100' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
+                v-on:click="selectNiftyIndex('NIFTY100')">Nifty 100</button>
+        <button type="button" class="px-2 py-1 rounded-md border border-edge"
+                :class="niftyIndex === 'LOW_SCORE' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
+                v-on:click="selectNiftyIndex('LOW_SCORE')">Low-Score Validation</button>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-baseline justify-between gap-2 text-[12px] text-muted">
+      <div>
+        {{ niftySummary.total }} stocks
+        <span v-if="niftySummary.analyzed"> · {{ niftySummary.buy }} Buy · {{ niftySummary.hold }} Hold · {{ niftySummary.reduce_avoid }} Reduce/Avoid</span>
+        <span v-if="niftySummary.median_overall != null"> · Median overall {{ niftyMedianLabel }}</span>
+      </div>
+      <div class="text-[11px] text-faint">
+        <span v-if="niftyLoading">Analyzing {{ niftyUniverseName }} · {{ niftyDone }} / {{ niftyRows.length || niftyExpected }}</span>
+        <span v-else>{{ niftyUniverseAnalyzed }} / {{ niftyRows.length }} analyzed</span>
+      </div>
+    </div>
+    <div v-if="niftyError" class="text-xs text-amber-400">{{ niftyError }}</div>
+    <div class="panel rounded-xl overflow-auto" style="max-height: calc(100vh - 13rem)">
+      <table class="w-full text-left">
+        <thead class="text-[10px] uppercase tracking-wider text-faint border-b border-edge bg-panel sticky top-0 z-10">
+          <tr>
+            <th class="px-3 py-2 font-medium">Company</th>
+            <th class="px-3 py-2 font-medium text-right">Price</th>
+            <th class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('overall')">
+              Overall <span class="text-faint">{{ niftySortMark('overall') }}</span>
+            </th>
+            <th class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('swing')">
+              Swing <span class="text-faint">{{ niftySortMark('swing') }}</span>
+            </th>
+            <th class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('long')">
+              Long <span class="text-faint">{{ niftySortMark('long') }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in niftySortedRows" :key="row.symbol" class="border-t border-edge/70">
+            <td class="px-3 py-1">
+              <button type="button" class="text-left hover:text-blue-400 flex items-baseline gap-2 max-w-md"
+                      v-on:click="viewNiftyStock(row.symbol)">
+                <span class="text-[12px] font-medium font-mono shrink-0">{{ row.symbol }}</span>
+                <span class="text-[11px] text-muted truncate">{{ row.name }}</span>
+              </button>
+            </td>
+            <td class="px-3 py-1 text-right text-[12px] font-mono whitespace-nowrap">{{ niftyPrice(row) }}</td>
+            <td class="px-3 py-1 text-right whitespace-nowrap">
+              <span class="text-[11px] px-1.5 py-0.5 rounded" :class="verdictClass(row.overall_verdict_class)">{{ niftyScoreCell(row.overall_score, row.overall_verdict) }}</span>
+            </td>
+            <td class="px-3 py-1 text-right whitespace-nowrap">
+              <span class="text-[11px] px-1.5 py-0.5 rounded" :class="verdictClass(row.swing_verdict_class)">{{ niftyScoreCell(row.swing_score, row.swing_verdict) }}</span>
+            </td>
+            <td class="px-3 py-1 text-right whitespace-nowrap">
+              <span class="text-[11px] px-1.5 py-0.5 rounded" :class="verdictClass(row.long_verdict_class)">{{ niftyScoreCell(row.long_score, row.long_verdict) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- ============ TRADEBOOK LIST ============ -->
   <section v-if="view === 'tradebook'" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
     <div class="flex flex-wrap items-end justify-between gap-4">
@@ -1364,6 +1444,9 @@ createApp({
       activePillar: 'growth', morphIndex: 0, loadingStep: '', loadingPct: 0,
       aiLoading: false, glossaryOpen: false, glossaryQuery: '',
       view: 'analyse',
+      niftyRows: [], niftyLoading: false, niftyError: '', niftyDone: 0,
+      niftySortKey: 'overall', niftySortDesc: true, niftyToken: 0, niftyAsOf: null,
+      niftyIndex: 'NIFTY50',
       tradebookSaving: false, tradebookMessage: '',
       tradebookRows: [], tradebookSummary: { total: 0, swing_buys: 0, swing_holds: 0, swing_reduces: 0, ai_aligned: 0, ai_disagreed: 0 },
       tradebookFilterQ: '', tradebookFilterSwing: '', tradebookFilterAgreement: '',
@@ -1445,6 +1528,47 @@ createApp({
         e.here.toLowerCase().includes(q)
       );
     },
+    niftyViewSpec() { return this.niftyViewFor(this.niftyIndex); },
+    niftyIndexName() { return this.niftyViewSpec.name; },
+    niftyUniverseName() { return this.niftyViewSpec.universeName; },
+    niftyExpected() { return this.niftyViewSpec.expected; },
+    niftyLowestN() { return this.niftyViewSpec.lowest; },
+    niftyTableRows() {
+      const n = this.niftyLowestN;
+      if (!n) return this.niftyRows || [];
+      return this.lowestOverallRows(this.niftyRows, n);
+    },
+    niftySortedRows() { return this.sortNiftyRows(this.niftyTableRows); },
+    niftyUniverseAnalyzed() {
+      return (this.niftyRows || []).filter(r => r.overall_score != null).length;
+    },
+    niftySummary() {
+      const rows = this.niftyTableRows || [];
+      const analyzed = rows.filter(r => r.overall_score != null);
+      const scores = analyzed.map(r => Number(r.overall_score));
+      const buy = analyzed.filter(r => r.overall_verdict === 'Buy' || r.overall_verdict === 'Strong Buy').length;
+      const hold = analyzed.filter(r => r.overall_verdict === 'Hold').length;
+      const reduce_avoid = analyzed.filter(r => r.overall_verdict === 'Reduce' || r.overall_verdict === 'Avoid').length;
+      return {
+        total: analyzed.length || rows.length,
+        analyzed: analyzed.length,
+        buy, hold, reduce_avoid,
+        median_overall: this.niftyMedian(scores),
+      };
+    },
+    niftyUpdatedLabel() {
+      const stamps = (this.niftyRows || []).map(r => r.analyzed_at).filter(Boolean);
+      if (stamps.length) {
+        const latest = stamps.reduce((a, b) => a > b ? a : b);
+        return this.fmtStampTime(latest);
+      }
+      return this.niftyAsOf ? this.fmtStampTime(this.niftyAsOf) : '—';
+    },
+    niftyMedianLabel() {
+      const m = this.niftySummary.median_overall;
+      if (m == null) return '';
+      return Number.isInteger(m) ? String(m) : (Math.round(m * 10) / 10).toFixed(1);
+    },
   },
   watch: {
     glossaryOpen(v) { if (v) this.glossaryQuery = ''; },
@@ -1473,6 +1597,12 @@ createApp({
       const id = params.get('tradebook');
       if (id) this.openSnapshot(id);
       else this.openTradebook();
+    } else if (params.has('lowscore')) {
+      this.openNifty('LOW_SCORE');
+    } else if (params.has('nifty100')) {
+      this.openNifty('NIFTY100');
+    } else if (params.has('nifty50')) {
+      this.openNifty50();
     } else {
       const q = params.get('q');
       if (q) { this.query = q; this.run(); }
@@ -1488,12 +1618,181 @@ createApp({
       this.run();
     },
     openHome() {
+      this.niftyToken += 1;
+      this.niftyLoading = false;
       this.view = 'analyse';
       this.snapshot = null;
       this.error = '';
       this.result = null;
       this.tradebookMessage = '';
       history.replaceState(null, '', '/');
+    },
+    niftyViewFor(id) {
+      const views = {
+        NIFTY50: { id: 'NIFTY50', indexId: 'NIFTY50', name: 'Nifty 50', universeName: 'Nifty 50', param: 'nifty50', expected: 50, lowest: 0, sortDesc: true },
+        NIFTY100: { id: 'NIFTY100', indexId: 'NIFTY100', name: 'Nifty 100', universeName: 'Nifty 100', param: 'nifty100', expected: 100, lowest: 0, sortDesc: true },
+        LOW_SCORE: { id: 'LOW_SCORE', indexId: 'NIFTY500', name: 'Low-Score Validation', universeName: 'Nifty 500', param: 'lowscore', expected: 500, lowest: 50, sortDesc: false },
+      };
+      return views[(id || 'NIFTY50').toUpperCase()] || views.NIFTY50;
+    },
+    async openNifty50() {
+      await this.openNifty('NIFTY50');
+    },
+    selectNiftyIndex(indexId) {
+      if (this.view === 'nifty' && this.niftyIndex === indexId) return;
+      return this.openNifty(indexId);
+    },
+    async openNifty(indexId) {
+      const spec = this.niftyViewFor(indexId);
+      this.view = 'nifty';
+      this.niftyIndex = spec.id;
+      this.snapshot = null;
+      this.error = '';
+      history.replaceState(null, '', '?' + spec.param);
+      await this.loadNifty(spec.indexId);
+    },
+    async loadNifty(indexId) {
+      const spec = this.niftyViewFor(this.niftyIndex);
+      const id = (indexId || spec.indexId || 'NIFTY50').toUpperCase();
+      const token = ++this.niftyToken;
+      this.niftyLoading = true;
+      this.niftyError = '';
+      this.niftyDone = 0;
+      this.niftyRows = [];
+      this.niftySortKey = 'overall';
+      this.niftySortDesc = spec.sortDesc;
+      this.niftyAsOf = null;
+      try {
+        const res = await fetch('/api/indexes/' + encodeURIComponent(id) + '/constituents');
+        const data = await res.json();
+        if (!res.ok) {
+          const d = data.detail;
+          throw new Error(typeof d === 'string' ? d : 'Could not load index constituents');
+        }
+        if (this.niftyToken !== token) return;
+        const constituents = data.constituents || [];
+        this.niftyAsOf = data.as_of || null;
+        this.niftyRows = constituents.map(c => ({
+          symbol: c.symbol,
+          name: c.name,
+          price: null,
+          currency_symbol: '₹',
+          overall_score: null,
+          overall_verdict: null,
+          overall_verdict_class: null,
+          swing_score: null,
+          swing_verdict: null,
+          swing_verdict_class: null,
+          long_score: null,
+          long_verdict: null,
+          long_verdict_class: null,
+          analyzed_at: null,
+          error: null,
+          href: '/?q=' + encodeURIComponent(c.symbol),
+        }));
+        const limit = 4;
+        let cursor = 0;
+        const workers = Array.from({ length: Math.min(limit, constituents.length) || 0 }, async () => {
+          while (cursor < constituents.length) {
+            const idx = cursor++;
+            const c = constituents[idx];
+            try {
+              // Quantitative only: never request a thesis (ai=false).
+              const r = await fetch(`/api/screener/quant?q=${encodeURIComponent(c.symbol)}`);
+              const row = await r.json();
+              if (this.niftyToken !== token) return;
+              this.applyNiftyRow(idx, row, c);
+            } catch (e) {
+              if (this.niftyToken !== token) return;
+              this.applyNiftyRow(idx, { symbol: c.symbol, name: c.name, error: (e && e.message) || 'unavailable' }, c);
+            }
+            if (this.niftyToken !== token) return;
+            this.niftyDone += 1;
+          }
+        });
+        await Promise.all(workers);
+      } catch (e) {
+        if (this.niftyToken !== token) return;
+        this.niftyError = e.message;
+      } finally {
+        if (this.niftyToken === token) this.niftyLoading = false;
+      }
+    },
+    applyNiftyRow(idx, row, constituent) {
+      const next = {
+        symbol: row.symbol || constituent.symbol,
+        name: row.name || constituent.name,
+        price: row.price == null ? null : row.price,
+        currency_symbol: row.currency_symbol || '₹',
+        overall_score: row.overall_score == null ? null : row.overall_score,
+        overall_verdict: row.overall_verdict || null,
+        overall_verdict_class: row.overall_verdict_class || null,
+        swing_score: row.swing_score == null ? null : row.swing_score,
+        swing_verdict: row.swing_verdict || null,
+        swing_verdict_class: row.swing_verdict_class || null,
+        long_score: row.long_score == null ? null : row.long_score,
+        long_verdict: row.long_verdict || null,
+        long_verdict_class: row.long_verdict_class || null,
+        analyzed_at: row.analyzed_at || null,
+        error: row.error || null,
+        href: row.href || ('/?q=' + encodeURIComponent(constituent.symbol)),
+      };
+      this.niftyRows.splice(idx, 1, next);
+    },
+    viewNiftyStock(symbol) {
+      if (!symbol) return;
+      this.niftyToken += 1;
+      this.niftyLoading = false;
+      this.query = symbol;
+      this.snapshot = null;
+      this.run();
+    },
+    setNiftySort(key) {
+      if (this.niftySortKey === key) this.niftySortDesc = !this.niftySortDesc;
+      else { this.niftySortKey = key; this.niftySortDesc = true; }
+    },
+    niftySortMark(key) {
+      if (this.niftySortKey !== key) return '';
+      return this.niftySortDesc ? '↓' : '↑';
+    },
+    niftyPrice(row) {
+      if (!row || row.price == null) return '—';
+      const n = Number(row.price).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return (row.currency_symbol || '₹') + n;
+    },
+    niftyScoreCell(score, verdict) {
+      if (score == null) return '—';
+      const n = Number(score);
+      const shown = Number.isInteger(n) ? String(n) : n.toFixed(1);
+      return verdict ? (shown + ' · ' + verdict) : shown;
+    },
+    niftyMedian(values) {
+      if (!values.length) return null;
+      const sorted = values.slice().sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      if (sorted.length % 2) return sorted[mid];
+      return (sorted[mid - 1] + sorted[mid]) / 2;
+    },
+    lowestOverallRows(rows, n) {
+      const scored = (rows || []).filter(r => r.overall_score != null);
+      return scored.slice().sort((a, b) => {
+        const diff = Number(a.overall_score) - Number(b.overall_score);
+        if (diff !== 0) return diff;
+        return (a.symbol || '').localeCompare(b.symbol || '');
+      }).slice(0, n);
+    },
+    sortNiftyRows(rows) {
+      const field = { overall: 'overall_score', swing: 'swing_score', long: 'long_score' }[this.niftySortKey] || 'overall_score';
+      const desc = this.niftySortDesc;
+      return (rows || []).slice().sort((a, b) => {
+        const av = a[field], bv = b[field];
+        const am = av == null, bm = bv == null;
+        if (am !== bm) return am ? 1 : -1;
+        if (am) return (a.symbol || '').localeCompare(b.symbol || '');
+        const diff = desc ? (Number(bv) - Number(av)) : (Number(av) - Number(bv));
+        if (diff !== 0) return diff;
+        return (a.symbol || '').localeCompare(b.symbol || '');
+      });
     },
     async openTradebook() {
       this.view = 'tradebook';

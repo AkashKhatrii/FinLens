@@ -16,6 +16,8 @@ from .analysis import UnknownSymbol, analyse, resolve
 from .ai import analyst
 from .config import MARKETS, using_provider
 from .providers import nse_symbols
+from .providers.index_constituents import get_index_constituents
+from .screener import analyse_quant_row
 from .tradebook import (
     apply_current_prices,
     close_snapshot,
@@ -127,6 +129,30 @@ def api_analyse(
         log.exception("Analysis failed for %r", q)
         raise HTTPException(status_code=500, detail=f"Analysis failed: {exc}")
     return JSONResponse(content=jsonable(result))
+
+
+@app.get("/api/indexes/{index_id}/constituents")
+def api_index_constituents(index_id: str) -> JSONResponse:
+    """Current index membership. Does not score or call the AI."""
+    try:
+        universe = get_index_constituents(index_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        log.exception("Could not load constituents for %r", index_id)
+        raise HTTPException(status_code=502, detail=f"Could not load index constituents: {exc}")
+    return JSONResponse(content=jsonable(universe.to_dict()))
+
+
+@app.get("/api/screener/quant")
+def api_screener_quant(
+    q: str = Query(..., min_length=1, description="Ticker or company name"),
+    market: str = Query("IN"),
+) -> JSONResponse:
+    """One quantitative Overall/Swing/Long row. Never calls the AI."""
+    del market
+    row = analyse_quant_row(q)
+    return JSONResponse(content=jsonable(row))
 
 
 @app.post("/api/cache/clear")
