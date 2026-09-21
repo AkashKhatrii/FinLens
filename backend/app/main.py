@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
@@ -24,9 +24,11 @@ from .tradebook import (
     get_snapshot,
     last_refreshed_at,
     list_snapshots,
+    parse_quantity,
     save_snapshot,
     snapshot_from_analysis,
     summarize,
+    update_quantity,
 )
 from .tradebook.prices import fetch_last_prices
 
@@ -214,6 +216,22 @@ def api_tradebook_remove(snapshot_id: str) -> JSONResponse:
 @app.post("/api/tradebook/{snapshot_id}/sell")
 def api_tradebook_sell(snapshot_id: str) -> JSONResponse:
     snap = close_snapshot(snapshot_id, "sold")
+    if snap is None:
+        raise HTTPException(status_code=404, detail="Snapshot not found.")
+    return JSONResponse(content=jsonable(snap))
+
+
+@app.patch("/api/tradebook/{snapshot_id}/quantity")
+def api_tradebook_quantity(
+    snapshot_id: str,
+    payload: dict[str, Any] = Body(...),
+) -> JSONResponse:
+    """Update lots only. Does not change entry price, scores, or signals."""
+    try:
+        qty = parse_quantity((payload or {}).get("quantity"))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    snap = update_quantity(snapshot_id, qty)
     if snap is None:
         raise HTTPException(status_code=404, detail="Snapshot not found.")
     return JSONResponse(content=jsonable(snap))

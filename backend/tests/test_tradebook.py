@@ -151,6 +151,8 @@ class TradebookApiTest(unittest.TestCase):
         self.assertEqual(snap["swing_confidence"], 84.0)
         self.assertEqual(snap["swing_regime"], "Healthy Pullback")
         self.assertEqual(snap["swing_entry_quality"], "Attractive")
+        self.assertEqual(snap["swing_trend"], "Bullish")
+        self.assertEqual(snap["quantity"], 1)
         self.assertEqual(snap["technical_stop"], 1980.0)
         self.assertEqual(snap["technical_target"], 2350.0)
         self.assertEqual(snap["risk_reward"], 1.5)
@@ -304,21 +306,32 @@ class TradebookIsolationTest(unittest.TestCase):
         method = html.split("addToTradebook", 1)[1][:1200]
         self.assertNotIn("/api/analyse", method)
 
-    def test_ui_has_refresh_remove_sell_and_view_analysis(self):
+    def test_ui_has_compact_rows_quantity_and_red_sell(self):
         html = (Path(__file__).resolve().parents[1] / "app" / "static" / "index.html").read_text()
         self.assertIn("Refresh Prices", html)
-        self.assertIn("Change since recommendation", html)
         self.assertIn("Last refreshed", html)
-        self.assertIn("View Analysis", html)
+        self.assertNotIn("View Analysis", html)
+        self.assertIn("viewAnalysis(row.ticker)", html)
+        self.assertIn("nudgeTradebookQuantity", html)
+        self.assertIn("commitTradebookQuantity", html)
+        self.assertIn("/api/tradebook/' + encodeURIComponent(row.id) + '/quantity'", html)
+        self.assertIn("text-red-500", html)
+        self.assertIn("askTradebookAction('sell', row)", html)
+        self.assertIn("v-on:click.stop", html)
+        self.assertIn("tradebookEntryLine", html)
+        self.assertIn("swing_entry_quality", html)
+        self.assertIn("fmtStamp(row.created_at)", html)
+        self.assertIn("tradebookAge(row.created_at)", html)
+        self.assertIn(">Added</th>", html)
         self.assertIn("from Tradebook?", html)
         self.assertIn("Mark as sold", html)
-        self.assertIn("Price unavailable", html)
-        self.assertIn("viewAnalysis", html)
         method = html.split("viewAnalysis(ticker)", 1)[1][:800]
         self.assertIn("this.run()", method)
         refresh = html.split("async refreshTradebookPrices()", 1)[1][:1200]
         self.assertNotIn("/api/analyse", refresh)
         self.assertIn("/api/tradebook/refresh-prices", refresh)
+        qty = html.split("async setTradebookQuantity", 1)[1][:900]
+        self.assertNotIn("/api/analyse", qty)
 
 
 class TradebookPricesAndCloseTest(unittest.TestCase):
@@ -454,6 +467,117 @@ class TradebookPricesAndCloseTest(unittest.TestCase):
             out = fetch_last_prices(["WABAG", "WABAG"])
         last.assert_called_once_with(["WABAG"])
         self.assertEqual(out["WABAG"], 2215.3)
+
+
+class TradebookQuantityAndPnlTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.env = patch.dict(os.environ, {"FINLENS_DATA_DIR": self.tmp.name})
+        self.env.start()
+        self.analyse_patch = patch("app.analysis.analyse")
+        self.analyse = self.analyse_patch.start()
+        self.client = TestClient(app)
+
+    def tearDown(self):
+        self.analyse_patch.stop()
+        self.env.stop()
+        self.tmp.cleanup()
+
+    def _create(self, **overrides):
+        return self.client.post("/api/tradebook", json=_analysis(**overrides)).json()
+
+    def test_quantity_defaults_to_one_and_scales_pnl(self):
+        created = self._create()
+        self.assertEqual(created["quantity"], 1)
+        with patch("app.main.fetch_last_prices", return_value={"WABAG": 2215.30}):
+            row = self.client.post("/api/tradebook/refresh-prices").json()["snapshots"][0]
+        self.assertEqual(row["snapshot_price"], 2127.9)
+        self.assertAlmostEqual(row["invested"], 2127.9, places=2)
+        self.assertAlmostEqual(row["current_value"], 2215.3, places=2)
+        updated = self.client.patch(
+            f"/api/tradebook/{created['id']}/quantity", json={"quantity": 10},
+        )
+        self.assertEqual(updated.status_code, 200, updated.text)
+        body = updated.json()
+        self.assertEqual(body["quantity"], 10)
+        self.assertEqual(body["snapshot_price"], 2127.9)
+        self.assertEqual(body["current_price"], 2215.3)
+        self.assertEqual(body["swing_verdict"], "Buy")
+        self.assertEqual(body["overall_verdict"], "Hold")
+        self.assertEqual(body["long_verdict"], "Hold")
+        self.assertAlmostEqual(body["invested"], 21279.0, places=2)
+        self.assertAlmostEqual(body["current_value"], 22153.0, places=2)
+        self.assertAlmostEqual(body["pnl"], 874.0, places=2)
+        self.assertAlmostEqual(body["pnl_pct"], 4.11, places=2)
+        stored = self.client.get(f"/api/tradebook/{created['id']}").json()
+        self.assertEqual(stored["quantity"], 10)
+        self.assertEqual(stored["snapshot_price"], 2127.9)
+        listing = self.client.get("/api/tradebook").json()
+        self.assertAlmostEqual(listing["summary"]["invested"], 21279.0, places=2)
+        self.assertAlmostEqual(listing["summary"]["current_value"], 22153.0, places=2)
+        self.assertAlmostEqual(listing["summary"]["pnl"], 874.0, places=2)
+        self.analyse.assert_not_called()
+
+    def test_invalid_quantity_is_rejected(self):
+        created = self._create()
+        for bad in (0, -3, 1.5, "abc", None):
+            res = self.client.patch(
+                f"/api/tradebook/{created['id']}/quantity", json={"quantity": bad},
+            )
+            self.assertEqual(res.status_code, 400, bad)
+        stored = self.client.get(f"/api/tradebook/{created['id']}").json()
+        self.assertEqual(stored["quantity"], 1)
+
+    def test_quantity_update_does_not_change_entry_signals(self):
+        created = self._create()
+        later = self.client.patch(
+            f"/api/tradebook/{created['id']}/quantity", json={"quantity": 4},
+        ).json()
+        self.assertEqual(later["overall_score"], 62.0)
+        self.assertEqual(later["swing_score"], 71.0)
+        self.assertEqual(later["swing_verdict"], "Buy")
+        self.assertEqual(later["long_score"], 58.0)
+        self.assertEqual(later["swing_regime"], "Healthy Pullback")
+        self.assertEqual(later["swing_trend"], "Bullish")
+        self.assertEqual(later["opportunity_category"], "Established Opportunity")
+        self.assertEqual(later["created_at"], created["created_at"])
+
+    def test_legacy_position_without_quantity_defaults_to_one(self):
+        import json
+        from pathlib import Path
+
+        created = self._create()
+        path = Path(self.tmp.name) / "tradebook" / f"{created['id']}.json"
+        raw = json.loads(path.read_text())
+        self.assertIn("quantity", raw)
+        del raw["quantity"]
+        del raw["swing_trend"]
+        path.write_text(json.dumps(raw))
+        stored = self.client.get(f"/api/tradebook/{created['id']}").json()
+        self.assertEqual(stored["quantity"], 1)
+        self.assertAlmostEqual(stored["invested"], 2127.9, places=2)
+        self.assertEqual(stored["snapshot_price"], 2127.9)
+        self.assertEqual(stored["swing_verdict"], "Buy")
+        self.assertEqual(stored["quant_evidence"]["trend"], "Bullish")
+
+    def test_entry_signals_survive_a_later_different_analysis(self):
+        first = self._create()
+        later = _analysis()
+        later["overall"] = {"score": 40.0, "verdict": "Reduce", "verdict_class": "reduce"}
+        later["horizons"] = deepcopy(later["horizons"])
+        later["horizons"]["swing"]["score"] = 35.0
+        later["horizons"]["swing"]["verdict"] = "Reduce"
+        later["horizons"]["long"]["score"] = 44.0
+        later["horizons"]["long"]["verdict"] = "Reduce"
+        later["ai"]["thesis"]["opportunity"]["category"] = "No Opportunity"
+        second = self.client.post("/api/tradebook", json=later).json()
+        stored = self.client.get(f"/api/tradebook/{first['id']}").json()
+        self.assertEqual(stored["overall_verdict"], "Hold")
+        self.assertEqual(stored["swing_verdict"], "Buy")
+        self.assertEqual(stored["long_verdict"], "Hold")
+        self.assertEqual(stored["opportunity_category"], "Established Opportunity")
+        self.assertEqual(second["overall_verdict"], "Reduce")
+        self.assertEqual(second["opportunity_category"], "No Opportunity")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,9 @@ from .store import (
     list_snapshots,
     save_snapshot,
     summarize,
+    update_quantity,
 )
+from .prices import parse_quantity
 
 __all__ = [
     "apply_current_prices",
@@ -18,7 +20,9 @@ __all__ = [
     "get_snapshot",
     "last_refreshed_at",
     "list_snapshots",
+    "parse_quantity",
     "save_snapshot",
     "snapshot_from_analysis",
     "summarize",
+    "update_quantity",
 ]

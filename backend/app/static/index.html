@@ -955,30 +955,11 @@ tailwind.config = {
       </div>
     </div>
     <div v-if="tradebookPriceMessage" class="text-[11px] text-muted">{{ tradebookPriceMessage }}</div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-      <div class="panel rounded-xl px-3 py-3">
-        <div class="text-[10px] text-faint uppercase">Recommendations</div>
-        <div class="text-lg font-mono mt-1">{{ tradebookSummary.total }}</div>
-      </div>
-      <div class="panel rounded-xl px-3 py-3">
-        <div class="text-[10px] text-faint uppercase">Swing Buys</div>
-        <div class="text-lg font-mono mt-1">{{ tradebookSummary.swing_buys }}</div>
-      </div>
-      <div class="panel rounded-xl px-3 py-3">
-        <div class="text-[10px] text-faint uppercase">Swing Holds</div>
-        <div class="text-lg font-mono mt-1">{{ tradebookSummary.swing_holds }}</div>
-      </div>
-      <div class="panel rounded-xl px-3 py-3">
-        <div class="text-[10px] text-faint uppercase">Swing Reduces</div>
-        <div class="text-lg font-mono mt-1">{{ tradebookSummary.swing_reduces }}</div>
-      </div>
-      <div class="panel rounded-xl px-3 py-3">
-        <div class="text-[10px] text-faint uppercase">AI Aligned</div>
-        <div class="text-lg font-mono mt-1">{{ tradebookSummary.ai_aligned }}</div>
-      </div>
-      <div class="panel rounded-xl px-3 py-3">
-        <div class="text-[10px] text-faint uppercase">AI Disagreed</div>
-        <div class="text-lg font-mono mt-1">{{ tradebookSummary.ai_disagreed }}</div>
+    <div class="panel rounded-xl px-3 py-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[12px]">
+      <div>Invested <span class="font-mono">₹{{ num(tradebookSummary.invested) }}</span></div>
+      <div>Value <span class="font-mono">₹{{ num(tradebookSummary.current_value) }}</span></div>
+      <div>P&amp;L <span class="font-mono" :class="pnlClass(tradebookSummary.pnl)">{{ fmtPnl(tradebookSummary.pnl) }}</span>
+        <span v-if="tradebookSummary.pnl_pct != null" class="font-mono" :class="pnlClass(tradebookSummary.pnl)"> ({{ fmtPnlPct(tradebookSummary.pnl_pct) }})</span>
       </div>
     </div>
     <div class="flex flex-wrap gap-2">
@@ -1005,50 +986,64 @@ tailwind.config = {
     <div v-if="!tradebookRows.length" class="panel rounded-2xl p-10 text-center text-sm text-muted">
       No recommendations recorded yet.
     </div>
-    <div v-else class="space-y-3">
-      <div v-for="row in tradebookRows" :key="row.id"
-           class="panel rounded-2xl p-4 cursor-pointer hover:border-muted transition"
-           v-on:click="openSnapshot(row.id)">
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-sm font-semibold truncate">{{ row.company_name || row.ticker }}</div>
-            <div class="text-[10px] font-mono text-blue-400">{{ row.ticker }}</div>
-            <div class="text-[10px] text-faint mt-0.5">{{ fmtStamp(row.created_at) }}</div>
-          </div>
-          <div class="flex flex-wrap gap-2" v-on:click.stop>
-            <button type="button" class="px-2 py-1 rounded-md border border-edge text-[11px] hover:text-fg"
-                    v-on:click="viewAnalysis(row.ticker)">View Analysis</button>
-            <button v-if="row.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px] hover:text-fg"
-                    v-on:click="askTradebookAction('remove', row)">Remove</button>
-            <button v-if="row.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px] hover:text-fg"
-                    v-on:click="askTradebookAction('sell', row)">Sell</button>
-          </div>
-        </div>
-        <div class="grid sm:grid-cols-3 gap-3 mt-3 text-[11px]">
-          <div>
-            <div class="text-[10px] uppercase text-faint">Recommended</div>
-            <div class="font-mono">₹{{ num(row.snapshot_price) }}</div>
-          </div>
-          <div>
-            <div class="text-[10px] uppercase text-faint">Current</div>
-            <div class="font-mono">{{ row.current_price == null ? 'Price unavailable' : ('₹' + num(row.current_price)) }}</div>
-          </div>
-          <div>
-            <div class="text-[10px] uppercase text-faint">Change since recommendation</div>
-            <div class="font-mono" :class="row.percentage_change == null ? 'text-muted' : (row.percentage_change >= 0 ? 'text-emerald-400' : 'text-red-400')">
-              {{ fmtPriceChange(row) }}
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-1.5 mt-3 items-center">
-          <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(row.swing_verdict))">{{ row.swing_verdict || '—' }} {{ row.swing_score != null ? row.swing_score : '' }}</span>
-          <span class="text-[11px] text-muted">{{ row.ai_available ? ((row.ai_swing_verdict || '—') + (row.ai_agreement ? ' · ' + row.ai_agreement : '')) : '—' }}</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(row.long_verdict))">{{ row.long_verdict || '—' }} {{ row.long_score != null ? row.long_score : '' }}</span>
-          <span class="text-[11px] text-muted truncate">{{ row.opportunity_category || '—' }}</span>
-          <span class="text-[11px] text-muted">{{ row.swing_regime || '—' }} · {{ row.swing_entry_quality || '—' }}</span>
-          <span v-if="row.is_active === false" class="text-[10px] text-faint">{{ row.removal_reason === 'sold' ? 'Sold' : 'Removed' }}</span>
-        </div>
-      </div>
+    <div v-else class="panel rounded-xl overflow-x-auto">
+      <table class="w-full text-left min-w-[58rem]">
+        <thead class="text-[10px] uppercase tracking-wider text-faint border-b border-edge">
+          <tr>
+            <th class="px-3 py-2 font-medium">Company</th>
+            <th class="px-2 py-2 font-medium whitespace-nowrap">Added</th>
+            <th class="px-2 py-2 font-medium text-right">Quantity</th>
+            <th class="px-2 py-2 font-medium text-right">Entry Price</th>
+            <th class="px-2 py-2 font-medium text-right">Current Price</th>
+            <th class="px-2 py-2 font-medium text-right">Invested</th>
+            <th class="px-2 py-2 font-medium text-right">Current Value</th>
+            <th class="px-2 py-2 font-medium text-right">P&amp;L</th>
+            <th class="px-2 py-2 font-medium text-right"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in tradebookRows" :key="row.id"
+              class="border-t border-edge/70 cursor-pointer hover:bg-inset/60"
+              v-on:click="viewAnalysis(row.ticker)">
+            <td class="px-3 py-1.5">
+              <div class="text-[12px] font-medium leading-tight whitespace-nowrap">
+                {{ row.company_name || row.ticker }}
+                <span class="font-mono text-[10px] text-faint ml-1.5">{{ row.ticker }}</span>
+              </div>
+              <div class="text-[10px] text-muted mt-0.5 leading-tight">{{ tradebookEntryLine(row) }}</div>
+            </td>
+            <td class="px-2 py-1.5 align-top whitespace-nowrap">
+              <div class="text-[12px] font-mono leading-tight">{{ fmtStamp(row.created_at) }}</div>
+              <div v-if="tradebookAge(row.created_at)" class="text-[10px] text-faint">{{ tradebookAge(row.created_at) }}</div>
+            </td>
+            <td class="px-2 py-1.5 align-top text-right" v-on:click.stop>
+              <div class="inline-flex items-center gap-1 justify-end">
+                <button type="button" class="w-5 h-5 rounded border border-edge text-[11px] leading-none"
+                        :disabled="row.is_active === false" v-on:click="nudgeTradebookQuantity(row, -1)">−</button>
+                <input type="text" inputmode="numeric" class="w-10 bg-inset border border-edge rounded px-1 py-0.5 text-[11px] font-mono text-right outline-none"
+                       :value="row.quantity" :disabled="row.is_active === false"
+                       v-on:change="commitTradebookQuantity(row, $event.target.value)">
+                <button type="button" class="w-5 h-5 rounded border border-edge text-[11px] leading-none"
+                        :disabled="row.is_active === false" v-on:click="nudgeTradebookQuantity(row, 1)">+</button>
+              </div>
+            </td>
+            <td class="px-2 py-1.5 align-top text-right text-[12px] font-mono whitespace-nowrap">₹{{ num(row.snapshot_price) }}</td>
+            <td class="px-2 py-1.5 align-top text-right text-[12px] font-mono whitespace-nowrap">{{ row.current_price == null ? '—' : ('₹' + num(row.current_price)) }}</td>
+            <td class="px-2 py-1.5 align-top text-right text-[12px] font-mono whitespace-nowrap">{{ row.invested == null ? '—' : ('₹' + num(row.invested)) }}</td>
+            <td class="px-2 py-1.5 align-top text-right text-[12px] font-mono whitespace-nowrap">{{ row.current_value == null ? '—' : ('₹' + num(row.current_value)) }}</td>
+            <td class="px-2 py-1.5 align-top text-right text-[12px] font-mono whitespace-nowrap" :class="pnlClass(row.pnl)">
+              <div>{{ fmtPnl(row.pnl) }}</div>
+              <div v-if="row.pnl_pct != null" class="text-[10px]">{{ fmtPnlPct(row.pnl_pct) }}</div>
+            </td>
+            <td class="px-2 py-1.5 align-top text-right whitespace-nowrap" v-on:click.stop>
+              <button v-if="row.is_active !== false" type="button"
+                      class="px-2 py-1 rounded-md border text-[11px] font-semibold text-red-500 border-red-500/40 hover:bg-red-500/10"
+                      v-on:click="askTradebookAction('sell', row)">Sell</button>
+              <span v-else class="text-[10px] text-faint">{{ row.removal_reason === 'sold' ? 'Sold' : 'Removed' }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -1057,15 +1052,13 @@ tailwind.config = {
     <div class="flex flex-wrap items-center justify-between gap-3">
       <button type="button" class="text-[11px] text-muted hover:text-fg" v-on:click="openTradebook()">← Tradebook</button>
       <div class="flex flex-wrap gap-2">
-        <button type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]" v-on:click="viewAnalysis(snapshot.ticker)">View Analysis</button>
-        <button v-if="snapshot.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]" v-on:click="askTradebookAction('remove', snapshot)">Remove</button>
-        <button v-if="snapshot.is_active !== false" type="button" class="px-2 py-1 rounded-md border border-edge text-[11px]" v-on:click="askTradebookAction('sell', snapshot)">Sell</button>
+        <button v-if="snapshot.is_active !== false" type="button" class="px-2 py-1 rounded-md border text-[11px] font-semibold text-red-500 border-red-500/40 hover:bg-red-500/10" v-on:click="askTradebookAction('sell', snapshot)">Sell</button>
       </div>
     </div>
     <div class="panel rounded-2xl p-6">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div class="text-2xl font-bold tracking-tight">{{ snapshot.company_name }}</div>
+          <div class="text-2xl font-bold tracking-tight cursor-pointer hover:text-blue-400" v-on:click="viewAnalysis(snapshot.ticker)">{{ snapshot.company_name }}</div>
           <div class="text-xs font-mono text-blue-400 mt-1">{{ snapshot.ticker }} · {{ snapshot.exchange || '—' }}</div>
           <div class="text-[11px] text-muted mt-1">{{ fmtStamp(snapshot.created_at) }}</div>
           <div v-if="snapshot.is_active === false" class="text-[11px] text-faint mt-1">{{ snapshot.removal_reason === 'sold' ? 'Sold' : 'Removed' }}</div>
@@ -1151,7 +1144,9 @@ tailwind.config = {
       <p class="text-[12px] text-muted leading-relaxed mb-4">{{ tradebookConfirm.body }}</p>
       <div class="flex justify-end gap-2">
         <button type="button" class="px-3 py-1.5 rounded-md border border-edge text-[11px]" v-on:click="tradebookConfirm = null">Cancel</button>
-        <button type="button" class="cta rounded-md px-3 py-1.5 text-[11px] font-semibold border border-edge" v-on:click="confirmTradebookAction()">{{ tradebookConfirm.ok }}</button>
+        <button type="button"
+                :class="tradebookConfirm.kind === 'sell' ? 'rounded-md px-3 py-1.5 text-[11px] font-semibold text-red-500 border border-red-500/40 hover:bg-red-500/10' : 'cta rounded-md px-3 py-1.5 text-[11px] font-semibold border border-edge'"
+                v-on:click="confirmTradebookAction()">{{ tradebookConfirm.ok }}</button>
       </div>
     </div>
   </div>
@@ -1448,7 +1443,7 @@ createApp({
       niftySortKey: 'overall', niftySortDesc: true, niftyToken: 0, niftyAsOf: null,
       niftyIndex: 'NIFTY50',
       tradebookSaving: false, tradebookMessage: '',
-      tradebookRows: [], tradebookSummary: { total: 0, swing_buys: 0, swing_holds: 0, swing_reduces: 0, ai_aligned: 0, ai_disagreed: 0 },
+      tradebookRows: [], tradebookSummary: { total: 0, swing_buys: 0, swing_holds: 0, swing_reduces: 0, ai_aligned: 0, ai_disagreed: 0, invested: 0, current_value: 0, pnl: 0, pnl_pct: null },
       tradebookFilterQ: '', tradebookFilterSwing: '', tradebookFilterAgreement: '',
       tradebookRefreshing: false, tradebookLastRefreshed: null, tradebookPriceMessage: '',
       tradebookShowHistory: false, tradebookConfirm: null,
@@ -1840,6 +1835,81 @@ createApp({
       this.tradebookConfirm = null;
       this.run();
     },
+    async setTradebookQuantity(row, raw) {
+      if (!row || !row.id) return;
+      const qty = parseInt(String(raw).trim(), 10);
+      if (!Number.isFinite(qty) || qty < 1) {
+        await this.loadTradebook();
+        return;
+      }
+      try {
+        const res = await fetch('/api/tradebook/' + encodeURIComponent(row.id) + '/quantity', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: qty }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Quantity update failed');
+        await this.loadTradebook();
+      } catch (e) {
+        this.tradebookPriceMessage = e.message;
+        await this.loadTradebook();
+      }
+    },
+    nudgeTradebookQuantity(row, delta) {
+      const next = Math.max(1, (Number(row.quantity) || 1) + delta);
+      return this.setTradebookQuantity(row, next);
+    },
+    commitTradebookQuantity(row, value) {
+      return this.setTradebookQuantity(row, value);
+    },
+    tradebookScoreLabel(verdict, score, prefix) {
+      if (!verdict && (score == null || score === '')) return '';
+      const n = score == null ? '' : (Number.isInteger(Number(score)) ? String(Number(score)) : Number(score).toFixed(1));
+      return [prefix, verdict, n].filter(v => v !== '' && v != null).join(' ').trim();
+    },
+    tradebookTrendLabel(row) {
+      const t = (row && (row.swing_trend || (row.quant_evidence && row.quant_evidence.trend))) || '';
+      if (!t) return '';
+      return /trend/i.test(t) ? t : (t + ' Trend');
+    },
+    tradebookEntryLine(row) {
+      const qe = (row && row.quant_evidence) || {};
+      const parts = [
+        this.tradebookScoreLabel(row.overall_verdict, row.overall_score, ''),
+        this.tradebookScoreLabel(row.swing_verdict, row.swing_score, 'Swing'),
+        this.tradebookScoreLabel(row.long_verdict, row.long_score, 'Long'),
+        this.tradebookTrendLabel(row),
+        row.swing_regime || qe.regime || '',
+        row.swing_entry_quality || qe.entry_quality || qe.setup || '',
+        row.opportunity_category || '',
+      ];
+      const seen = new Set();
+      const out = [];
+      for (const raw of parts) {
+        const s = String(raw || '').trim();
+        if (!s) continue;
+        const key = s.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(s);
+      }
+      return out.join(' · ');
+    },
+    pnlClass(v) {
+      if (v == null) return 'text-muted';
+      return Number(v) >= 0 ? 'text-emerald-400' : 'text-red-400';
+    },
+    fmtPnl(v) {
+      if (v == null) return '—';
+      const sign = v > 0 ? '+' : (v < 0 ? '−' : '');
+      return sign + '₹' + this.num(Math.abs(v));
+    },
+    fmtPnlPct(v) {
+      if (v == null) return '';
+      const sign = v > 0 ? '+' : (v < 0 ? '−' : '');
+      return sign + Math.abs(Number(v)).toFixed(2) + '%';
+    },
     askTradebookAction(kind, row) {
       const ticker = row.ticker || 'this stock';
       if (kind === 'sell') {
@@ -1920,6 +1990,17 @@ createApp({
       const d = new Date(iso);
       if (Number.isNaN(d.getTime())) return iso;
       return d.toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    },
+    tradebookAge(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return '';
+      const days = Math.max(0, Math.floor((Date.now() - d.getTime()) / 86400000));
+      if (days < 1) return 'today';
+      if (days === 1) return '1d';
+      if (days < 30) return days + 'd';
+      const months = Math.floor(days / 30);
+      return months + 'm';
     },
     async run() {
       const q = this.query.trim();
