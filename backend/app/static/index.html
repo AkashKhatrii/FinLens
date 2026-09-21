@@ -67,12 +67,15 @@ tailwind.config = {
     --lift: 9px 9px 18px var(--neu-lo), -9px -9px 18px var(--neu-hi);
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body {
     font-family: 'Inter', sans-serif;
     background: rgb(var(--ink));
     color: rgb(var(--fg));
+    overflow-x: hidden;
+    max-width: 100%;
   }
+  #app { min-width: 0; overflow-x: hidden; }
   html, body, header, .panel, .ticker-drop, .term-pop, .glossary-sheet,
   input, button, .theme-toggle, .bg-inset {
     transition: background-color .22s ease, border-color .22s ease, color .18s ease, box-shadow .22s ease;
@@ -87,7 +90,6 @@ tailwind.config = {
     will-change: transform, opacity; backface-visibility: hidden;
   }
 
-  .letter-pullup { display: inline-flex; }
   .letter-pullup span { display: inline-block; opacity: 0; transform: translateY(100%); animation: pullUp .55s cubic-bezier(.22,1,.36,1) forwards; }
   @keyframes pullUp { to { opacity: 1; transform: translateY(0); } }
 
@@ -95,6 +97,10 @@ tailwind.config = {
   .morph .item { position: absolute; inset: 0; opacity: 0; transform: translateY(8px);
     transition: opacity .6s ease, transform .6s ease; white-space: nowrap; }
   .morph .item.active { opacity: 1; transform: translateY(0); }
+  @media (max-width: 639px) {
+    .morph { height: 3.1rem; }
+    .morph .item { white-space: normal; line-height: 1.35; }
+  }
 
   .halo { position: relative; border-radius: .75rem; }
   .halo input {
@@ -249,6 +255,11 @@ tailwind.config = {
     box-shadow: var(--neu-in);
     background: rgb(var(--panel));
   }
+
+  .table-scroll { -webkit-overflow-scrolling: touch; }
+  @media (max-width: 767px) {
+    .theme-toggle { width: 1.85rem; height: 1.85rem; }
+  }
 </style>
 </head>
 <body class="text-fg antialiased">
@@ -257,41 +268,41 @@ tailwind.config = {
 
   <!-- ============ HEADER ============ -->
   <header class="border-b border-edge sticky top-0 z-30 bg-ink">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
-      <div class="flex items-center gap-3 shrink-0">
-        <button type="button" class="flex items-center gap-3" v-on:click="openHome()">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:h-16 sm:py-0 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <button type="button" class="flex items-center gap-2 sm:gap-3" v-on:click="openHome()">
           <div class="w-8 h-8 rounded-lg bg-blue-600 grid place-items-center text-sm font-bold text-white">F</div>
-          <span class="text-[17px] font-semibold tracking-tight letter-pullup">
+          <span class="hidden sm:inline-flex text-[17px] font-semibold tracking-tight letter-pullup">
             <span v-for="(ch,i) in 'FinLens'" :key="i" :style="{ animationDelay: (i*0.05)+'s' }"
                   :class="i>=3 ? 'text-blue-400 font-normal' : ''">{{ ch }}</span>
           </span>
         </button>
-        <span class="hidden sm:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-muted">NSE / BSE</span>
+        <span class="hidden md:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-muted">NSE / BSE</span>
       </div>
 
-      <!-- compact search once results are shown -->
-      <form v-if="view === 'analyse' && result" class="flex-1 max-w-md" v-on:submit.prevent="run()">
+      <!-- compact search once results are shown: full width under the nav on phones -->
+      <form v-if="view === 'analyse' && result" class="order-last w-full sm:order-none sm:flex-1 sm:max-w-md min-w-0" v-on:submit.prevent="run()">
         <ticker-search v-model="query" placeholder="Analyse another company…" compact
                        @submit="run()" @pick="pickTicker"></ticker-search>
       </form>
 
-      <div class="flex items-center gap-3 text-[11px] text-muted shrink-0">
-        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+      <div class="flex items-center gap-1.5 sm:gap-3 text-[11px] text-muted ml-auto shrink-0">
+        <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 :class="view === 'nifty' ? 'tab-on' : ''"
                 v-on:click="openNifty50()">Nifty</button>
-        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+        <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 :class="(view === 'tradebook' || view === 'snapshot') ? 'tab-on' : ''"
                 v-on:click="openTradebook()">Tradebook</button>
-        <button type="button" class="px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+        <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 v-on:click="glossaryOpen = true">Terms</button>
-        <label class="hidden sm:flex items-center gap-2">
+        <label class="flex items-center gap-2">
           <select v-model="aiProvider" aria-label="AI provider"
-                  class="bg-inset border border-edge rounded-md px-2 py-1 text-[11px] text-fg outline-none">
+                  class="bg-inset border border-edge rounded-md px-1.5 sm:px-2 py-1 text-[11px] text-fg outline-none max-w-[6.75rem] sm:max-w-none">
             <option v-for="p in aiProviders" :key="p.key" :value="p.key" :disabled="!p.available">
               {{ p.label }}{{ p.available ? '' : ' (no key)' }}
             </option>
           </select>
-          <span class="flex items-center gap-1.5">
+          <span class="hidden sm:flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full" :class="aiReady ? 'bg-emerald-400' : 'bg-amber-400'"></span>
             {{ aiReady ? 'ready' : 'no key' }}
           </span>
@@ -312,12 +323,12 @@ tailwind.config = {
   </header>
 
   <!-- ============ HERO / SEARCH ============ -->
-  <section v-if="view === 'analyse' && !result && !loading && !error" class="max-w-3xl mx-auto px-6 pt-24 pb-16 text-center">
-    <h1 class="text-5xl font-bold tracking-tight mb-5 leading-tight">
+  <section v-if="view === 'analyse' && !result && !loading && !error" class="max-w-3xl mx-auto px-4 sm:px-6 pt-12 sm:pt-24 pb-16 text-center">
+    <h1 class="text-[1.75rem] sm:text-5xl font-bold tracking-tight mb-4 sm:mb-5 leading-tight">
       Know what a stock is<br>
       <span class="text-blue-400">actually worth</span>
     </h1>
-    <div class="morph text-muted text-base mb-12">
+    <div class="morph text-muted text-sm sm:text-base mb-8 sm:mb-12">
       <span v-for="(t,i) in taglines" :key="i" class="item" :class="{active: morphIndex===i}">{{ t }}</span>
     </div>
 
@@ -335,7 +346,7 @@ tailwind.config = {
               class="text-xs px-3 py-1.5 rounded-full border border-edge text-muted hover:text-fg hover:border-muted transition">{{ s }}</button>
     </div>
 
-    <div class="grid grid-cols-3 gap-4 mt-16 text-left">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-10 sm:mt-16 text-left">
       <div v-for="f in features" :key="f.t" class="panel rounded-xl p-4">
         <div class="text-xs font-semibold text-blue-400 mb-1.5">{{ f.t }}</div>
         <div class="text-xs text-muted leading-relaxed">{{ f.d }}</div>
@@ -346,7 +357,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ LOADING ============ -->
-  <section v-if="view === 'analyse' && loading" class="max-w-7xl mx-auto px-6 py-16">
+  <section v-if="view === 'analyse' && loading" class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
     <div class="text-center mb-10">
       <div class="text-sm text-muted mb-2">{{ loadingStep }}</div>
       <div class="w-56 h-0.5 bg-edge rounded-full mx-auto overflow-hidden">
@@ -360,7 +371,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ ERROR ============ -->
-  <section v-if="view === 'analyse' && error" class="max-w-xl mx-auto px-6 py-20 text-center">
+  <section v-if="view === 'analyse' && error" class="max-w-xl mx-auto px-4 sm:px-6 py-20 text-center">
     <div class="panel rounded-xl p-7" :class="didYouMean.length ? 'border-amber-900/50' : 'border-red-900/50'">
       <div class="font-semibold mb-2" :class="didYouMean.length ? 'text-amber-400' : 'text-red-400'">
         {{ didYouMean.length ? 'Did you mean…' : "Couldn't analyse that" }}
@@ -378,14 +389,14 @@ tailwind.config = {
   </section>
 
   <!-- ============ RESULTS ============ -->
-  <main v-if="view === 'analyse' && result" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
+  <main v-if="view === 'analyse' && result" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
 
     <!-- Company header -->
-    <div class="rise panel rounded-2xl p-6" style="animation-delay:.02s">
-      <div class="flex flex-wrap items-start justify-between gap-6">
+    <div class="rise panel rounded-2xl p-4 sm:p-6" style="animation-delay:.02s">
+      <div class="flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4 sm:gap-6">
         <div class="min-w-0">
           <div class="flex items-center gap-2.5 mb-1.5 flex-wrap">
-            <h2 class="text-2xl font-bold tracking-tight">{{ result.company.name }}</h2>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight break-words">{{ result.company.name }}</h2>
             <span class="text-xs font-mono px-2 py-0.5 rounded bg-inset border border-edge text-muted">{{ result.symbol }}</span>
           </div>
           <div class="text-xs text-muted">
@@ -393,8 +404,8 @@ tailwind.config = {
             <span v-if="result.company.market_cap_cr"> · ₹{{ fmtCr(result.company.market_cap_cr) }} Cr <term-tip id="mcap" label="mcap"></term-tip></span>
           </div>
         </div>
-        <div class="text-right shrink-0">
-          <div class="text-3xl font-semibold font-mono">₹{{ num(result.price.last) }}</div>
+        <div class="text-left sm:text-right w-full sm:w-auto sm:shrink-0">
+          <div class="text-2xl sm:text-3xl font-semibold font-mono">₹{{ num(result.price.last) }}</div>
           <div class="text-sm font-medium" :class="result.price.day_change_pct >= 0 ? 'text-emerald-400' : 'text-red-400'">
             {{ result.price.day_change_pct >= 0 ? '▲' : '▼' }} {{ num(Math.abs(result.price.day_change_pct)) }}%
           </div>
@@ -854,10 +865,10 @@ tailwind.config = {
   </main>
 
   <!-- ============ NIFTY QUANT ============ -->
-  <section v-if="view === 'nifty'" class="max-w-7xl mx-auto px-6 py-6 space-y-4">
+  <section v-if="view === 'nifty'" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-4 min-w-0">
     <div class="flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <h1 class="text-2xl font-semibold tracking-tight">{{ niftyIndexName }} Quant</h1>
+      <div class="min-w-0">
+        <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">{{ niftyIndexName }} Quant</h1>
         <div class="text-[11px] text-muted mt-1">
           <span v-if="niftyLowestN">50 lowest Overall scores from the current Nifty 500 universe.</span>
           <span v-else>{{ niftyRows.length || niftyExpected }} current constituents · Quantitative analysis only</span>
@@ -888,8 +899,8 @@ tailwind.config = {
       </div>
     </div>
     <div v-if="niftyError" class="text-xs text-amber-400">{{ niftyError }}</div>
-    <div class="panel rounded-xl overflow-auto" style="max-height: calc(100vh - 13rem)">
-      <table class="w-full text-left">
+    <div class="panel rounded-xl overflow-auto table-scroll" style="max-height: calc(100vh - 14rem)">
+      <table class="w-full text-left min-w-[28rem]">
         <thead class="text-[10px] uppercase tracking-wider text-faint border-b border-edge bg-panel sticky top-0 z-10">
           <tr>
             <th class="px-3 py-2 font-medium">Company</th>
@@ -908,10 +919,10 @@ tailwind.config = {
         <tbody>
           <tr v-for="row in niftySortedRows" :key="row.symbol" class="border-t border-edge/70">
             <td class="px-3 py-1">
-              <button type="button" class="text-left hover:text-blue-400 flex items-baseline gap-2 max-w-md"
+              <button type="button" class="text-left hover:text-blue-400 flex items-baseline gap-2 max-w-md min-w-0"
                       v-on:click="viewNiftyStock(row.symbol)">
                 <span class="text-[12px] font-medium font-mono shrink-0">{{ row.symbol }}</span>
-                <span class="text-[11px] text-muted truncate">{{ row.name }}</span>
+                <span class="text-[11px] text-muted truncate hidden sm:inline">{{ row.name }}</span>
               </button>
             </td>
             <td class="px-3 py-1 text-right text-[12px] font-mono whitespace-nowrap">{{ niftyPrice(row) }}</td>
@@ -931,10 +942,10 @@ tailwind.config = {
   </section>
 
   <!-- ============ TRADEBOOK LIST ============ -->
-  <section v-if="view === 'tradebook'" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
+  <section v-if="view === 'tradebook'" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
-        <div class="text-2xl font-bold tracking-tight">Tradebook</div>
+        <div class="text-xl sm:text-2xl font-bold tracking-tight">Tradebook</div>
         <div class="text-[12px] text-muted mt-0.5">Recommendation Journal</div>
         <div v-if="tradebookLastRefreshed" class="text-[10px] text-faint mt-1">
           Last refreshed: {{ fmtStampTime(tradebookLastRefreshed) }}
@@ -964,7 +975,7 @@ tailwind.config = {
     </div>
     <div class="flex flex-wrap gap-2">
       <input v-model="tradebookFilterQ" type="search" placeholder="Ticker or company"
-             class="bg-inset border border-edge rounded-lg px-3 py-2 text-xs outline-none placeholder-faint"
+             class="bg-inset border border-edge rounded-lg px-3 py-2 text-xs outline-none placeholder-faint w-full sm:w-auto min-w-0 sm:min-w-[12rem]"
              v-on:input="loadTradebook()">
       <select v-model="tradebookFilterSwing" class="bg-inset border border-edge rounded-lg px-2 py-2 text-xs outline-none"
               v-on:change="loadTradebook()">
@@ -986,7 +997,54 @@ tailwind.config = {
     <div v-if="!tradebookRows.length" class="panel rounded-2xl p-10 text-center text-sm text-muted">
       No recommendations recorded yet.
     </div>
-    <div v-else class="panel rounded-xl overflow-x-auto">
+    <template v-else>
+      <div class="md:hidden space-y-2">
+        <div v-for="row in tradebookRows" :key="'m-'+row.id"
+             class="panel rounded-xl p-3 cursor-pointer"
+             v-on:click="viewAnalysis(row.ticker)">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-[13px] font-medium leading-tight truncate">{{ row.company_name || row.ticker }}</div>
+              <div class="text-[10px] font-mono text-faint mt-0.5">
+                {{ row.ticker }} · {{ fmtStamp(row.created_at) }}
+                <span v-if="tradebookAge(row.created_at)"> · {{ tradebookAge(row.created_at) }}</span>
+              </div>
+            </div>
+            <div class="shrink-0" v-on:click.stop>
+              <button v-if="row.is_active !== false" type="button"
+                      class="px-2 py-1 rounded-md border text-[11px] font-semibold text-red-500 border-red-500/40 hover:bg-red-500/10"
+                      v-on:click="askTradebookAction('sell', row)">Sell</button>
+              <span v-else class="text-[10px] text-faint">{{ row.removal_reason === 'sold' ? 'Sold' : 'Removed' }}</span>
+            </div>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between gap-2">
+            <div class="text-[12px] font-mono">
+              ₹{{ num(row.snapshot_price) }} → {{ row.current_price == null ? '—' : ('₹' + num(row.current_price)) }}
+            </div>
+            <div class="text-[12px] font-mono text-right" :class="pnlClass(row.pnl)">
+              {{ fmtPnl(row.pnl) }}
+              <span v-if="row.pnl_pct != null"> ({{ fmtPnlPct(row.pnl_pct) }})</span>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between gap-2" v-on:click.stop>
+            <div class="inline-flex items-center gap-1">
+              <button type="button" class="w-6 h-6 rounded border border-edge text-[11px] leading-none"
+                      :disabled="row.is_active === false" v-on:click="nudgeTradebookQuantity(row, -1)">−</button>
+              <input type="text" inputmode="numeric" class="w-10 bg-inset border border-edge rounded px-1 py-0.5 text-[11px] font-mono text-right outline-none"
+                     :value="row.quantity" :disabled="row.is_active === false"
+                     v-on:change="commitTradebookQuantity(row, $event.target.value)">
+              <button type="button" class="w-6 h-6 rounded border border-edge text-[11px] leading-none"
+                      :disabled="row.is_active === false" v-on:click="nudgeTradebookQuantity(row, 1)">+</button>
+            </div>
+            <div class="text-[11px] font-mono text-muted">
+              Inv {{ row.invested == null ? '—' : ('₹' + num(row.invested)) }}
+              · Val {{ row.current_value == null ? '—' : ('₹' + num(row.current_value)) }}
+            </div>
+          </div>
+          <div class="text-[10px] text-muted mt-1.5 leading-tight">{{ tradebookEntryLine(row) }}</div>
+        </div>
+      </div>
+      <div class="hidden md:block panel rounded-xl overflow-x-auto table-scroll">
       <table class="w-full text-left min-w-[58rem]">
         <thead class="text-[10px] uppercase tracking-wider text-faint border-b border-edge">
           <tr>
@@ -1044,26 +1102,27 @@ tailwind.config = {
           </tr>
         </tbody>
       </table>
-    </div>
+      </div>
+    </template>
   </section>
 
   <!-- ============ TRADEBOOK DETAIL ============ -->
-  <section v-if="view === 'snapshot' && snapshot" class="max-w-7xl mx-auto px-6 py-8 space-y-5">
+  <section v-if="view === 'snapshot' && snapshot" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <button type="button" class="text-[11px] text-muted hover:text-fg" v-on:click="openTradebook()">← Tradebook</button>
       <div class="flex flex-wrap gap-2">
         <button v-if="snapshot.is_active !== false" type="button" class="px-2 py-1 rounded-md border text-[11px] font-semibold text-red-500 border-red-500/40 hover:bg-red-500/10" v-on:click="askTradebookAction('sell', snapshot)">Sell</button>
       </div>
     </div>
-    <div class="panel rounded-2xl p-6">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div class="text-2xl font-bold tracking-tight cursor-pointer hover:text-blue-400" v-on:click="viewAnalysis(snapshot.ticker)">{{ snapshot.company_name }}</div>
+    <div class="panel rounded-2xl p-4 sm:p-6">
+      <div class="flex flex-col sm:flex-row sm:flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+          <div class="text-xl sm:text-2xl font-bold tracking-tight cursor-pointer hover:text-blue-400 break-words" v-on:click="viewAnalysis(snapshot.ticker)">{{ snapshot.company_name }}</div>
           <div class="text-xs font-mono text-blue-400 mt-1">{{ snapshot.ticker }} · {{ snapshot.exchange || '—' }}</div>
           <div class="text-[11px] text-muted mt-1">{{ fmtStamp(snapshot.created_at) }}</div>
           <div v-if="snapshot.is_active === false" class="text-[11px] text-faint mt-1">{{ snapshot.removal_reason === 'sold' ? 'Sold' : 'Removed' }}</div>
         </div>
-        <div class="text-right space-y-2">
+        <div class="text-left sm:text-right space-y-2 w-full sm:w-auto">
           <div>
             <div class="text-[10px] uppercase text-faint">Price at recommendation</div>
             <div class="text-2xl font-mono">₹{{ num(snapshot.snapshot_price) }}</div>
@@ -1151,9 +1210,9 @@ tailwind.config = {
     </div>
   </div>
 
-  <div v-if="glossaryOpen" class="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-20 pb-8 glossary-scrim"
+  <div v-if="glossaryOpen" class="fixed inset-0 z-[70] flex items-start justify-center px-3 sm:px-4 pt-12 sm:pt-20 pb-8 glossary-scrim"
        v-on:click.self="glossaryOpen = false">
-    <div class="rounded-2xl w-full max-w-2xl max-h-[min(80vh,40rem)] overflow-hidden flex flex-col border border-edge glossary-sheet">
+    <div class="rounded-2xl w-full max-w-2xl max-h-[min(85vh,40rem)] overflow-hidden flex flex-col border border-edge glossary-sheet">
       <div class="flex items-center gap-3 px-4 py-3 border-b border-edge">
         <input v-model="glossaryQuery" type="search" placeholder="Search terms — P/E, ROCE, RSI…"
                class="flex-1 bg-inset rounded-lg px-3 py-2 text-sm outline-none placeholder-faint border border-edge"
