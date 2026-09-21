@@ -1,0 +1,30 @@
+# Render Blueprint. Connect the GitHub repo, then apply this in the dashboard
+# (New + Blueprint) or create a Web Service with the same commands.
+# Persistent disk requires a paid instance. Free web services sleep and lose files.
+services:
+  - type: web
+    name: finlens
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: bash -lc "cd backend && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: FINLENS_PROVIDER
+        value: deepseek
+      - key: FINLENS_DATA_DIR
+        value: /var/data
+      - key: FINLENS_CACHE_DIR
+        value: /var/data/cache
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: FINLENS_PASSWORD
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+    disk:
+      name: finlens-data
+      mountPath: /var/data
+      sizeGB: 1

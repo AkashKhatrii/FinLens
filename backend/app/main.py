@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, Query, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
+from .access import PasswordGateMiddleware
 from . import cache
 from .analysis import UnknownSymbol, analyse, resolve
 from .ai import analyst
@@ -48,6 +49,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(PasswordGateMiddleware)
 
 
 def jsonable(obj: Any) -> Any:

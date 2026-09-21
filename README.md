@@ -152,6 +152,45 @@ backend/app/
 
 ---
 
+## Deploy (GitHub + Render)
+
+Local `./run.sh` is unchanged. Hosted FinLens is the same FastAPI app behind HTTPS.
+
+**What you need**
+
+- A paid Render web service (Starter or above) plus a 1 GB disk. Free instances sleep and have no persistent disk, so Tradebook files would vanish on restart.
+- Secrets on Render, never in git: `DEEPSEEK_API_KEY`, `FINLENS_PASSWORD`, and optionally `ANTHROPIC_API_KEY`.
+- Outbound internet (yfinance, NSE, DeepSeek/Claude). Cloud IPs can make a quote fetch flake; Refresh Prices usually recovers.
+
+**GitHub**
+
+```bash
+git remote add origin https://github.com/AkashKhatrii/FinLens.git   # once
+git push -u origin main
+```
+
+`.env` and `.data/` stay local (gitignored). The live Tradebook starts empty unless you copy `backend/.data/tradebook` onto the disk later.
+
+**Render**
+
+1. New **Web Service** from `AkashKhatrii/FinLens`, branch `main`. Or New + Blueprint using [`render.yaml`](render.yaml).
+2. Build: `pip install -r backend/requirements.txt`. Start: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Python `3.12.8`.
+3. Disk at `/var/data` (1 GB). Env:
+   - `FINLENS_DATA_DIR=/var/data`
+   - `FINLENS_CACHE_DIR=/var/data/cache`
+   - `FINLENS_PROVIDER=deepseek`
+   - `DEEPSEEK_API_KEY` (your key)
+   - `FINLENS_PASSWORD` (browser login; username is always `finlens`)
+   - optional `ANTHROPIC_API_KEY` for Claude
+4. Health check `/api/health` (this path is not password-gated).
+5. Open `https://….onrender.com`, enter username `finlens` and your password, then use analysis / Tradebook / Nifty as on localhost.
+
+Leave `FINLENS_PASSWORD` unset on your laptop so local access stays open.
+
+A full Nifty 500 low-score run can exceed Render’s request timeout. Single-ticker analysis and Tradebook should match local.
+
+---
+
 ## Adding other markets
 
 `config.MARKETS` already has a `US` entry and the engines are market-agnostic —
