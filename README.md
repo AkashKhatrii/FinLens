@@ -152,14 +152,16 @@ backend/app/
 
 ---
 
-## Deploy (GitHub + Render)
+## Deploy (GitHub + Railway)
 
 Local `./run.sh` is unchanged. Hosted FinLens is the same FastAPI app behind HTTPS.
 
+This project deploys on **Railway** (persistent volume + env vars). A Render blueprint remains in [`render.yaml`](render.yaml) if you ever want that host instead.
+
 **What you need**
 
-- A paid Render web service (Starter or above) plus a 1 GB disk. Free instances sleep and have no persistent disk, so Tradebook files would vanish on restart.
-- Secrets on Render, never in git: `DEEPSEEK_API_KEY`, `FINLENS_PASSWORD`, and optionally `ANTHROPIC_API_KEY`.
+- A Railway service with a volume mounted at `/var/data`. Without a volume, Tradebook files vanish on restart.
+- Secrets on Railway, never in git: `DEEPSEEK_API_KEY`, `FINLENS_PASSWORD`, and optionally `ANTHROPIC_API_KEY`.
 - Outbound internet (yfinance, NSE, DeepSeek/Claude). Cloud IPs can make a quote fetch flake; Refresh Prices usually recovers.
 
 **GitHub**
@@ -169,25 +171,33 @@ git remote add origin https://github.com/AkashKhatrii/FinLens.git   # once
 git push -u origin main
 ```
 
-`.env` and `.data/` stay local (gitignored). The live Tradebook starts empty unless you copy `backend/.data/tradebook` onto the disk later.
+`.env` and `.data/` stay local (gitignored).
 
-**Render**
+**Railway**
 
-1. New **Web Service** from `AkashKhatrii/FinLens`, branch `main`. Or New + Blueprint using [`render.yaml`](render.yaml).
-2. Build: `pip install -r backend/requirements.txt`. Start: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT`. Python `3.12.8`.
-3. Disk at `/var/data` (1 GB). Env:
+1. New project → deploy from `AkashKhatrii/FinLens` (`main`). Railway uses the [`Dockerfile`](Dockerfile).
+2. Add a **volume** mounted at `/var/data`.
+3. Variables:
    - `FINLENS_DATA_DIR=/var/data`
    - `FINLENS_CACHE_DIR=/var/data/cache`
    - `FINLENS_PROVIDER=deepseek`
-   - `DEEPSEEK_API_KEY` (your key)
+   - `DEEPSEEK_API_KEY`
    - `FINLENS_PASSWORD` (browser login; username is always `finlens`)
    - optional `ANTHROPIC_API_KEY` for Claude
 4. Health check `/api/health` (this path is not password-gated).
-5. Open `https://….onrender.com`, enter username `finlens` and your password, then use analysis / Tradebook / Nifty as on localhost.
+5. Generate a public HTTPS domain in Railway, open it, enter username `finlens` and your password.
+
+**Copy your Mac Tradebook onto the volume**
+
+```bash
+./scripts/sync-tradebook.sh
+```
+
+That uploads `backend/.data/tradebook/*.json` to `/tradebook` on the volume, which the app sees as `/var/data/tradebook`. It is not committed to git.
 
 Leave `FINLENS_PASSWORD` unset on your laptop so local access stays open.
 
-A full Nifty 500 low-score run can exceed Render’s request timeout. Single-ticker analysis and Tradebook should match local.
+A full Nifty 500 low-score run can exceed a request timeout. Single-ticker analysis and Tradebook should match local.
 
 ---
 
