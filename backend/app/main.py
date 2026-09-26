@@ -97,17 +97,57 @@ def api_search(
     limit: int = Query(8, ge=1, le=15),
     market: str = Query("IN"),
 ) -> dict[str, Any]:
-    """Typeahead over the NSE equity list. Empty query -> empty matches.
+    """Typeahead over the market's equity list. Empty query -> empty matches.
 
-    Only India has a local equity master; other markets resolve through the
-    provider's own search at analyse time, so typeahead returns nothing there.
+    India searches the local NSE master; the US searches the cached S&P 500
+    constituent list (same 24h memoised source as the screener, so per-keystroke
+    cost is a scan over ~500 names, not a network call). Other markets have no
+    local list and return nothing.
     """
-    matches = (
-        [{"symbol": l.symbol, "name": l.name} for l in nse_symbols.search(q, limit)]
-        if (market or "IN").upper() == "IN"
-        else []
-    )
-    return {"query": q, "market": (market or "IN").upper(), "matches": matches}
+    mkt = (market or "IN").upper()
+    if mkt == "US":
+        matches = _search_us(q, limit)
+    elif mkt == "IN":
+        matches = (
+            [{"symbol": l.symbol, "name": l.name} for l in nse_symbols.search(q, limit)]
+            if q.strip()
+            else []
+        )
+    else:
+        matches = []
+    return {"query": q, "market": mkt, "matches": matches}
+
+
+def _search_us(q: str, limit: int) -> list[dict[str, str]]:
+    """Prefix-first typeahead over S&P 500 constituents.
+
+    Symbol prefix matches rank first (typing ANET shows ANET), then symbol
+    substring, then company-name matches. Returns [] if the list cannot be
+    loaded, so typeahead degrades silently instead of 500ing.
+    """
+    raw = (q or "").strip()
+    if not raw or limit <= 0:
+        return []
+    try:
+        universe = get_index_constituents("SP500")
+    except Exception:
+        log.warning("US typeahead: S&P 500 list unavailable", exc_info=True)
+        return []
+    q_up = raw.upper()
+    scored: list[tuple[int, str, str]] = []
+    for c in universe.constituents:
+        sym = c.symbol.upper()
+        if sym.startswith(q_up):
+            score = 3
+        elif q_up in sym:
+            score = 2
+        elif q_up in c.name.upper():
+            score = 1
+        else:
+            continue
+        scored.append((score, sym, c.name))
+    scored.sort(key=lambda t: (-t[0], t[1]))
+    return [{"symbol": s, "name": n} for _, s, n in scored[:limit]]
 
 
 @app.get("/api/resolve")

@@ -1277,12 +1277,6 @@ const TickerSearch = {
       this.timer = setTimeout(() => this.load(q), 160);
     },
     async load(q) {
-      // Only India has a local equity master for typeahead; US queries
-      // resolve through Yahoo search at analyse time, so skip suggestions.
-      if ((this.market || 'IN').toUpperCase() !== 'IN') {
-        this.hits = []; this.open = false; this.active = -1;
-        return;
-      }
       const id = ++this.seq;
       try {
         const res = await fetch('/api/search?q=' + encodeURIComponent(q) + '&market=' + encodeURIComponent(this.market || 'IN'));
