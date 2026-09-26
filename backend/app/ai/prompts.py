@@ -895,3 +895,84 @@ def build_json_user_prompt(fact_pack_json: str, ticker: str, name: str, schema: 
         + "\\n\\nRespond with a single json object (no markdown) matching this schema:\\n"
         + json.dumps(schema, indent=2)
     )
+
+
+def _debate_market_section(market: str) -> str:
+    return _US_SECTION if (market or "IN").upper() == "US" else _INDIA_SECTION
+
+
+def build_debate_system_prompt(market: str, side: str) -> str:
+    """Advocate persona for the optional bull/bear debate. Static text only."""
+    side = (side or "bull").lower()
+    role = (
+        "the bull advocate: argue why this stock is attractive to own at the current price"
+        if side == "bull"
+        else "the bear advocate: argue why this stock is unattractive or dangerous at the current price"
+    )
+    currency = (
+        "All figures are in USD unless labelled otherwise."
+        if (market or "IN").upper() == "US"
+        else "All figures are in INR unless labelled otherwise; amounts suffixed `_cr` are in crores."
+    )
+    return f"""You are {role} in a structured investment debate. Your opponent argues the other side from the same evidence. You write for an intelligent retail investor.
+
+You are given a pre-computed fact pack: {currency} Trust the numbers; your job is argument, not arithmetic.
+
+## Debate discipline
+
+- Steelman your side: make the strongest honest case the evidence supports. Do not hype (bull) or manufacture doom (bear).
+- Interpret, don't restate. Every important claim attaches to a number, date, or named mechanism from the fact pack.
+- Never invent a number, threshold, peer comparison, future event, or causal explanation that is not in the fact pack or established domain knowledge.
+- Distinguish what the data shows from reasonable inference from what remains uncertain.
+- Attack the argument, not the arguer. In rebuttals, target the other side's weakest evidence or interpretation.
+
+{_debate_market_section(market)}"""
+
+
+def build_debate_opening_prompt(
+    fact_pack_json: str, ticker: str, name: str, schema: dict, market: str = "IN", side: str = "bull"
+) -> str:
+    """User message for an opening statement. JSON mode needs the word 'json'."""
+    import json
+
+    side = (side or "bull").lower()
+    direction = "why an investor should own it" if side == "bull" else "why an investor should avoid it or demand a much lower price"
+    return f"""Argue the {side} case for **{name} ({ticker})**: {direction}.
+
+<fact_pack>
+{fact_pack_json}
+</fact_pack>
+
+Make 2-3 distinct, evidence-backed points. Then stop.
+
+Respond with a single json object (no markdown) matching this schema:
+{json.dumps(schema, indent=2)}"""
+
+
+def build_debate_rebuttal_prompt(
+    fact_pack_json: str,
+    ticker: str,
+    name: str,
+    schema: dict,
+    market: str = "IN",
+    side: str = "bull",
+    opponent_points: list[str] | None = None,
+) -> str:
+    """User message for a rebuttal. JSON mode needs the word 'json'."""
+    import json
+
+    side = (side or "bull").lower()
+    other = "bear" if side == "bull" else "bull"
+    points = "\n".join(f"- {p}" for p in (opponent_points or []))
+    return f"""You are the {side} advocate for **{name} ({ticker})**. The {other} advocate opened with:
+
+{points}
+
+Rebut in 2-4 sentences, using the fact pack below. Target the weakest evidence or interpretation above; concede nothing you do not have to, but do not invent facts.
+
+<fact_pack>
+{fact_pack_json}
+</fact_pack>
+
+Respond with a single json object (no markdown) matching this schema:
+{json.dumps(schema, indent=2)}"""

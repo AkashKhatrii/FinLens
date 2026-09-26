@@ -749,6 +749,54 @@ tailwind.config = {
       </div>
     </div>
 
+    <!-- Bull / bear debate (opt-in) -->
+    <div class="rise panel rounded-2xl p-6" style="animation-delay:.40s"
+         :class="debate && debate.debate ? 'border-violet-500/30' : ''">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-5 h-5 rounded bg-violet-600 grid place-items-center text-[10px] font-bold text-white">VS</div>
+        <div class="text-sm font-semibold">Bull / Bear debate</div>
+        <span v-if="debate && debate.model" class="text-[10px] text-faint font-mono">{{ debate.model }}</span>
+      </div>
+
+      <div v-if="debateLoading" class="text-xs text-muted bg-inset rounded-lg p-4 border border-edge">
+        The bull and the bear are arguing from the numbers above…
+      </div>
+      <div v-else-if="!debate || debate.error" class="text-xs text-muted bg-inset rounded-lg p-4 border border-edge">
+        <div v-if="debate && debate.error" class="text-amber-400/90 mb-2">{{ debate.error }}</div>
+        <div v-else>Two advocates argue the same numbers from opposite sides, then rebut each other. Optional — the quant scores above don't change either way.</div>
+        <button type="button" v-on:click="runDebate()" :disabled="!aiReady || debateLoading"
+                class="mt-4 cta rounded-lg px-4 py-2 text-xs font-semibold border border-edge disabled:opacity-40">
+          {{ aiReady ? 'Start debate' : 'AI not configured' }}
+        </button>
+      </div>
+
+      <div v-else class="grid md:grid-cols-2 gap-4">
+        <div class="bg-inset rounded-lg p-4 border border-edge">
+          <div class="text-[11px] font-semibold text-emerald-400 mb-2">Bull case</div>
+          <ul class="space-y-2 mb-3">
+            <li v-for="(p, i) in debate.debate.bull.points" :key="'b'+i" class="text-xs text-muted leading-relaxed">{{ p }}</li>
+          </ul>
+          <div v-if="debate.debate.bull.rebuttal">
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-faint mb-1">Rebuttal</div>
+            <p class="text-xs text-muted leading-relaxed">{{ debate.debate.bull.rebuttal }}</p>
+          </div>
+        </div>
+        <div class="bg-inset rounded-lg p-4 border border-edge">
+          <div class="text-[11px] font-semibold text-rose-400 mb-2">Bear case</div>
+          <ul class="space-y-2 mb-3">
+            <li v-for="(p, i) in debate.debate.bear.points" :key="'s'+i" class="text-xs text-muted leading-relaxed">{{ p }}</li>
+          </ul>
+          <div v-if="debate.debate.bear.rebuttal">
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-faint mb-1">Rebuttal</div>
+            <p class="text-xs text-muted leading-relaxed">{{ debate.debate.bear.rebuttal }}</p>
+          </div>
+        </div>
+        <div v-if="debate.debate.errors && debate.debate.errors.length" class="md:col-span-2 text-[10px] text-faint">
+          {{ debate.debate.errors.join(' · ') }}
+        </div>
+      </div>
+    </div>
+
     <!-- Valuation + risk -->
     <div class="grid lg:grid-cols-2 gap-5">
       <div class="rise panel rounded-2xl p-5" style="animation-delay:.42s">
@@ -1476,6 +1524,7 @@ createApp({
       query: '', result: null, loading: false, error: '', didYouMean: [], mounted: false,
       activePillar: 'growth', morphIndex: 0, loadingStep: '', loadingPct: 0,
       aiLoading: false, glossaryOpen: false, glossaryQuery: '',
+      debate: null, debateLoading: false,
       view: 'analyse', market: 'IN',
       niftyRows: [], niftyLoading: false, niftyError: '', niftyDone: 0,
       niftySortKey: 'overall', niftySortDesc: true, niftyToken: 0, niftyAsOf: null,
@@ -2065,7 +2114,7 @@ createApp({
       const q = this.query.trim();
       if (!q || this.loading) return;
       this.view = 'analyse';
-      this.loading = true; this.aiLoading = false; this.error = ''; this.didYouMean = []; this.result = null;
+      this.loading = true; this.aiLoading = false; this.debate = null; this.debateLoading = false; this.error = ''; this.didYouMean = []; this.result = null;
       this.tradebookMessage = '';
       this.stepThrough();
       try {
@@ -2131,7 +2180,27 @@ createApp({
         this.aiLoading = false;
       }
     },
-    reset() { this.result = null; this.error = ''; this.query = ''; this.aiLoading = false; this.tradebookMessage = ''; this.view = 'analyse'; history.replaceState(null, '', '/'); },
+    async runDebate() {
+      if (!this.result || this.debateLoading || this.loading || !this.aiReady) return;
+      const q = this.result.symbol || this.query.trim();
+      if (!q) return;
+      this.debateLoading = true;
+      try {
+        const res = await fetch(`/api/debate?q=${encodeURIComponent(q)}&market=${encodeURIComponent(this.market || 'IN')}&provider=${encodeURIComponent(this.aiProvider)}`);
+        const data = await res.json();
+        if (!res.ok) {
+          const d = data.detail;
+          const msg = (d && typeof d === 'object') ? (d.message || 'Debate failed') : (d || 'Debate failed');
+          throw new Error(msg);
+        }
+        this.debate = data.error ? { error: data.error } : data;
+      } catch (e) {
+        this.debate = { error: e.message };
+      } finally {
+        this.debateLoading = false;
+      }
+    },
+    reset() { this.result = null; this.error = ''; this.query = ''; this.aiLoading = false; this.debate = null; this.debateLoading = false; this.tradebookMessage = ''; this.view = 'analyse'; history.replaceState(null, '', '/'); },
     toggleTheme() {
       this.theme = this.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', this.theme);

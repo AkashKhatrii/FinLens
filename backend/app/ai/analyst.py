@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import re
+import time
 from pathlib import Path
 from typing import Any
 
@@ -333,4 +334,152 @@ def _claude_thesis(
             "cache_read": getattr(usage, "cache_read_input_tokens", 0),
             "cache_write": getattr(usage, "cache_creation_input_tokens", 0),
         },
+    }
+
+
+def _debate_single_call(
+    *,
+    spec: dict[str, Any],
+    model: str,
+    provider_key: str,
+    system: str,
+    user: str,
+    schema_model: type,
+) -> Any:
+    """One structured debate call. Returns a validated pydantic model or raises."""
+    if spec["kind"] == "anthropic":
+        client = _get_anthropic_client()
+        if client is None:
+            raise RuntimeError("No Anthropic client available.")
+        response = client.messages.parse(
+            model=model,
+            system=[{
+                "type": "text",
+                "text": system,
+                "cache_control": {"type": "ephemeral"},
+            }],
+            messages=[{"role": "user", "content": user}],
+            output_format=schema_model,
+            **_claude_parse_options(max_tokens=2048),
+        )
+        if response.stop_reason == "refusal":
+            raise RuntimeError("The model declined to produce a view.")
+        parsed = response.parsed_output
+        if parsed is None:
+            raise RuntimeError("No structured output returned.")
+        return parsed
+    client = _openai_client(spec)
+    response = _openai_complete(
+        client=client,
+        model=model,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+        max_tokens=2048,
+    )
+    content = ""
+    if response.choices:
+        msg = response.choices[0].message
+        content = getattr(msg, "content", None) or getattr(msg, "reasoning_content", None) or ""
+    if not str(content).strip():
+        raise RuntimeError("The AI response was empty.")
+    return schema_model.model_validate(_parse_json_object(str(content)))
+
+
+def run_debate(
+    fact_pack: dict[str, Any], ticker: str, name: str, market: str = "IN"
+) -> dict[str, Any]:
+    """Optional bull/bear debate over the fact pack.
+
+    Four small LLM calls: bull + bear openings in parallel, then rebuttals in
+    parallel. Returns {"debate": {...}, ...} or {"error": ...}. Never raises
+    for provider failures; returns {"error": ...} instead.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
+    from .prompts import (
+        build_debate_opening_prompt,
+        build_debate_rebuttal_prompt,
+        build_debate_system_prompt,
+    )
+    from .schemas import DebateOpening, DebateRebuttal
+
+    started = time.time()
+    if not AI_ENABLED:
+        return {"error": "AI is disabled (FINLENS_AI=off)."}
+    st = status()
+    if not st["available"]:
+        return {"error": st.get("reason") or "AI provider is not available."}
+    key = st["provider"]
+    spec = PROVIDERS[key]
+    model = st["model"]
+    payload = json.dumps(fact_pack, indent=2, sort_keys=True, default=str)
+
+    errors: list[str] = []
+
+    def opening(side: str) -> DebateOpening | None:
+        try:
+            return _debate_single_call(
+                spec=spec,
+                model=model,
+                provider_key=key,
+                system=build_debate_system_prompt(market, side),
+                user=build_debate_opening_prompt(
+                    payload, ticker, name, DebateOpening.model_json_schema(), market, side
+                ),
+                schema_model=DebateOpening,
+            )
+        except Exception as exc:  # noqa: BLE001 - one side failing must not kill the debate
+            log.warning("Debate %s opening failed: %s", side, exc)
+            errors.append(f"{side} opening failed: {exc}")
+            return None
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        bull_open, bear_open = pool.map(opening, ("bull", "bear"))
+
+    if bull_open is None and bear_open is None:
+        return {"error": "The debate could not be started: " + "; ".join(errors)}
+
+    def rebuttal(side: str, opponent_points: list[str]) -> str:
+        try:
+            result = _debate_single_call(
+                spec=spec,
+                model=model,
+                provider_key=key,
+                system=build_debate_system_prompt(market, side),
+                user=build_debate_rebuttal_prompt(
+                    payload, ticker, name, DebateRebuttal.model_json_schema(),
+                    market, side, opponent_points,
+                ),
+                schema_model=DebateRebuttal,
+            )
+            return result.rebuttal
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Debate %s rebuttal failed: %s", side, exc)
+            errors.append(f"{side} rebuttal failed: {exc}")
+            return ""
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        bull_reb, bear_reb = pool.map(
+            rebuttal,
+            ("bull", "bear"),
+            (bear_open.points if bear_open else [], bull_open.points if bull_open else []),
+        )
+
+    return {
+        "debate": {
+            "bull": {
+                "points": bull_open.points if bull_open else [],
+                "rebuttal": bull_reb,
+            },
+            "bear": {
+                "points": bear_open.points if bear_open else [],
+                "rebuttal": bear_reb,
+            },
+            "errors": errors,
+        },
+        "provider": key,
+        "model": model,
+        "latency_ms": int((time.time() - started) * 1000),
     }

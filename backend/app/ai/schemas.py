@@ -81,3 +81,19 @@ class Thesis(BaseModel):
     data_caveats: list[str] = Field(
         description="Up to 3 things in the fact pack that were missing or looked unreliable and limited your read."
     )
+
+
+class DebateOpening(BaseModel):
+    side: Literal["bull", "bear"] = Field(description="Which side this advocate argues.")
+    points: list[str] = Field(
+        description="2-3 evidence-backed points arguing this side. Cite specific numbers "
+                    "from the fact pack. Do not invent numbers, thresholds, or peer comparisons."
+    )
+
+
+class DebateRebuttal(BaseModel):
+    side: Literal["bull", "bear"] = Field(description="Which side this advocate argues.")
+    rebuttal: str = Field(
+        description="2-4 sentences rebutting the other side's opening. Attack its weakest "
+                    "evidence or interpretation using fact-pack numbers. Do not invent facts."
+    )

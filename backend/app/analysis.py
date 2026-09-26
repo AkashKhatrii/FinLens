@@ -218,6 +218,31 @@ def analyse(
     return result
 
 
+def debate(query: str, market: str = "IN") -> dict[str, Any]:
+    """Quant analysis (no thesis) plus an optional bull/bear debate.
+
+    The debate is opt-in: it only runs when the caller explicitly asks, never
+    as part of the standard analysis flow.
+    """
+    result = analyse(query, market=market, use_ai=False)
+    started = time.time()
+    d = analyst.run_debate(
+        _fact_pack(result), result["symbol"], result["company"]["name"], market
+    )
+    if "latency_ms" not in d:
+        d["latency_ms"] = int((time.time() - started) * 1000)
+    return {
+        "symbol": result["symbol"],
+        "company": result["company"]["name"],
+        "market": market,
+        "debate": d.get("debate"),
+        "error": d.get("error"),
+        "provider": d.get("provider"),
+        "model": d.get("model"),
+        "latency_ms": d["latency_ms"],
+    }
+
+
 def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
     """Trimmed view of the analysis for the model.
 

@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from .access import PasswordGateMiddleware
 from . import cache
-from .analysis import UnknownSymbol, analyse, resolve
+from .analysis import UnknownSymbol, analyse, debate, resolve
 from .ai import analyst
 from .config import MARKETS, using_provider
 from .providers import nse_symbols
@@ -179,6 +179,28 @@ def api_analyse(
     except Exception as exc:
         log.exception("Analysis failed for %r", q)
         raise HTTPException(status_code=500, detail=f"Analysis failed: {exc}")
+    return JSONResponse(content=jsonable(result))
+
+
+@app.get("/api/debate")
+def api_debate(
+    q: str = Query(..., min_length=1, description="Ticker or company name, e.g. ANET"),
+    market: str = Query("IN"),
+    provider: str | None = Query(None, description="AI provider for this request: deepseek or claude."),
+) -> JSONResponse:
+    """Optional bull/bear debate over the quant fact pack. Opt-in only; the UI
+    requests it via an explicit button, never automatically."""
+    try:
+        with using_provider(provider):
+            result = debate(q, market=market)
+    except UnknownSymbol as exc:
+        raise HTTPException(
+            status_code=404,
+            detail={"message": exc.message, "suggestions": exc.suggestions},
+        )
+    except Exception as exc:
+        log.exception("Debate failed for %r", q)
+        raise HTTPException(status_code=500, detail=f"Debate failed: {exc}")
     return JSONResponse(content=jsonable(result))
 
 
