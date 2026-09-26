@@ -227,7 +227,7 @@ def debate(query: str, market: str = "IN") -> dict[str, Any]:
     result = analyse(query, market=market, use_ai=False)
     started = time.time()
     d = analyst.run_debate(
-        _fact_pack(result), result["symbol"], result["company"]["name"], market
+        _debate_fact_pack(result), result["symbol"], result["company"]["name"], market
     )
     if "latency_ms" not in d:
         d["latency_ms"] = int((time.time() - started) * 1000)
@@ -241,6 +241,24 @@ def debate(query: str, market: str = "IN") -> dict[str, Any]:
         "model": d.get("model"),
         "latency_ms": d["latency_ms"],
     }
+
+
+def _debate_fact_pack(r: dict[str, Any]) -> dict[str, Any]:
+    """Fact pack for the debate: DCF fields are stripped from the valuation
+    section. Prompt bans were not enough — the DCF number is the most dramatic
+    figure in the pack, so advocates and the trader anchored on it and
+    re-litigated valuation instead of arguing the business. Standard multiples
+    (P/E, EV/EBITDA, earnings yield) stay; they are legitimate one-clause
+    context. The thesis keeps its own full pack."""
+    pack = _fact_pack(r)
+    valuation = {k: v for k, v in pack.get("valuation", {}).items() if not k.startswith("dcf")}
+    if len(valuation) != len(pack.get("valuation", {})):
+        valuation["_note"] = (
+            "DCF fields withheld from this debate: argue the business "
+            "(growth, returns, cash, risks), not the model."
+        )
+    pack["valuation"] = valuation
+    return pack
 
 
 def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:

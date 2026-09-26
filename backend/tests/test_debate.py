@@ -162,3 +162,39 @@ def test_run_debate_trader_failure_degrades_gracefully():
         out = analyst.run_debate({"price": 100}, "ANET", "Arista", "US")
     assert out["debate"]["trader"] is None
     assert any("trader decision failed" in e for e in out["debate"]["errors"])
+
+
+def test_debate_fact_pack_strips_dcf():
+    from app.analysis import _debate_fact_pack
+
+    fake_result = {
+        "company": {"name": "X", "summary": "s"},
+        "price": 10.0,
+        "overall": {}, "horizons": {}, "pillars": {},
+        "fundamentals": {}, "technicals": {},
+        "valuation": {
+            "pe_ratio": 20.0,
+            "dcf_value": 5.0,
+            "dcf_value_display": "$5.00",
+            "dcf_upside_pct": -50.0,
+            "dcf_assumptions": {"g": 0.04},
+        },
+        "risk": {}, "earnings": None, "ownership": {},
+        "analysts": {}, "data_gaps": [],
+    }
+    pack = _debate_fact_pack(fake_result)
+    v = pack["valuation"]
+    assert v["pe_ratio"] == 20.0  # standard multiples stay
+    assert not any(k.startswith("dcf") for k in v)
+    assert "_note" in v  # tells the model why DCF is absent
+
+
+def test_debate_prompts_require_business_arguments():
+    from app.ai.prompts import build_debate_system_prompt, build_trader_system_prompt
+
+    for side in ("bull", "bear"):
+        assert "must not be the core of your case" in build_debate_system_prompt("US", side)
+    trader = build_trader_system_prompt("IN")
+    assert "not valuation multiples or DCF" in trader
+    assert "OPPOSITE direction" in trader
+    assert "never a specific invented date or event" in trader

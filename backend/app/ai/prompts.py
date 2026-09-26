@@ -930,6 +930,7 @@ You are given a pre-computed fact pack: {currency} Trust the numbers; your job i
 
 - Do not re-argue DCF or valuation. A valuation read already exists in the fact pack (pillar scores); that discussion is owned elsewhere.
 - Argue the business: growth durability, returns on capital, cash conversion, competitive position, governance, and risks.
+- Valuation multiples (P/E, EV/EBITDA, earnings yield) may appear as one clause of context, but they must not be the core of your case. If your whole case is "it's expensive" or "it's cheap", you have no case.
 - If valuation matters to your case, cite the existing read in one clause at most. Never re-derive a fair value.
 
 {_debate_market_section(market)}"""
@@ -995,6 +996,8 @@ You write for an intelligent retail investor.
 - Every important claim attaches to a number, date, or named mechanism from the fact pack or the debate record.
 - Never invent a number, threshold, peer comparison, future event, or causal explanation that is not in the fact pack or established domain knowledge.
 - Do not re-argue DCF or valuation; a valuation read already exists in the fact pack. Decide on the business and the price together, in one judgement.
+- The strongest bull and bear points you name must be business arguments (growth durability, returns, cash conversion, competitive position, governance, balance-sheet risk) — not valuation multiples or DCF. If an advocate's strongest material was valuation, say so explicitly and select the strongest business argument instead.
+- what_would_change_mind must point in the OPPOSITE direction of your decision: a positive business development if your decision is negative, a negative one if positive. It must be an observable business development (e.g. "two consecutive quarters of revenue growth below 10%"), never a specific invented date or event.
 - Distinguish what the data shows from reasonable inference from what remains uncertain.
 
 {_debate_market_section(market)}"""
@@ -1031,7 +1034,7 @@ def build_trader_prompt(
 {fact_pack_json}
 </fact_pack>
 
-Weigh both sides against the fact pack and give your decision. Name the single strongest point from each side that survived rebuttal, and the one development that would flip your call.
+Weigh both sides against the fact pack and give your decision. Name the single strongest business argument from each side that survived rebuttal (not a valuation multiple), and the one development — in the opposite direction of your decision — that would flip your call.
 
 Respond with a single json object (no markdown) matching this schema:
 {json.dumps(schema, indent=2)}"""

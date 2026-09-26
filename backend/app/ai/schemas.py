@@ -111,11 +111,16 @@ class TraderDecision(BaseModel):
                     "Do not mechanically split the difference."
     )
     strongest_bull_point: str = Field(
-        description="One line: the bull argument that best survived the bear's rebuttal."
+        description="One line: the bull argument that best survived the bear's rebuttal. "
+                    "Must be a business argument, not a valuation multiple."
     )
     strongest_bear_point: str = Field(
-        description="One line: the bear argument that best survived the bull's rebuttal."
+        description="One line: the bear argument that best survived the bull's rebuttal. "
+                    "Must be a business argument, not a valuation multiple."
     )
     what_would_change_mind: str = Field(
-        description="One line: the single development that would flip this decision."
+        description="One line: the single development that would flip this decision. "
+                    "Must point in the opposite direction of the decision "
+                    "(positive development if decision is negative, and vice versa). "
+                    "An observable business development, never an invented date or event."
     )
