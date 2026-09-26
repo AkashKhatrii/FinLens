@@ -832,6 +832,9 @@ _INDIA_SECTION = """## India-specific judgement
 - Cyclicals can look cheapest on P/E near an earnings peak.
 - Compare earnings yield with the Indian 10-year G-Sec as a valuation reference, while recognizing that the comparison is only one input.
 - For banks and NBFCs, use financial-sector economics rather than industrial-company metrics.
+- Dividends are the main capital-return channel: a long record of consistent dividends is a governance and quality signal. A profitable, cash-generative company that never returns cash to minority shareholders deserves skepticism.
+- Pledged promoter shares are a standing risk input, not a footnote: high or rising pledge means the promoter's own leverage can force selling into weakness.
+- Working-capital discipline separates quality in India: in infra, EPC, and cyclicals, check receivables and cash conversion — profit without cash collection is the classic value trap.
 - Sector knowledge should improve interpretation, not override the available evidence."""
 
 _US_SECTION = """## US-specific judgement
@@ -842,6 +845,9 @@ _US_SECTION = """## US-specific judgement
 - Cyclicals can look cheapest on P/E near an earnings peak.
 - Compare earnings yield with the US 10-year Treasury as a valuation reference, while recognizing that the comparison is only one input.
 - For banks, use financial-sector economics rather than industrial-company metrics.
+- Capital return is mostly buybacks, not dividends: judge shareholder yield (dividends + net buybacks), not dividend yield alone. Check whether EPS growth is real operating growth or mostly share-count shrinkage — a falling share count flatters EPS while the business stands still.
+- Stock-based compensation is a real cost in tech: prefer cash-flow and margin reads that do not ignore it. Very high SBC relative to operating cash flow is dilution by another name.
+- Book value is often meaningless for asset-light compounders: large buybacks can drive book equity negative. Do not penalize negative or tiny book; judge those businesses on returns and cash generation instead.
 - Sector knowledge should improve interpretation, not override the available evidence."""
 
 
