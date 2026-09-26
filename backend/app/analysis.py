@@ -9,7 +9,7 @@ import logging
 import time
 from typing import Any
 
-from .ai import analyst
+from .ai import analyst, stance_log
 from .config import MARKETS
 from .engine import fundamentals, percentile, qualitative, scoring, technicals, valuation
 from .engine.accumulation import accumulation_from_analysis
@@ -193,6 +193,22 @@ def analyse(
             if ai:
                 ai["latency_ms"] = int((time.time() - ai_started) * 1000)
             result["ai"] = ai
+            if ai and ai.get("thesis") and not ai.get("error"):
+                # Timestamp the AI stances for forward-return measurement.
+                # Logging must never break analysis.
+                try:
+                    stance_log.record(
+                        ticker=symbol,
+                        name=bundle.quote.name,
+                        market=market,
+                        price=result["price"]["last"],
+                        thesis=ai["thesis"],
+                        horizons=result["horizons"],
+                        provider=ai.get("provider"),
+                        model=ai.get("model"),
+                    )
+                except Exception:
+                    log.exception("AI stance logging failed")
             result["deterministic_accumulation"] = accumulation_from_analysis(result)
             # The accumulation panel is rule-based only now that the AI thesis no
             # longer carries its own accumulation view.

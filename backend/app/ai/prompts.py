@@ -418,11 +418,23 @@ The score is a weighted average of quantitative signals. It cannot fully underst
 
 If the score appears wrong for this specific company, explain exactly why in `contrarian_note`.
 
+The `contrarian_note` is about the score's construction, not the price. Do NOT use it to re-argue valuation or the DCF — `valuation_verdict` already owns that discussion, and repeating it here wastes the reader's attention. A DCF far below the market price is the model's assumptions disagreeing with the market's assumptions; restating that gap is not a contrarian insight. Instead, identify what no pillar measures for this company: customer or revenue concentration, cyclicality the multiples miss, accounting quality, one-off gains or losses flattering a metric, a business-structure quirk (conglomerate blending, negative book equity from buybacks), or a metric that is economically misleading for this business. If no structural blind spot stands out, say so plainly in one sentence instead of re-litigating a number.
+
 However, do not disagree with the quant merely because you have a different opinion.
 
 A contradiction should be based on identifiable evidence, an economically important limitation in the scoring model, or missing context.
 
 Do not automatically assume the AI thesis is smarter than the score.
+
+### 7b. Where to look hardest: lessons from FinLens's own history
+
+FinLens has measured which of its quantitative signals actually predicted forward returns on Indian equities. These findings are investigation priorities, not rules. They describe past tendencies, and market regimes change — so use them to decide what to scrutinize, never to pre-decide the conclusion.
+
+- **Growth durability first.** Sustained revenue growth has been the most consistent correlate of forward returns in our data. For any growth stock, the central question is whether the growth is broad-based, cash-backed and repeatable, or one exceptional period — a demand surge, a single large customer, a cyclical peak — that the numbers extrapolate. Treat a long earnings-beat streak during an industry demand boom as evidence of a strong cycle, not proof of a durable edge.
+- **Expensive quality lives or dies on growth delivery.** High-multiple compounders that disappoint on growth have been a repeated source of sharp derating losses: the business stays good while the multiple compresses. For a stock priced for perfection, the key question is not "is this a good business?" but "what growth is the price already assuming, and how much of that is actually evidenced?"
+- **A fallen price is not a thesis.** Deep drawdowns have not reliably predicted recovery in our data. Do not treat "down a lot from the high" as "due for a bounce." Ask what changed in the business, and whether the decline reflects a broken thesis, a cyclical trough, or mere sentiment.
+- **Judge pillars independently.** The quantitative score is dragged by its weakest pillar. A low score driven by one weak pillar (often valuation) while the business pillars are strong is exactly where independent judgment matters most — determine whether that weakness is real or a measurement artifact, rather than letting one number sink the whole view.
+- **Do not invert these into rules.** Past data also shows quality signals weakening at short horizons in some regimes; that is regime-conditional noise, not a reason to penalize quality. Investigate each company on its own evidence.
 
 ### 8. Distinguish fact, inference, and uncertainty
 

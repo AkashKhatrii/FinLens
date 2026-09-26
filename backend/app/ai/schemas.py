@@ -71,8 +71,12 @@ class Thesis(BaseModel):
         description="Exactly two entries, one each for swing and long."
     )
     contrarian_note: str = Field(
-        description="Where the quantitative score is most likely to be wrong about this specific company, "
-                    "and why. Be concrete, not hedging boilerplate."
+        description="Where the quantitative score's construction is most likely to be blind about "
+                    "this specific company, and why. Do NOT repeat the valuation/DCF argument — "
+                    "valuation_verdict already covers it. Focus on what no pillar measures: customer "
+                    "concentration, cyclicality, accounting quality, one-offs, business-structure quirks, "
+                    "or a metric that is economically misleading for this business. Be concrete, not "
+                    "hedging boilerplate. If no structural blind spot stands out, say so in one sentence."
     )
     data_caveats: list[str] = Field(
         description="Up to 3 things in the fact pack that were missing or looked unreliable and limited your read."
