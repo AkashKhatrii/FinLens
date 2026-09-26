@@ -12,7 +12,7 @@ from typing import Any
 from .ai import analyst
 from .config import MARKETS
 from .engine import fundamentals, percentile, qualitative, scoring, technicals, valuation
-from .engine.accumulation import accumulation_from_analysis, public_accumulation_from_ai
+from .engine.accumulation import accumulation_from_analysis
 from .engine.bank_presentation import fact_pack_bank_fundamentals, public_bank_metrics
 from .engine.bank_scoring import apply_bank_metrics
 from .engine.common import fmt_money
@@ -189,20 +189,14 @@ def analyse(
             result["ai"] = {"error": ai_status["reason"]}
         else:
             ai_started = time.time()
-            ai = analyst.generate_thesis(_fact_pack(result), symbol, bundle.quote.name)
+            ai = analyst.generate_thesis(_fact_pack(result), symbol, bundle.quote.name, market)
             if ai:
                 ai["latency_ms"] = int((time.time() - ai_started) * 1000)
             result["ai"] = ai
-            thesis = (ai or {}).get("thesis") or {}
-            opportunity = thesis.get("opportunity") or {}
-            result["deterministic_accumulation"] = accumulation_from_analysis(
-                result,
-                opportunity_category=opportunity.get("category"),
-                thesis_breakers=opportunity.get("thesis_breakers"),
-            )
-            public = public_accumulation_from_ai(thesis.get("accumulation"))
-            if public:
-                result["accumulation"] = public
+            result["deterministic_accumulation"] = accumulation_from_analysis(result)
+            # The accumulation panel is rule-based only now that the AI thesis no
+            # longer carries its own accumulation view.
+            result["accumulation"] = result["deterministic_accumulation"]
 
     result["elapsed_ms"] = int((time.time() - started) * 1000)
     return result
@@ -212,11 +206,18 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
     """Trimmed view of the analysis for the model.
 
     Chart series and raw holder lists are dropped - they cost tokens and add
-    nothing the model can reason about.
+    nothing the model can reason about. Pillar metric notes are dropped too:
+    the raw numbers are already in fundamentals/valuation/technicals, and the
+    model should interpret them itself rather than restate pre-chewed notes.
     """
     tech = {k: v for k, v in r["technicals"].items() if k != "series"}
+    company = dict(r["company"])
+    summary = company.get("summary")
+    if isinstance(summary, str) and len(summary) > 500:
+        company["summary"] = summary[:500].rsplit(" ", 1)[0] + "…"
+    earnings = r["earnings"] or {}
     pack = {
-        "company": r["company"],
+        "company": company,
         "price": r["price"],
         "quant_scores": {
             "overall": r["overall"],
@@ -233,8 +234,7 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
                 "coverage": round(p["coverage"], 2),
                 "metrics": [
                     {"label": m["label"], "value": m["display"],
-                     "score": round(m["score"], 1) if m["score"] is not None else None,
-                     "note": m["note"]}
+                     "score": round(m["score"], 1) if m["score"] is not None else None}
                     for m in p["metrics"]
                 ],
                 "notes": p["notes"]}
@@ -247,12 +247,9 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
         "pe_history": r["valuation"].get("pe_history"),
         "technicals": tech,
         "risk": r["risk"],
-        "earnings": r["earnings"],
+        "earnings": {k: v for k, v in earnings.items() if k != "surprises"},
         "ownership": {k: v for k, v in r["ownership"].items() if k != "top_holders"},
         "analysts": r["analysts"],
-        "recent_news": [{"title": n["title"], "publisher": n["publisher"]} for n in r["news"]],
-        "rule_based_pros": r["pros"],
-        "rule_based_cons": r["cons"],
         "data_gaps": r["data_gaps"],
     }
     swing = (r.get("horizons") or {}).get("swing") or {}
@@ -275,11 +272,5 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
                 "Known event. Describe it factually as a near-term catalyst/risk for a "
                 "short-dated position. Do not describe this as 'no immediate event risk'."
             ),
-        }
-    det = r.get("deterministic_accumulation") or {}
-    if det.get("state") or det.get("label"):
-        pack["deterministic_accumulation"] = {
-            "state": det.get("label") or det.get("state"),
-            "usage": "debug_context_only",
         }
     return pack

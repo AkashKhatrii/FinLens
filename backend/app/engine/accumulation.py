@@ -160,28 +160,6 @@ def accumulation_from_analysis(
     )
 
 
-def public_accumulation_from_ai(ai_view: dict[str, Any] | None) -> dict[str, Any] | None:
-    """Map the AI Accumulation view into the public payload. Never copies engine rationale."""
-    if not isinstance(ai_view, dict):
-        return None
-    raw = ai_view.get("state") or ai_view.get("label")
-    if not raw:
-        return None
-    state = _state_from_label(str(raw))
-    label = STATE_LABELS.get(state, str(raw).strip()) if state else str(raw).strip()
-    reasons = [str(x).strip() for x in (ai_view.get("accumulation_reasons") or []) if str(x).strip()]
-    monitors = [str(x).strip() for x in (ai_view.get("monitor_conditions") or []) if str(x).strip()]
-    return {
-        "state": label,
-        "label": label,
-        "rationale": str(ai_view.get("rationale") or "").strip(),
-        "approach": str(ai_view.get("approach") or "").strip(),
-        "accumulation_reasons": reasons,
-        "monitor_conditions": monitors,
-        "source": "ai",
-    }
-
-
 def _state_from_label(value: str) -> str | None:
     folded = _norm_label(value)
     for key, label in STATE_LABELS.items():

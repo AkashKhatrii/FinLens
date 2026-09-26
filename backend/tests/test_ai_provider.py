@@ -18,7 +18,6 @@ VALID_THESIS = {
     "valuation_verdict": "P/E sits above its own history.",
     "bull_case": ["Deal wins", "Margin defence", "Cash conversion"],
     "bear_case": ["Wage inflation", "Client concentration", "Multiple compression"],
-    "key_risks": ["US budget cuts", "Visa policy", "INR spike"],
     "what_to_watch": ["Next quarter TCV", "Attrition", "Large-deal pipeline"],
     "horizon_calls": [
         {
@@ -38,15 +37,6 @@ VALID_THESIS = {
     ],
     "contrarian_note": "The quant score overweights near-term technicals.",
     "data_caveats": ["No concall transcript"],
-    "opportunity": {
-        "category": "Watch",
-        "rationale": "Quality is high but the multiple is full, so initiating now is not compelling.",
-        "the_bet": "Waiting for a better entry rather than denying the long-term franchise.",
-        "needs_to_happen": "The multiple needs to compress toward its own history, or growth needs to re-accelerate.",
-        "catalysts": ["Next quarter TCV", "A pullback toward the 5-year median P/E"],
-        "thesis_breakers": ["Sustained ROCE below cost of capital", "The multiple expands further without growth"],
-        "risk_level": "Medium",
-    },
 }
 
 

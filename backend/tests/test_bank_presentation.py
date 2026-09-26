@@ -172,8 +172,7 @@ class TestFactPack(unittest.TestCase):
             {
                 "company", "price", "quant_scores", "pillar_scores",
                 "fundamentals", "valuation", "pe_history", "technicals",
-                "risk", "earnings", "ownership", "analysts", "recent_news",
-                "rule_based_pros", "rule_based_cons", "data_gaps",
+                "risk", "earnings", "ownership", "analysts", "data_gaps",
             },
         )
         self.assertNotIn("series", pack["technicals"])

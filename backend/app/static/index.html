@@ -660,15 +660,12 @@ tailwind.config = {
       <div v-else-if="ai" class="space-y-5">
         <div class="text-base font-medium text-fg leading-relaxed">{{ ai.headline }}</div>
 
-        <div v-if="ai.opportunity" class="space-y-3">
-          <div class="text-[11px] font-semibold uppercase tracking-wider text-muted">
-            <term-tip id="opportunity" label="Investment View"></term-tip>
-          </div>
+        <div class="space-y-3">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-muted">Investment View</div>
           <div class="text-[10px] text-faint leading-relaxed">
             Short is the near-term stock. Long is what is currently proven.
-            Opportunity is long-term forward-looking potential — not an entry signal.
           </div>
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
             <div class="bg-inset rounded-lg p-3.5 border border-edge">
               <div class="flex items-center justify-between gap-2">
                 <span class="text-[11px] font-semibold">Short</span>
@@ -681,25 +678,12 @@ tailwind.config = {
                 <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(stanceClass(investmentLong.stance))">{{ investmentLong.stance }}</span>
               </div>
             </div>
-            <div class="bg-inset rounded-lg p-3.5 border border-edge">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] font-semibold"><term-tip id="opportunity" label="Opportunity"></term-tip></span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(opportunityClass(ai.opportunity.category))">{{ ai.opportunity.category }}</span>
-              </div>
-            </div>
             <div class="bg-inset rounded-lg p-3.5 border border-edge" v-if="result.accumulation">
               <div class="flex items-center justify-between gap-2">
                 <span class="text-[11px] font-semibold"><term-tip id="accumulation" label="Accumulation"></term-tip></span>
                 <span class="text-[10px] px-1.5 py-0.5 rounded" :class="verdictClass(accumulationClass(accumulationLabel(result.accumulation)))">{{ accumulationLabel(result.accumulation) }}</span>
               </div>
             </div>
-          </div>
-          <div class="bg-inset rounded-lg p-3.5 border border-edge space-y-2">
-            <p class="text-xs text-muted leading-relaxed">{{ ai.opportunity.rationale }}</p>
-            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">The bet:</span> {{ ai.opportunity.the_bet }}</div>
-            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">Needs to happen:</span> {{ ai.opportunity.needs_to_happen }}</div>
-            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">Breaks if:</span> {{ (ai.opportunity.thesis_breakers || []).join(' · ') }}</div>
-            <div class="text-[10px] text-faint leading-relaxed"><span class="text-muted">Risk:</span> {{ ai.opportunity.risk_level }} — a long-term thesis, not a quantitative score</div>
           </div>
         </div>
 
@@ -749,15 +733,9 @@ tailwind.config = {
           </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <div class="text-[11px] font-semibold text-amber-400 mb-2">Key risks</div>
-            <ul class="space-y-1.5"><li v-for="(r,i) in ai.key_risks" :key="i" class="text-xs text-muted flex gap-2"><span class="text-amber-600">!</span>{{ r }}</li></ul>
-          </div>
-          <div>
-            <div class="text-[11px] font-semibold text-sky-400 mb-2">What to watch</div>
-            <ul class="space-y-1.5"><li v-for="(w,i) in ai.what_to_watch" :key="i" class="text-xs text-muted flex gap-2"><span class="text-sky-600">◆</span>{{ w }}</li></ul>
-          </div>
+        <div v-if="(ai.what_to_watch || []).length">
+          <div class="text-[11px] font-semibold text-sky-400 mb-2">What to watch</div>
+          <ul class="space-y-1.5"><li v-for="(w,i) in ai.what_to_watch" :key="i" class="text-xs text-muted flex gap-2"><span class="text-sky-600">◆</span>{{ w }}</li></ul>
         </div>
 
         <div class="note-violet rounded-lg p-4">
@@ -1148,7 +1126,7 @@ tailwind.config = {
         </div>
       </div>
     </div>
-    <div class="grid md:grid-cols-3 gap-4">
+    <div class="grid md:grid-cols-2 gap-4">
       <div class="panel rounded-2xl p-5">
         <div class="text-[11px] uppercase text-muted mb-2">Swing</div>
         <div class="flex items-center justify-between mb-2">
@@ -1166,22 +1144,11 @@ tailwind.config = {
         </div>
         <div class="text-[11px] text-muted">Confidence {{ snapshot.long_confidence != null ? snapshot.long_confidence : '—' }}</div>
       </div>
-      <div class="panel rounded-2xl p-5">
-        <div class="text-[11px] uppercase text-muted mb-2">Opportunity</div>
-        <div class="text-sm font-semibold">{{ snapshot.opportunity_category || 'Unavailable' }}</div>
-        <div class="text-[11px] text-muted mt-1">Risk {{ snapshot.opportunity_risk || '—' }}</div>
-      </div>
     </div>
     <div class="grid md:grid-cols-3 gap-3 panel rounded-2xl p-5">
       <div><div class="text-[10px] text-faint uppercase">Technical Stop</div><div class="font-mono text-sm">{{ snapshot.technical_stop != null ? ('₹' + num(snapshot.technical_stop)) : '—' }}</div></div>
       <div><div class="text-[10px] text-faint uppercase">Technical Target</div><div class="font-mono text-sm">{{ snapshot.technical_target != null ? ('₹' + num(snapshot.technical_target)) : '—' }}</div></div>
       <div><div class="text-[10px] text-faint uppercase">Risk/Reward</div><div class="font-mono text-sm">{{ snapshot.risk_reward != null ? snapshot.risk_reward : '—' }}</div></div>
-    </div>
-    <div class="panel rounded-2xl p-5 space-y-2">
-      <div class="text-sm font-semibold">Opportunity detail</div>
-      <div class="text-[11px] text-muted"><span class="text-fg">The bet:</span> {{ snapshot.opportunity_bet || '—' }}</div>
-      <div class="text-[11px] text-muted"><span class="text-fg">Needs to happen:</span> {{ snapshot.opportunity_needs_to_happen || '—' }}</div>
-      <div class="text-[11px] text-muted"><span class="text-fg">Breaks if:</span> {{ (snapshot.opportunity_thesis_breakers || []).join(' · ') || '—' }}</div>
     </div>
     <div class="panel rounded-2xl p-5 space-y-2">
       <div class="text-sm font-semibold">AI at recording</div>
@@ -2198,14 +2165,6 @@ createApp({
       }[c] || 'v-neutral';
     },
     stanceClass(s) { return { 'Strong Buy': 'strong-buy', 'Buy': 'buy', 'Hold': 'hold', 'Reduce': 'reduce', 'Avoid': 'avoid' }[s] || 'hold'; },
-    opportunityClass(cat) {
-      return {
-        'Established Opportunity': 'buy',
-        'Emerging Opportunity': 'early',
-        'Watch': 'hold',
-        'No Opportunity': 'avoid',
-      }[cat] || 'hold';
-    },
     accumulationClass(label) {
       return {
         'Accumulate': 'buy',

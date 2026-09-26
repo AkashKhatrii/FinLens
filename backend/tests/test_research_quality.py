@@ -41,9 +41,6 @@ class TestUnsupportedNumericalThresholds(unittest.TestCase):
     def test_prompt_forbids_invented_future_thresholds_across_fields(self):
         text = _prompt()
         self.assertIn("must not invent numerical thresholds", text)
-        self.assertIn("opportunity", text)
-        self.assertIn("accumulation", text)
-        self.assertIn("thesis_breakers", text)
         self.assertIn("what_to_watch", text)
         self.assertIn("bull_case", text)
         self.assertIn("bear_case", text)
@@ -316,17 +313,25 @@ class TestEventRiskLanguage(unittest.TestCase):
         self.assertIn("no immediate event risk", note)
 
 
-class TestAccumulationIndependence(unittest.TestCase):
-    """K. AI Accumulation remains independent of Long and Opportunity."""
+class TestNoAiAccumulationView(unittest.TestCase):
+    """K. The AI thesis no longer carries its own accumulation view; the
+    accumulation panel is driven by the deterministic engine."""
 
-    def test_prompt_keeps_accumulation_independent(self):
+    def test_thesis_schema_has_no_accumulation_view(self):
+        self.assertNotIn("accumulation", Thesis.model_fields)
+        self.assertNotIn("opportunity", Thesis.model_fields)
+        self.assertNotIn("key_risks", Thesis.model_fields)
+
+    def test_prompt_does_not_instruct_ai_accumulation(self):
         text = _prompt()
-        self.assertIn("independently determine accumulation", text)
-        self.assertIn("do not copy long, swing, opportunity", text)
-        self.assertIn("long hold does not mean watch for accumulation by default", text)
+        self.assertNotIn("independently determine accumulation", text)
+        self.assertNotIn("do not copy long, swing, opportunity", text)
+
+    def test_ui_still_renders_deterministic_accumulation_panel(self):
         html = (STATIC / "index.html").read_text()
         self.assertNotIn("Quantitative Long", html)
         self.assertIn("accumulation: data.accumulation", html)
+        self.assertIn("result.accumulation", html)
 
 
 class TestMissingBankKpisAreUncertainty(unittest.TestCase):

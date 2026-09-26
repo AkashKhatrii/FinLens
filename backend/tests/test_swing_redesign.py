@@ -238,10 +238,8 @@ class TestSwingAiContract(unittest.TestCase):
         self.assertIn("must not independently recalculate", swing_block)
         self.assertIn("high pe does not make swing hold", swing_block)
 
-    def test_long_and_opportunity_prompt_anchors_remain(self):
+    def test_long_prompt_anchors_remain(self):
         lower = SYSTEM_PROMPT.lower()
-        self.assertIn("established opportunity", lower)
-        self.assertIn("emerging opportunity", lower)
         self.assertIn("entry/setup is secondary for long", lower)
 
 
@@ -417,15 +415,10 @@ class TestSwingAiIndependencePrompt(unittest.TestCase):
         self.assertIn("pnb will deliver faster fy28 growth", self.lower)
 
     def test_long_remains_independent(self):
-        long_block = self.text.split("**Long: 1–3+ years**")[1].split("## Opportunity")[0].lower()
+        long_block = self.text.split("**Long: 1–3+ years**")[1].split("### 6.")[0].lower()
         self.assertIn("is this a good company/business worth owning", long_block)
         self.assertIn("a weak short-term chart should not by itself invalidate", long_block)
         self.assertIn("not driven by rsi, bollinger, moving averages, or short-term price action", self.lower)
-
-    def test_opportunity_remains_independent_and_long_term(self):
-        self.assertIn("Do not use short-term price trends, technical indicators, or entry timing to determine Opportunity.", self.text)
-        self.assertIn("not a third horizon", self.lower)
-        self.assertIn("do not use swing technicals to justify opportunity", self.lower)
 
     def test_bank_specific_evidence_rules_remain(self):
         self.assertIn("bank_fundamentals", self.lower)

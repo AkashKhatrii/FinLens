@@ -28,7 +28,7 @@ from ..config import (
     provider_model,
     resolve_provider,
 )
-from .prompts import SYSTEM_PROMPT, build_json_user_prompt, build_user_prompt
+from .prompts import build_json_user_prompt, build_system_prompt, build_user_prompt
 from .schemas import Thesis
 
 log = logging.getLogger(__name__)
@@ -158,7 +158,9 @@ def _claude_parse_options(max_tokens: int = 8192) -> dict[str, Any]:
     }
 
 
-def generate_thesis(fact_pack: dict[str, Any], ticker: str, name: str) -> dict[str, Any] | None:
+def generate_thesis(
+    fact_pack: dict[str, Any], ticker: str, name: str, market: str = "IN"
+) -> dict[str, Any] | None:
     if not AI_ENABLED:
         return None
     st = status()
@@ -171,8 +173,8 @@ def generate_thesis(fact_pack: dict[str, Any], ticker: str, name: str) -> dict[s
     payload = json.dumps(fact_pack, indent=2, sort_keys=True, default=str)
 
     if spec["kind"] == "anthropic":
-        return _claude_thesis(payload, ticker, name, model)
-    return _openai_compat_thesis(spec, payload, ticker, name, key, model)
+        return _claude_thesis(payload, ticker, name, model, market)
+    return _openai_compat_thesis(spec, payload, ticker, name, key, model, market)
 
 
 def _openai_complete(*, client: OpenAI, model: str, messages: list[dict[str, str]], max_tokens: int):
@@ -204,15 +206,16 @@ def _parse_json_object(text: str) -> dict:
 
 def _openai_compat_thesis(
     spec: dict[str, Any], payload: str, ticker: str, name: str, provider: str, model: str,
+    market: str = "IN",
 ) -> dict[str, Any]:
     client = _openai_client(spec)
-    user = build_json_user_prompt(payload, ticker, name, Thesis.model_json_schema())
+    user = build_json_user_prompt(payload, ticker, name, Thesis.model_json_schema(), market)
     try:
         response = _openai_complete(
             client=client,
             model=model,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": build_system_prompt(market)},
                 {"role": "user", "content": user},
             ],
             max_tokens=8192,
@@ -267,7 +270,9 @@ def _openai_compat_thesis(
     }
 
 
-def _claude_thesis(payload: str, ticker: str, name: str, model: str) -> dict[str, Any] | None:
+def _claude_thesis(
+    payload: str, ticker: str, name: str, model: str, market: str = "IN"
+) -> dict[str, Any] | None:
     client = _get_anthropic_client()
     if client is None:
         return None
@@ -276,10 +281,10 @@ def _claude_thesis(payload: str, ticker: str, name: str, model: str) -> dict[str
             model=model,
             system=[{
                 "type": "text",
-                "text": SYSTEM_PROMPT,
+                "text": build_system_prompt(market),
                 "cache_control": {"type": "ephemeral"},
             }],
-            messages=[{"role": "user", "content": build_user_prompt(payload, ticker, name)}],
+            messages=[{"role": "user", "content": build_user_prompt(payload, ticker, name, market)}],
             output_format=Thesis,
             **_claude_parse_options(),
         )

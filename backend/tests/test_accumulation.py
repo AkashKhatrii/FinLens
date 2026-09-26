@@ -5,11 +5,7 @@ import json
 import unittest
 from pathlib import Path
 
-from app.engine.accumulation import (
-    accumulation_from_analysis,
-    classify_accumulation,
-    public_accumulation_from_ai,
-)
+from app.engine.accumulation import accumulation_from_analysis, classify_accumulation
 from app.engine.bank_scoring import BANK_GROWTH_WEIGHTS, BANK_HEALTH_WEIGHTS, BANK_PROFIT_WEIGHTS
 from app.engine.scoring import HORIZONS, OVERALL_BLEND, VERDICT_BANDS
 from app.engine.metric_weights import VALUATION
@@ -479,27 +475,14 @@ class TestAccumulationClassifier(unittest.TestCase):
         self.assertEqual(view["label"], "Accumulate")
         analysis = ANALYSIS.read_text()
         self.assertIn("deterministic_accumulation", analysis)
-        self.assertIn("public_accumulation_from_ai", analysis)
         self.assertLess(analysis.find("deterministic_accumulation"), analysis.find("if not use_ai"))
 
-    def test_public_accumulation_follows_ai_not_deterministic_engine(self):
-        engine = accumulation_from_analysis(
-            _result(long_verdict="Hold"),
-            opportunity_category="Established Opportunity",
-        )
-        self.assertEqual(engine["label"], "Accumulate Gradually")
-        public = public_accumulation_from_ai({
-            "state": "Watch for Accumulation",
-            "rationale": "The franchise is interesting, but earnings durability is not yet proven.",
-            "approach": "Sustained improvement in returns and cash conversion would make gradual accumulation more compelling.",
-        })
-        self.assertEqual(public["label"], "Watch for Accumulation")
-        self.assertEqual(public["source"], "ai")
-        self.assertNotIn("Quantitative Long", public["rationale"])
-        self.assertNotIn("ai_disagreement", public)
+    def test_public_accumulation_is_the_deterministic_engine_view(self):
+        engine = accumulation_from_analysis(_result(long_verdict="Hold"))
+        self.assertEqual(engine["label"], "Watch for Accumulation")
         analysis = ANALYSIS.read_text()
-        self.assertIn("public_accumulation_from_ai", analysis)
-        self.assertNotIn("reconcile_ai_accumulation", analysis)
+        self.assertIn('result["accumulation"] = result["deterministic_accumulation"]', analysis)
+        self.assertNotIn("public_accumulation_from_ai", analysis)
 
 
 class TestAccumulationDoesNotTouchExistingScores(unittest.TestCase):
@@ -529,21 +512,13 @@ class TestAccumulationDoesNotTouchExistingScores(unittest.TestCase):
 
 
 class TestAccumulationPromptAndUi(unittest.TestCase):
-    def test_prompt_defines_accumulation_separately_from_horizons(self):
+    def test_prompt_defines_no_ai_accumulation_view(self):
         text = PROMPTS.read_text()
         lower = text.lower()
-        self.assertIn("accumulation", lower)
-        self.assertIn("not a fourth horizon", lower)
-        self.assertIn("not a trading signal", lower)
-        self.assertIn("should not simply copy long", lower)
+        self.assertNotIn("## accumulation", lower)
+        self.assertNotIn("independently determine accumulation", lower)
         self.assertIn("exactly two entries", lower)
-        self.assertIn("debug context only", lower)
-        self.assertIn("do not copy it", lower)
-        self.assertNotIn("explain the fact-pack accumulation", lower)
-        self.assertNotIn("do not silently replace", lower)
-        self.assertIn("roe needs to reach 15%", lower)
         self.assertIn("data gap", lower)
-        self.assertIn("profit cagr is only 3.6%", lower)
 
     def test_ui_has_accumulation_section(self):
         html = (STATIC / "index.html").read_text()
@@ -561,7 +536,18 @@ class TestAccumulationPromptAndUi(unittest.TestCase):
 
 
 class TestAccumulationSchema(unittest.TestCase):
-    def test_thesis_accumulation_is_optional_so_existing_theses_still_validate(self):
+    """The AI thesis no longer carries accumulation/opportunity views."""
+
+    def test_thesis_has_no_accumulation_or_opportunity_fields(self):
+        from app.ai.schemas import Thesis
+
+        self.assertNotIn("accumulation", Thesis.model_fields)
+        self.assertNotIn("opportunity", Thesis.model_fields)
+        self.assertNotIn("key_risks", Thesis.model_fields)
+        self.assertIn("bear_case", Thesis.model_fields)
+        self.assertIn("horizon_calls", Thesis.model_fields)
+
+    def test_existing_theses_without_removed_fields_still_validate(self):
         from app.ai.schemas import Thesis
 
         thesis = Thesis.model_validate({
@@ -571,7 +557,6 @@ class TestAccumulationSchema(unittest.TestCase):
             "valuation_verdict": "Valuation is not obviously excessive on the supplied multiples.",
             "bull_case": ["Growth is intact", "Balance sheet is usable", "Valuation is reasonable"],
             "bear_case": ["Returns are still mediocre", "Execution risk remains", "Coverage is thin"],
-            "key_risks": ["Execution fails", "Cycle turns", "Valuation rerates higher"],
             "what_to_watch": ["Next quarter growth", "Margin direction", "Leverage"],
             "horizon_calls": [
                 {
@@ -585,58 +570,18 @@ class TestAccumulationSchema(unittest.TestCase):
                     "what_would_change_it": "A material change in the cited evidence.",
                 },
             ],
-            "opportunity": {
-                "category": "Watch",
-                "rationale": "Evidence is mixed; wait for confirmation.",
-                "the_bet": "Taking a position would amount to waiting for clearer evidence.",
-                "needs_to_happen": "Reported economics need to improve with confirmation.",
-                "catalysts": ["Next results print"],
-                "thesis_breakers": ["The cited improvement reverses"],
-                "risk_level": "Medium",
-            },
             "contrarian_note": "The score cannot see trajectory that is only partly in the numbers.",
             "data_caveats": ["No concall transcript"],
         })
-        self.assertIsNone(thesis.accumulation)
-
-    def test_schema_has_qualitative_accumulation_states(self):
-        from app.ai.schemas import Thesis
-        schema = Thesis.model_json_schema()
-        dumped = str(schema).lower()
-        self.assertIn("accumulate gradually", dumped)
-        self.assertIn("watch for accumulation", dumped)
-        self.assertIn("do not accumulate", dumped)
-        self.assertIn("approach", dumped)
-        self.assertNotIn("explain the fact-pack accumulation", dumped)
-        self.assertNotIn("do not silently replace", dumped)
+        self.assertEqual(thesis.horizon_calls[1].stance, "Hold")
 
 
-class TestAccumulationIsAiOwned(unittest.TestCase):
-    def test_ai_accumulation_can_differ_from_long_hold(self):
-        public = public_accumulation_from_ai({
-            "state": "Accumulate Gradually",
-            "rationale": "The franchise is proven and cash conversion is healthy, but valuation leaves less room for a large entry.",
-            "approach": "A less demanding multiple, with the business case intact, would make a larger entry more reasonable.",
-        })
-        self.assertEqual(public["label"], "Accumulate Gradually")
-        self.assertNotEqual(public["label"], "Hold")
+class TestAccumulationIsDeterministic(unittest.TestCase):
+    """The accumulation panel is driven by the deterministic engine, not the AI."""
 
-    def test_ai_accumulation_can_differ_from_established_opportunity(self):
-        public = public_accumulation_from_ai({
-            "state": "Watch for Accumulation",
-            "rationale": "The long-term opportunity is interesting, but earnings durability is not yet proven.",
-            "approach": "Repeated evidence that returns and asset quality are stable would make gradual accumulation more compelling.",
-        })
-        self.assertEqual(public["label"], "Watch for Accumulation")
-
-    def test_fact_pack_omits_deterministic_accumulation_rationale(self):
+    def test_fact_pack_has_no_accumulation_block(self):
         from app.analysis import _fact_pack
 
-        engine = accumulation_from_analysis(
-            _result(long_verdict="Hold"),
-            opportunity_category="Established Opportunity",
-        )
-        self.assertIn("Quantitative Long", " ".join(engine.get("accumulation_reasons") or []))
         payload = _result(long_verdict="Hold")
         payload.update({
             "company": {"name": "Test", "sector": "Industrials"},
@@ -648,43 +593,24 @@ class TestAccumulationIsAiOwned(unittest.TestCase):
             "news": [],
             "pros": [],
             "cons": [],
-            "deterministic_accumulation": engine,
         })
         pack = _fact_pack(payload)
-        dumped = json.dumps(pack)
-        lower = dumped.lower()
-        self.assertNotIn("accumulation", pack)
-        self.assertIn("deterministic_accumulation", pack)
-        self.assertEqual(pack["deterministic_accumulation"].get("usage"), "debug_context_only")
-        self.assertNotIn("rationale", pack["deterministic_accumulation"])
-        self.assertNotIn("accumulation_reasons", pack["deterministic_accumulation"])
-        self.assertNotIn("Quantitative Long", dumped)
-        self.assertNotIn("emerging fundamental concern", lower)
-        self.assertNotIn("base Long and Opportunity mapping", dumped)
+        self.assertNotIn("accumulation", json.dumps(pack).lower())
 
-    def test_prompt_does_not_instruct_copying_deterministic_accumulation(self):
+    def test_prompt_does_not_instruct_ai_accumulation(self):
         lower = PROMPTS.read_text().lower()
-        self.assertIn("debug context only", lower)
-        self.assertIn("not an instruction", lower)
-        self.assertNotIn("explain the fact-pack accumulation.state", lower)
-        self.assertNotIn("if you disagree with the deterministic", lower)
-
-    def test_prompt_treats_mixed_evidence_as_tension_not_automatic_deterioration(self):
-        lower = PROMPTS.read_text().lower()
-        self.assertIn("forcing the situation into a deterioration narrative", lower)
-        self.assertIn("profit cagr is only 3.6%", lower)
-        self.assertIn("durability remains uncertain", lower)
+        self.assertNotIn("independently determine accumulation", lower)
+        self.assertNotIn("do not copy long, swing, opportunity", lower)
 
     def test_prompt_treats_missing_bank_kpis_as_uncertainty(self):
         lower = PROMPTS.read_text().lower()
         self.assertIn("missing bank-specific fundamentals are a data gap", lower)
         self.assertIn("not evidence of weakness", lower)
 
-    def test_prompt_forbids_invented_numerical_recovery_thresholds(self):
+    def test_prompt_forbids_invented_numerical_thresholds(self):
         lower = PROMPTS.read_text().lower()
-        self.assertIn("roe needs to reach 15%", lower)
-        self.assertIn("two to three quarters above 15% roe", lower)
-        self.assertIn("do not invent numerical thresholds", lower)
+        self.assertIn("must not invent numerical thresholds", lower)
+        self.assertIn("two to three consecutive quarters of x%", lower)
 
     def test_dynamic_headings_cover_all_four_states(self):
         html = (STATIC / "index.html").read_text()
@@ -694,69 +620,19 @@ class TestAccumulationIsAiOwned(unittest.TestCase):
         self.assertIn("'Watch for Accumulation': 'Why wait?'", html)
         self.assertIn("'Do Not Accumulate': 'Why not accumulate?'", html)
 
-    def test_schema_accumulation_view_requires_approach_not_engine_explanation(self):
-        from app.ai.schemas import AccumulationView
-        view = AccumulationView.model_validate({
-            "state": "Accumulate Gradually",
-            "rationale": "Proven franchise, but valuation argues for a measured approach.",
-            "approach": "A less demanding multiple would make a larger entry more reasonable.",
-        })
-        self.assertEqual(view.state, "Accumulate Gradually")
-        self.assertEqual(view.approach.startswith("A less demanding"), True)
-        dumped = str(AccumulationView.model_json_schema()).lower()
-        self.assertNotIn("explain the fact-pack accumulation", dumped)
-        self.assertNotIn("silently replace", dumped)
-
 
 class TestAccumulationPublicWiring(unittest.TestCase):
-    """AI accumulation must reach the public result the UI actually reads."""
+    """The deterministic accumulation view must reach the public result the UI reads."""
 
-    def test_valid_ai_accumulation_reaches_public_result(self):
-        public = public_accumulation_from_ai({
-            "state": "Watch for Accumulation",
-            "rationale": "Earnings durability is not yet proven.",
-            "approach": "Repeated evidence of stable returns would make gradual accumulation more compelling.",
-        })
-        result = {"ai": {"thesis": {"accumulation": {"state": "Watch for Accumulation"}}}}
-        result["accumulation"] = public
-        self.assertEqual(result["accumulation"]["state"], "Watch for Accumulation")
-        self.assertEqual(result["accumulation"]["rationale"], "Earnings durability is not yet proven.")
-        self.assertEqual(result["accumulation"]["approach"].startswith("Repeated evidence"), True)
-        self.assertNotIn("Quantitative Long", result["accumulation"]["rationale"])
-
-    def test_serialized_result_contains_ai_accumulation_when_ai_returns_it(self):
-        public = public_accumulation_from_ai({
-            "state": "Accumulate Gradually",
-            "rationale": "Proven franchise, but valuation argues for patience.",
-            "approach": "A less demanding multiple would make a larger entry more reasonable.",
-        })
-        payload = json.dumps({"accumulation": public})
-        loaded = json.loads(payload)["accumulation"]
-        self.assertEqual(loaded["state"], "Accumulate Gradually")
-        self.assertIn("rationale", loaded)
-        self.assertIn("approach", loaded)
-
-    def test_deterministic_accumulation_is_not_substituted_as_public_result(self):
-        engine = accumulation_from_analysis(
-            _result(long_verdict="Hold"),
-            opportunity_category="Established Opportunity",
-        )
-        public = public_accumulation_from_ai({
-            "state": "Watch for Accumulation",
-            "rationale": "Improvement is not yet durable.",
-            "approach": "Wait for confirmation in reported returns.",
-        })
+    def test_deterministic_accumulation_is_the_public_result(self):
+        engine = accumulation_from_analysis(_result(long_verdict="Hold"))
         result = {
             "deterministic_accumulation": engine,
-            "accumulation": public,
+            "accumulation": engine,
         }
-        self.assertEqual(result["accumulation"]["state"], "Watch for Accumulation")
-        self.assertNotEqual(result["accumulation"]["rationale"], engine["rationale"])
-        self.assertNotIn("Quantitative Long", result["accumulation"]["rationale"])
+        self.assertEqual(result["accumulation"]["label"], "Watch for Accumulation")
         analysis = ANALYSIS.read_text()
-        self.assertIn('result["accumulation"] = public', analysis)
-        self.assertNotIn('result["accumulation"] = accumulation_from_analysis', analysis)
-        self.assertNotIn('result["accumulation"] = result["deterministic_accumulation"]', analysis)
+        self.assertIn('result["accumulation"] = result["deterministic_accumulation"]', analysis)
 
     def test_run_thesis_copies_public_accumulation_onto_the_result(self):
         html = (STATIC / "index.html").read_text()
@@ -764,7 +640,6 @@ class TestAccumulationPublicWiring(unittest.TestCase):
         self.assertIn("accumulation:", thesis_fn)
         self.assertIn("data.accumulation", thesis_fn)
         self.assertNotIn("deterministic_accumulation", thesis_fn)
-        self.assertNotIn("this.result = { ...this.result, ai: data.ai || { error: 'No thesis returned.' } };", thesis_fn)
 
     def test_ui_card_reads_public_accumulation_state_or_label(self):
         html = (STATIC / "index.html").read_text()
@@ -772,7 +647,6 @@ class TestAccumulationPublicWiring(unittest.TestCase):
         self.assertIn("v-if=\"result.accumulation\"", card)
         self.assertIn("accumulationWhyHeading", card)
         self.assertIn("result.accumulation.rationale", card)
-        self.assertIn("result.accumulation.approach", card)
         self.assertIn("accumulationLabel", html)
 
     def test_ui_headings_for_all_four_public_states(self):
