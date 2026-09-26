@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from ..providers.base import StockBundle
-from .common import Metric, Pillar, band, fmt_money, safe_div
+from .common import Metric, Pillar, band, fmt_money, fmt_turnover, safe_div
 from .fundamentals import FundamentalFacts
 from .metric_weights import EARNINGS, RISK, SENTIMENT
 from .sector import PROFILE_BANK, apply_profile, classify
@@ -40,6 +40,7 @@ class RiskFacts:
     max_drawdown_pct: float | None = None
     # Average daily turnover: ₹ Cr/day for IN, $M/day for US.
     liquidity_per_day: float | None = None
+    liquidity_display: str | None = None
     downside_deviation_pct: float | None = None
     red_flags: list[dict[str, str]] = field(default_factory=list)
 
@@ -91,6 +92,7 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
             turnover_raw = (hist["Close"] * hist["Volume"]).tail(60).mean()
             scale = 1e7 if market == "IN" else 1e6  # ₹ Cr/day vs $M/day
             r.liquidity_per_day = float(turnover_raw / scale) if turnover_raw else None
+            r.liquidity_display = fmt_turnover(r.liquidity_per_day, market)
 
     p.metrics.append(Metric(
         "beta", "Beta vs Index", r.beta, "",

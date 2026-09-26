@@ -50,6 +50,19 @@ def fmt_price(value: float | None, market: str = "IN") -> str:
     return f"{currency_symbol_for(market)}{value:,.2f}"
 
 
+def fmt_turnover(per_day: float | None, market: str = "IN") -> str:
+    """Average daily turnover in the market's own scale.
+
+    Takes the already-scaled value (₹ Cr/day for IN, $M/day for US) and
+    renders it with the right symbol and unit.
+    """
+    if per_day is None:
+        return "—"
+    sym = currency_symbol_for(market)
+    unit = "Cr" if market == "IN" else "M"
+    return f"{sym}{per_day:,.0f} {unit}/day"
+
+
 @dataclass
 class Metric:
     key: str

@@ -51,6 +51,7 @@ class ValuationFacts:
     earnings_yield: float | None = None
     bond_yield: float | None = None
     dcf_value: float | None = None
+    dcf_value_display: str | None = None
     dcf_upside_pct: float | None = None
     dcf_assumptions: dict[str, Any] = field(default_factory=dict)
     analyst_upside_pct: float | None = None
@@ -372,6 +373,7 @@ def _dcf(v: ValuationFacts, bundle: StockBundle, f: FundamentalFacts,
         return
 
     v.dcf_value = equity_value / shares
+    v.dcf_value_display = fmt_money(v.dcf_value, bundle.market)
     if bundle.quote.price:
         v.dcf_upside_pct = (v.dcf_value / bundle.quote.price - 1) * 100
     v.dcf_assumptions = {

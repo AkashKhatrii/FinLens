@@ -786,7 +786,7 @@ tailwind.config = {
         </div>
         <div v-else-if="dcf" class="text-[11px] text-muted bg-inset rounded-lg p-3 border border-edge leading-relaxed">
           <span class="text-muted"><term-tip id="dcf" label="DCF"></term-tip> assumptions:</span>
-          base <term-tip id="fcf" label="FCF"></term-tip> {{ dcf.base_fcf_display || ('₹' + fmtCr(dcf.base_fcf_cr) + ' Cr') }}, growing {{ dcf.stage1_growth_pct }}% fading to
+          base <term-tip id="fcf" label="FCF"></term-tip> {{ dcf.base_fcf_display || baseFcfFallback(dcf) }}, growing {{ dcf.stage1_growth_pct }}% fading to
           <term-tip id="terminalgrowth" label="terminal growth"></term-tip> {{ dcf.terminal_growth_pct }}%,
           <term-tip id="discountrate" label="discounted"></term-tip> at {{ dcf.discount_rate_pct }}%
           (<term-tip id="beta" label="beta"></term-tip> {{ dcf.beta_used }}) over {{ dcf.horizon_years }} years.
@@ -1571,7 +1571,7 @@ createApp({
         { k: 'P/E', v: n(v.pe) }, { k: '5Y median P/E', v: n(v.pe_median_5y) },
         { k: 'P/B', v: n(v.pb) }, { k: 'EV/EBITDA', v: n(v.ev_ebitda) },
         { k: 'PEG', v: n(v.peg) }, { k: 'Div yield', v: v.dividend_yield == null ? '—' : v.dividend_yield.toFixed(2) + '%' },
-        { k: 'DCF value', v: v.dcf_value == null ? '—' : '₹' + v.dcf_value.toFixed(0) },
+        { k: 'DCF value', v: v.dcf_value_display || (v.dcf_value == null ? '—' : this.cs() + v.dcf_value.toFixed(0)) },
         { k: 'DCF upside', v: v.dcf_upside_pct == null ? '—' : v.dcf_upside_pct.toFixed(1) + '%' },
       ];
     },
@@ -1581,7 +1581,7 @@ createApp({
         { k: 'Beta', v: n(r.beta) },
         { k: 'Volatility', v: r.volatility_pct == null ? '—' : r.volatility_pct.toFixed(1) + '%' },
         { k: 'Max drawdown', v: r.max_drawdown_pct == null ? '—' : r.max_drawdown_pct.toFixed(1) + '%' },
-        { k: 'Turnover/day', v: r.liquidity_cr_per_day == null ? '—' : '₹' + r.liquidity_cr_per_day.toFixed(0) + ' Cr' },
+        { k: 'Turnover/day', v: r.liquidity_display || '—' },
       ];
     },
     glossaryHits() {
@@ -2146,7 +2146,7 @@ createApp({
       if (!q) return;
       this.aiLoading = true;
       try {
-        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=true&provider=${encodeURIComponent(this.aiProvider)}`);
+        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&market=${encodeURIComponent(this.market || 'IN')}&ai=true&provider=${encodeURIComponent(this.aiProvider)}`);
         const data = await res.json();
         if (!res.ok) {
           const d = data.detail;
@@ -2173,6 +2173,16 @@ createApp({
     togglePillar(k) { this.activePillar = k; document.querySelector('table')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); },
     num(v) { return v == null ? '—' : Number(v).toLocaleString('en-IN', { maximumFractionDigits: 2 }); },
     fmtCr(v) { return v == null ? '—' : Number(v).toLocaleString('en-IN', { maximumFractionDigits: 0 }); },
+    baseFcfFallback(d) {
+      // Legacy fallback for cached results predating base_fcf_display.
+      // base_fcf_cr is value/1e7, so for US rescale to $M/$B.
+      if (!d || d.base_fcf_cr == null) return '—';
+      if ((this.market || 'IN').toUpperCase() === 'US') {
+        const m = d.base_fcf_cr * 10;
+        return this.cs() + (m >= 1000 ? (m / 1000).toFixed(1) + 'B' : m.toFixed(0) + 'M');
+      }
+      return this.cs() + this.fmtCr(d.base_fcf_cr) + ' Cr';
+    },
     pctColor(p) { return p == null ? 'text-faint' : p >= 75 ? 'text-emerald-400' : p >= 45 ? 'text-amber-400' : 'text-red-400'; },
     pctBg(p) { return p == null ? 'bg-edge' : p >= 75 ? 'bg-emerald-500' : p >= 45 ? 'bg-amber-500' : 'bg-red-500'; },
     scoreColor(s) { return s == null ? 'text-faint' : s >= 66 ? 'text-emerald-400' : s >= 50 ? 'text-amber-400' : 'text-red-400'; },
