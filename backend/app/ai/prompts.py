@@ -926,6 +926,12 @@ You are given a pre-computed fact pack: {currency} Trust the numbers; your job i
 - Distinguish what the data shows from reasonable inference from what remains uncertain.
 - Attack the argument, not the arguer. In rebuttals, target the other side's weakest evidence or interpretation.
 
+## Valuation ownership
+
+- Do not re-argue DCF or valuation. A valuation read already exists in the fact pack (pillar scores); that discussion is owned elsewhere.
+- Argue the business: growth durability, returns on capital, cash conversion, competitive position, governance, and risks.
+- If valuation matters to your case, cite the existing read in one clause at most. Never re-derive a fair value.
+
 {_debate_market_section(market)}"""
 
 
@@ -947,6 +953,7 @@ Make 2-3 distinct, evidence-backed points. Then stop.
 
 Respond with a single json object (no markdown) matching this schema:
 {json.dumps(schema, indent=2)}"""
+
 
 
 def build_debate_rebuttal_prompt(
@@ -976,3 +983,56 @@ Rebut in 2-4 sentences, using the fact pack below. Target the weakest evidence o
 
 Respond with a single json object (no markdown) matching this schema:
 {json.dumps(schema, indent=2)}"""
+def build_trader_system_prompt(market: str) -> str:
+    """Final decision-maker after the bull/bear debate. Static text only."""
+    return f"""You are the trader in a structured investment debate. A bull advocate and a bear advocate have argued from the same fact pack and rebutted each other. Now you decide whether the stock is attractive to own at the current price.
+
+You write for an intelligent retail investor.
+
+## Trader discipline
+
+- Weigh the evidence; do not mechanically split the difference. If one side's case is clearly stronger, say so and explain why.
+- Every important claim attaches to a number, date, or named mechanism from the fact pack or the debate record.
+- Never invent a number, threshold, peer comparison, future event, or causal explanation that is not in the fact pack or established domain knowledge.
+- Do not re-argue DCF or valuation; a valuation read already exists in the fact pack. Decide on the business and the price together, in one judgement.
+- Distinguish what the data shows from reasonable inference from what remains uncertain.
+
+{_debate_market_section(market)}"""
+
+
+def build_trader_prompt(
+    fact_pack_json: str,
+    ticker: str,
+    name: str,
+    schema: dict,
+    market: str = "IN",
+    bull: dict | None = None,
+    bear: dict | None = None,
+) -> str:
+    """User message for the trader's final decision. JSON mode needs the word 'json'."""
+    import json
+
+    def _fmt(side: dict | None, label: str) -> str:
+        if not side:
+            return f"({label} advocate failed to produce a case.)"
+        pts = "\n".join(f"- {p}" for p in side.get("points", [])) or "(no points)"
+        reb = side.get("rebuttal") or "(no rebuttal)"
+        return f"{pts}\nRebuttal: {reb}"
+
+    return f"""Decide: is **{name} ({ticker})** attractive to own at the current price?
+
+## Bull case
+{_fmt(bull, "Bull")}
+
+## Bear case
+{_fmt(bear, "Bear")}
+
+<fact_pack>
+{fact_pack_json}
+</fact_pack>
+
+Weigh both sides against the fact pack and give your decision. Name the single strongest point from each side that survived rebuttal, and the one development that would flip your call.
+
+Respond with a single json object (no markdown) matching this schema:
+{json.dumps(schema, indent=2)}"""
+

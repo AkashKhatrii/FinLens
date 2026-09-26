@@ -5,12 +5,14 @@ from unittest.mock import patch
 import pytest
 from pydantic import ValidationError
 
-from app.ai.schemas import DebateOpening, DebateRebuttal
+from app.ai.schemas import DebateOpening, DebateRebuttal, TraderDecision
 from app.ai import analyst
 from app.ai.prompts import (
     build_debate_opening_prompt,
     build_debate_rebuttal_prompt,
     build_debate_system_prompt,
+    build_trader_prompt,
+    build_trader_system_prompt,
 )
 
 
@@ -61,6 +63,12 @@ _OK_STATUS = {"available": True, "provider": "deepseek", "model": "deepseek-chat
 
 
 def _fake_call(*, spec, model, provider_key, system, user, schema_model):
+    if schema_model is TraderDecision:
+        return TraderDecision(
+            decision="positive", conviction="medium", rationale="Bull evidence stronger.",
+            strongest_bull_point="Durable growth.", strongest_bear_point="High multiple.",
+            what_would_change_mind="Growth stalls.",
+        )
     side = "bull" if "the bull case" in user or "the bull advocate" in user else "bear"
     if schema_model is DebateOpening:
         return DebateOpening(side=side, points=[f"{side} point one.", f"{side} point two."])
@@ -80,6 +88,8 @@ def test_run_debate_happy_path():
     assert d["bull"]["rebuttal"] == "bull rebuttal text."
     assert d["errors"] == []
     assert out["provider"] == "deepseek"
+    assert d["trader"]["decision"] == "positive"
+    assert d["trader"]["what_would_change_mind"] == "Growth stalls."
 
 
 def test_run_debate_unavailable_ai():
@@ -90,6 +100,8 @@ def test_run_debate_unavailable_ai():
 
 def test_run_debate_partial_failure_keeps_working_side():
     def flaky(*, spec, model, provider_key, system, user, schema_model):
+        if schema_model is TraderDecision:
+            raise RuntimeError("trader down")
         side = "bull" if "the bull case" in user or "the bull advocate" in user else "bear"
         if schema_model is DebateOpening and side == "bear":
             raise RuntimeError("boom")
@@ -106,3 +118,47 @@ def test_run_debate_partial_failure_keeps_working_side():
     assert d["bull"]["points"] == ["bull point."]
     assert d["bear"]["points"] == []  # failed side degrades gracefully
     assert any("bear opening failed" in e for e in d["errors"])
+
+
+def test_debate_system_prompt_bans_dcf_relitigation():
+    for side in ("bull", "bear"):
+        p = build_debate_system_prompt("US", side)
+        assert "Do not re-argue DCF" in p
+        assert "valuation read already exists" in p
+
+
+def test_trader_schema_and_prompt():
+    t = TraderDecision(
+        decision="neutral", conviction="low", rationale="Both sides weak.",
+        strongest_bull_point="b", strongest_bear_point="s",
+        what_would_change_mind="New data.",
+    )
+    assert t.decision == "neutral"
+    with pytest.raises(ValidationError):
+        TraderDecision(decision="maybe", conviction="low", rationale="x",
+                       strongest_bull_point="b", strongest_bear_point="s",
+                       what_would_change_mind="y")
+    schema = TraderDecision.model_json_schema()
+    pr = build_trader_prompt(
+        '{"price": 1}', "ANET", "Arista", schema, "US",
+        {"points": ["bull pt"], "rebuttal": "bull reb"},
+        {"points": ["bear pt"], "rebuttal": "bear reb"},
+    )
+    assert "json" in pr and "bull pt" in pr and "bear pt" in pr
+    assert "Do not re-argue DCF" in build_trader_system_prompt("IN")
+
+
+def test_run_debate_trader_failure_degrades_gracefully():
+    def flaky(*, spec, model, provider_key, system, user, schema_model):
+        if schema_model is TraderDecision:
+            raise RuntimeError("trader down")
+        return _fake_call(spec=spec, model=model, provider_key=provider_key,
+                          system=system, user=user, schema_model=schema_model)
+
+    with (
+        patch.object(analyst, "status", return_value=_OK_STATUS),
+        patch.object(analyst, "_debate_single_call", side_effect=flaky),
+    ):
+        out = analyst.run_debate({"price": 100}, "ANET", "Arista", "US")
+    assert out["debate"]["trader"] is None
+    assert any("trader decision failed" in e for e in out["debate"]["errors"])

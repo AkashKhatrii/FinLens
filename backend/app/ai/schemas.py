@@ -97,3 +97,25 @@ class DebateRebuttal(BaseModel):
         description="2-4 sentences rebutting the other side's opening. Attack its weakest "
                     "evidence or interpretation using fact-pack numbers. Do not invent facts."
     )
+
+
+class TraderDecision(BaseModel):
+    decision: Literal["positive", "negative", "neutral"] = Field(
+        description="Whether the stock is attractive to own at the current price, after weighing both sides."
+    )
+    conviction: Literal["low", "medium", "high"] = Field(
+        description="How strongly the evidence supports the decision."
+    )
+    rationale: str = Field(
+        description="3-5 sentences: which side's evidence was stronger and why. "
+                    "Do not mechanically split the difference."
+    )
+    strongest_bull_point: str = Field(
+        description="One line: the bull argument that best survived the bear's rebuttal."
+    )
+    strongest_bear_point: str = Field(
+        description="One line: the bear argument that best survived the bull's rebuttal."
+    )
+    what_would_change_mind: str = Field(
+        description="One line: the single development that would flip this decision."
+    )

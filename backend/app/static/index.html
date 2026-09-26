@@ -794,6 +794,30 @@ tailwind.config = {
         <div v-if="debate.debate.errors && debate.debate.errors.length" class="md:col-span-2 text-[10px] text-faint">
           {{ debate.debate.errors.join(' · ') }}
         </div>
+        <div v-if="debate.debate.trader" class="md:col-span-2 bg-inset rounded-lg p-4 border border-violet-500/25">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="text-[11px] font-semibold text-violet-300">Trader's decision</div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold" :class="verdictClass(traderClass(debate.debate.trader.decision))">{{ debate.debate.trader.decision }}</span>
+              <span class="text-[10px] text-faint">conviction: {{ debate.debate.trader.conviction }}</span>
+            </div>
+          </div>
+          <p class="text-xs text-muted leading-relaxed mb-3">{{ debate.debate.trader.rationale }}</p>
+          <div class="grid md:grid-cols-3 gap-3">
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-emerald-400/80 mb-1">Strongest bull point</div>
+              <p class="text-xs text-muted leading-relaxed">{{ debate.debate.trader.strongest_bull_point }}</p>
+            </div>
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-rose-400/80 mb-1">Strongest bear point</div>
+              <p class="text-xs text-muted leading-relaxed">{{ debate.debate.trader.strongest_bear_point }}</p>
+            </div>
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-faint mb-1">What would change my mind</div>
+              <p class="text-xs text-muted leading-relaxed">{{ debate.debate.trader.what_would_change_mind }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2234,6 +2258,7 @@ createApp({
       }[c] || 'v-neutral';
     },
     stanceClass(s) { return { 'Strong Buy': 'strong-buy', 'Buy': 'buy', 'Hold': 'hold', 'Reduce': 'reduce', 'Avoid': 'avoid' }[s] || 'hold'; },
+    traderClass(d) { return { 'positive': 'buy', 'negative': 'reduce', 'neutral': 'hold' }[d] || 'hold'; },
     accumulationClass(label) {
       return {
         'Accumulate': 'buy',

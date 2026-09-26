@@ -402,8 +402,10 @@ def run_debate(
         build_debate_opening_prompt,
         build_debate_rebuttal_prompt,
         build_debate_system_prompt,
+        build_trader_prompt,
+        build_trader_system_prompt,
     )
-    from .schemas import DebateOpening, DebateRebuttal
+    from .schemas import DebateOpening, DebateRebuttal, TraderDecision
 
     started = time.time()
     if not AI_ENABLED:
@@ -467,6 +469,26 @@ def run_debate(
             (bear_open.points if bear_open else [], bull_open.points if bull_open else []),
         )
 
+    bull_side = {"points": bull_open.points, "rebuttal": bull_reb} if bull_open else None
+    bear_side = {"points": bear_open.points, "rebuttal": bear_reb} if bear_open else None
+
+    trader: TraderDecision | None = None
+    try:
+        trader = _debate_single_call(
+            spec=spec,
+            model=model,
+            provider_key=key,
+            system=build_trader_system_prompt(market),
+            user=build_trader_prompt(
+                payload, ticker, name, TraderDecision.model_json_schema(),
+                market, bull_side, bear_side,
+            ),
+            schema_model=TraderDecision,
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Debate trader call failed: %s", exc)
+        errors.append(f"trader decision failed: {exc}")
+
     return {
         "debate": {
             "bull": {
@@ -477,6 +499,7 @@ def run_debate(
                 "points": bear_open.points if bear_open else [],
                 "rebuttal": bear_reb,
             },
+            "trader": trader.model_dump() if trader else None,
             "errors": errors,
         },
         "provider": key,
