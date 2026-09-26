@@ -13,12 +13,22 @@ import numpy as np
 import pandas as pd
 
 from ..providers.base import StockBundle
-from .common import Metric, Pillar, band, safe_div
+from .common import Metric, Pillar, band, fmt_money, safe_div
 from .fundamentals import FundamentalFacts
 from .metric_weights import EARNINGS, RISK, SENTIMENT
 from .sector import PROFILE_BANK, apply_profile, classify
 
 TRADING_DAYS = 252
+
+# Liquidity bands per market: India in ₹ Cr/day, US in $M/day. The US bar is
+# higher because the screenable universe (S&P 500) is far more liquid than the
+# Nifty 500 tail this was tuned against.
+_LIQUIDITY_BANDS = {
+    "IN": [(0.3, 10), (2, 38), (8, 65), (30, 85), (100, 95)],
+    "US": [(1, 10), (10, 38), (50, 65), (200, 85), (1000, 95)],
+}
+# Below this daily turnover, flag thin trading. Same reasoning as the bands.
+_LIQUIDITY_FLAG = {"IN": 2.0, "US": 2.0}
 
 
 # --- risk --------------------------------------------------------------------
@@ -28,7 +38,8 @@ class RiskFacts:
     beta: float | None = None
     volatility_pct: float | None = None
     max_drawdown_pct: float | None = None
-    liquidity_cr_per_day: float | None = None
+    # Average daily turnover: ₹ Cr/day for IN, $M/day for US.
+    liquidity_per_day: float | None = None
     downside_deviation_pct: float | None = None
     red_flags: list[dict[str, str]] = field(default_factory=list)
 
@@ -61,11 +72,13 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
     r = RiskFacts()
     p = Pillar("risk", "Risk")
     hist = bundle.history
+    market = bundle.market
     profile = classify(bundle.quote.sector, bundle.quote.industry)
     is_bank = profile == PROFILE_BANK
 
     r.beta = compute_beta(hist, bundle.benchmark_history)
 
+    turnover_raw: float | None = None
     if hist is not None and not hist.empty and len(hist) > 60:
         rets = hist["Close"].pct_change().dropna()
         r.volatility_pct = float(rets.tail(TRADING_DAYS).std() * np.sqrt(TRADING_DAYS) * 100)
@@ -75,8 +88,9 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
         curve = hist["Close"]
         r.max_drawdown_pct = float(((curve / curve.cummax()) - 1).min() * 100)
         if "Volume" in hist:
-            turnover = (hist["Close"] * hist["Volume"]).tail(60).mean()
-            r.liquidity_cr_per_day = float(turnover / 1e7) if turnover else None
+            turnover_raw = (hist["Close"] * hist["Volume"]).tail(60).mean()
+            scale = 1e7 if market == "IN" else 1e6  # ₹ Cr/day vs $M/day
+            r.liquidity_per_day = float(turnover_raw / scale) if turnover_raw else None
 
     p.metrics.append(Metric(
         "beta", "Beta vs Index", r.beta, "",
@@ -97,19 +111,24 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
          if r.max_drawdown_pct else ""),
         weight=RISK["max_drawdown"], higher_is_better=False,
     ))
-    p.metrics.append(Metric(
-        "liquidity", "Avg Daily Turnover", r.liquidity_cr_per_day, "cr",
-        band(r.liquidity_cr_per_day, [(0.3, 10), (2, 38), (8, 65), (30, 85), (100, 95)]),
+    liq_bands = _LIQUIDITY_BANDS.get(market, _LIQUIDITY_BANDS["IN"])
+    liq_thin_at = 3.0 if market == "IN" else 5.0  # ₹ Cr vs $M
+    liq_metric = Metric(
+        "liquidity", "Avg Daily Turnover", r.liquidity_per_day, "",
+        band(r.liquidity_per_day, liq_bands),
         ("Thin trading — exiting a position in a hurry will cost you."
-         if (r.liquidity_cr_per_day or 99) < 3 else ""),
+         if (r.liquidity_per_day or 99) < liq_thin_at else ""),
         weight=RISK["liquidity"],
-    ))
+    )
+    if turnover_raw:
+        liq_metric.display_override = f"{fmt_money(turnover_raw, market)}/day"
+    p.metrics.append(liq_metric)
 
     # --- red flags (surfaced separately, not averaged away) ------------------
     if f.equity is not None and f.equity <= 0:
         r.red_flags.append({
             "severity": "high",
-            "text": f"Negative net worth (₹{f.equity / 1e7:,.0f} Cr) — accumulated losses exceed "
+            "text": f"Negative net worth ({fmt_money(f.equity, market)}) — accumulated losses exceed "
                     "paid-up capital and reserves. Equity-based ratios are not meaningful.",
         })
     de = safe_div(f.total_debt, f.equity) if (f.equity and f.equity > 0) else None
@@ -136,11 +155,17 @@ def risk_analyse(bundle: StockBundle, f: FundamentalFacts) -> tuple[RiskFacts, P
                             "text": f"Operating cash flow is only {ocf_ni:.0%} of reported profit — earnings quality concern."})
     if f.net_income is not None and f.net_income < 0:
         r.red_flags.append({"severity": "high", "text": "Loss-making at the net level."})
-    if (r.liquidity_cr_per_day or 99) < 2:
+    liq_flag_at = _LIQUIDITY_FLAG.get(market, _LIQUIDITY_FLAG["IN"])
+    if (r.liquidity_per_day or 99) < liq_flag_at:
+        unit = "₹ Cr" if market == "IN" else "$M"
         r.red_flags.append({"severity": "medium",
-                            "text": f"Average turnover under ₹{r.liquidity_cr_per_day:.1f} Cr/day — liquidity risk."})
+                            "text": f"Average turnover under {r.liquidity_per_day:.1f} {unit}/day — liquidity risk."})
+    # Promoter holding is an India-only concept. In the US, Yahoo's
+    # heldPercentInsiders counts officers/directors, who typically hold
+    # single-digit stakes even at great companies — flagging that as "limited
+    # skin in the game" is wrong, so the check stays India-only.
     promoter = bundle.ownership.promoter_or_insider_pct
-    if not is_bank and promoter is not None and promoter < 25:
+    if market == "IN" and not is_bank and promoter is not None and promoter < 25:
         r.red_flags.append({"severity": "medium",
                             "text": f"Promoter/insider holding is only {promoter:.1f}% — limited skin in the game."})
     if bundle.gaps:
@@ -231,6 +256,7 @@ def sentiment_analyse(bundle: StockBundle, analyst_upside: float | None) -> Pill
     p = Pillar("sentiment", "Sentiment & Ownership")
     a = bundle.analysts
     own = bundle.ownership
+    market = bundle.market
 
     rec_scores = {"strong buy": 92, "buy": 78, "outperform": 75,
                   "hold": 50, "neutral": 50, "underperform": 25, "sell": 12}
@@ -247,13 +273,30 @@ def sentiment_analyse(bundle: StockBundle, analyst_upside: float | None) -> Pill
         band(analyst_upside, [(-25, 10), (-5, 35), (5, 58), (20, 80), (45, 92)]),
         "", weight=SENTIMENT["analyst_upside"],
     ))
-    p.metrics.append(Metric(
-        "promoter_holding", "Promoter / Insider Holding", own.promoter_or_insider_pct, "%",
-        band(own.promoter_or_insider_pct, [(5, 15), (25, 40), (45, 68), (60, 85), (75, 88)]),
-        (f"Promoters hold {own.promoter_or_insider_pct:.1f}%."
-         if own.promoter_or_insider_pct is not None else ""),
-        weight=SENTIMENT["promoter_holding"],
-    ))
+    # Ownership semantics differ by market. India: promoter holding is the
+    # skin-in-the-game signal and low values are a genuine negative.
+    # US: there is no promoter concept — Yahoo's insider bucket counts
+    # officers/directors, who typically hold low-single-digit stakes even at
+    # great companies. Scoring that bucket punishes normal US ownership, so
+    # for the US it is displayed but unscored (weight 0 keeps coverage clean),
+    # and institutional ownership carries the ownership read instead.
+    if market == "US":
+        p.metrics.append(Metric(
+            "promoter_holding", "Insider Holding", own.promoter_or_insider_pct, "%",
+            None,
+            ("US officers/directors typically hold small stakes — this is not "
+             "comparable to Indian promoter holding and is not scored. "
+             "Institutional ownership below is the ownership signal that matters."),
+            weight=0.0,
+        ))
+    else:
+        p.metrics.append(Metric(
+            "promoter_holding", "Promoter / Insider Holding", own.promoter_or_insider_pct, "%",
+            band(own.promoter_or_insider_pct, [(5, 15), (25, 40), (45, 68), (60, 85), (75, 88)]),
+            (f"Promoters hold {own.promoter_or_insider_pct:.1f}%."
+             if own.promoter_or_insider_pct is not None else ""),
+            weight=SENTIMENT["promoter_holding"],
+        ))
     p.metrics.append(Metric(
         "institutional_holding", "Institutional Holding", own.institutions_pct, "%",
         band(own.institutions_pct, [(1, 25), (8, 45), (18, 65), (35, 82), (55, 88)]),
@@ -262,6 +305,11 @@ def sentiment_analyse(bundle: StockBundle, analyst_upside: float | None) -> Pill
     if bundle.news:
         p.notes.append(f"{len(bundle.news)} recent news items pulled for the AI read.")
     if own.promoter_pledge_pct is None:
-        p.notes.append("Promoter pledge data not available from this source — check BSE filings before a large position.")
+        if market == "US":
+            p.notes.append(
+                "Insider pledging is disclosed in proxy statements (DEF 14A), not here — "
+                "check SEC filings before a large position, and watch Form 4s for insider transactions.")
+        else:
+            p.notes.append("Promoter pledge data not available from this source — check BSE filings before a large position.")
     apply_profile(p, classify(bundle.quote.sector, bundle.quote.industry))
     return p

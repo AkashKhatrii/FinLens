@@ -17,7 +17,7 @@ from typing import Any
 import pandas as pd
 
 from ..providers.base import Statements, StockBundle, latest, pick_row, series_values
-from .common import Metric, Pillar, band, cagr, pct_change, safe_div, trend_slope_pct
+from .common import Metric, Pillar, band, cagr, fmt_money, pct_change, safe_div, trend_slope_pct
 from .metric_weights import GROWTH, HEALTH, PROFIT
 from .sector import PROFILE_BANK, apply_profile, classify
 
@@ -281,7 +281,7 @@ def analyse(bundle: StockBundle) -> tuple[FundamentalFacts, Pillar, Pillar, Pill
     ))
     if not equity_ok and f.equity is not None:
         health.notes.append(
-            f"Shareholders' equity is negative (₹{f.equity / CRORE:,.0f} Cr). Accumulated losses "
+            f"Shareholders' equity is negative ({fmt_money(f.equity, bundle.market)}). Accumulated losses "
             "exceed capital, so equity-based ratios are suppressed rather than scored."
         )
     net_debt = (f.total_debt - f.cash) if (f.total_debt is not None and f.cash is not None) else None

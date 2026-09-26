@@ -40,7 +40,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 
 app = FastAPI(
     title="FinLens",
-    description="AI-assisted equity research for Indian listed companies.",
+    description="AI-assisted equity research for Indian (NSE/BSE) and US listed companies.",
     version="0.1.0",
 )
 app.add_middleware(
@@ -95,12 +95,19 @@ def health() -> dict[str, Any]:
 def api_search(
     q: str = Query("", max_length=80),
     limit: int = Query(8, ge=1, le=15),
+    market: str = Query("IN"),
 ) -> dict[str, Any]:
-    """Typeahead over the NSE equity list. Empty query -> empty matches."""
-    return {
-        "query": q,
-        "matches": [{"symbol": l.symbol, "name": l.name} for l in nse_symbols.search(q, limit)],
-    }
+    """Typeahead over the NSE equity list. Empty query -> empty matches.
+
+    Only India has a local equity master; other markets resolve through the
+    provider's own search at analyse time, so typeahead returns nothing there.
+    """
+    matches = (
+        [{"symbol": l.symbol, "name": l.name} for l in nse_symbols.search(q, limit)]
+        if (market or "IN").upper() == "IN"
+        else []
+    )
+    return {"query": q, "market": (market or "IN").upper(), "matches": matches}
 
 
 @app.get("/api/resolve")
@@ -154,8 +161,9 @@ def api_screener_quant(
     market: str = Query("IN"),
 ) -> JSONResponse:
     """One quantitative Overall/Swing/Long row. Never calls the AI."""
-    del market
-    row = analyse_quant_row(q)
+    if (market or "IN").upper() not in MARKETS:
+        raise HTTPException(status_code=400, detail=f"Unsupported market '{market}'.")
+    row = analyse_quant_row(q, market=market)
     return JSONResponse(content=jsonable(row))
 
 

@@ -13,6 +13,42 @@ from __future__ import annotations
 from dataclasses import dataclass, field, asdict
 from typing import Any, Sequence
 
+from ..config import MARKETS
+
+
+def currency_symbol_for(market: str) -> str:
+    """Display currency for a market code ('IN' -> ₹, 'US' -> $)."""
+    return MARKETS.get(market, MARKETS["IN"])["symbol"]
+
+
+def fmt_money(value: float | None, market: str = "IN") -> str:
+    """Large money amounts in the market's own scale.
+
+    India thinks in crores; the US thinks in millions/billions/trillions.
+    Rendering a US market cap as '₹... Cr' is how the old code produced
+    nonsense like a $-denominated DCF labelled in rupees.
+    """
+    if value is None:
+        return "—"
+    sym = currency_symbol_for(market)
+    if market == "IN":
+        return f"{sym}{value / 1e7:,.0f} Cr"
+    av = abs(value)
+    if av >= 1e12:
+        return f"{sym}{value / 1e12:,.2f}T"
+    if av >= 1e9:
+        return f"{sym}{value / 1e9:,.1f}B"
+    if av >= 1e6:
+        return f"{sym}{value / 1e6:,.0f}M"
+    return f"{sym}{value:,.0f}"
+
+
+def fmt_price(value: float | None, market: str = "IN") -> str:
+    """Per-share prices with the market's currency symbol."""
+    if value is None:
+        return "—"
+    return f"{currency_symbol_for(market)}{value:,.2f}"
+
 
 @dataclass
 class Metric:
@@ -25,6 +61,8 @@ class Metric:
     weight: float = 1.0
     higher_is_better: bool = True
     peer: float | None = None           # sector/own-history reference, if known
+    display_override: str = ""          # when set, display returns this verbatim
+                                       # (for market-specific money formatting)
 
     @property
     def verdict(self) -> str:
@@ -38,6 +76,8 @@ class Metric:
 
     @property
     def display(self) -> str:
+        if self.display_override:
+            return self.display_override
         if self.value is None:
             return "—"
         v = self.value

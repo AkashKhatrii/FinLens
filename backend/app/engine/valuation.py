@@ -20,7 +20,7 @@ from ..config import MARKETS
 from ..providers.bank_metrics import BankMetrics
 from ..providers.base import StockBundle, latest, pick_row
 from .bank_scoring import score_bank_metric
-from .common import Metric, Pillar, band, cagr, safe_div
+from .common import Metric, Pillar, band, cagr, fmt_money, fmt_price, safe_div
 from .fundamentals import FundamentalFacts
 from .metric_weights import VALUATION
 from .sector import PROFILE_BANK, apply_profile, classify
@@ -232,7 +232,7 @@ def analyse(
     if v.pe:
         v.earnings_yield = 100 / v.pe
 
-    # Dividend rate (₹/share) is unambiguous; the yield field's units drift
+    # Dividend rate (per-share) is unambiguous; the yield field's units drift
     # between yfinance versions, so only use it as a fallback.
     div_rate = info.get("dividendRate")
     if div_rate and price:
@@ -317,13 +317,14 @@ def analyse(
         p.metrics.append(Metric(
             "dcf_upside", "DCF Upside", v.dcf_upside_pct, "%",
             band(v.dcf_upside_pct, [(-50, 5), (-20, 25), (0, 50), (25, 76), (60, 92)]),
-            (f"Two-stage DCF fair value ≈ ₹{v.dcf_value:,.0f} vs ₹{price:,.0f} spot."
+            (f"Two-stage DCF fair value ≈ {fmt_price(v.dcf_value, bundle.market)} vs "
+             f"{fmt_price(price, bundle.market)} spot."
              if v.dcf_value else ""),
             weight=VALUATION["dcf_upside"],
         ))
     if v.analyst_upside_pct is not None:
         p.notes.append(
-            f"Street target ₹{bundle.analysts.target_mean:,.0f} "
+            f"Street target {fmt_price(bundle.analysts.target_mean, bundle.market)} "
             f"({v.analyst_upside_pct:+.1f}%) across {bundle.analysts.analyst_count or '?'} analysts."
         )
     apply_profile(p, profile)
@@ -350,7 +351,9 @@ def _dcf(v: ValuationFacts, bundle: StockBundle, f: FundamentalFacts,
 
     hist_growth = cagr(f.revenue_series)
     g1 = min(max((hist_growth or 8.0) / 100, 0.02), 0.15)   # stage 1, capped at 15%
-    g_term = 0.05                                            # long-run nominal India
+    # Long-run nominal growth: India ~5% (higher inflation + real growth),
+    # US ~4%. This is the terminal anchor, so it must match the market.
+    g_term = 0.05 if bundle.market == "IN" else 0.04
 
     pv, fcf = 0.0, base_fcf
     for year in range(1, 6):
@@ -373,6 +376,7 @@ def _dcf(v: ValuationFacts, bundle: StockBundle, f: FundamentalFacts,
         v.dcf_upside_pct = (v.dcf_value / bundle.quote.price - 1) * 100
     v.dcf_assumptions = {
         "base_fcf_cr": round(base_fcf / 1e7),
+        "base_fcf_display": fmt_money(base_fcf, bundle.market),
         "stage1_growth_pct": round(g1 * 100, 1),
         "terminal_growth_pct": round(g_term * 100, 1),
         "discount_rate_pct": round(discount * 100, 1),

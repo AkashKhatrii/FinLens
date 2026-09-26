@@ -277,19 +277,27 @@ tailwind.config = {
                   :class="i>=3 ? 'text-blue-400 font-normal' : ''">{{ ch }}</span>
           </span>
         </button>
-        <span class="hidden md:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-muted">NSE / BSE</span>
+        <div class="flex items-center gap-1 text-[11px] px-1 py-0.5 rounded-full border border-edge" role="group" aria-label="Market">
+          <button type="button" class="px-2 py-0.5 rounded-full"
+                  :class="market === 'IN' ? 'tab-on' : 'text-muted hover:text-fg'"
+                  v-on:click="setMarket('IN')" title="India — NSE / BSE">IN</button>
+          <button type="button" class="px-2 py-0.5 rounded-full"
+                  :class="market === 'US' ? 'tab-on' : 'text-muted hover:text-fg'"
+                  v-on:click="setMarket('US')" title="United States — NYSE / NASDAQ">US</button>
+        </div>
+        <span class="hidden md:block text-[11px] px-2 py-0.5 rounded-full border border-edge text-muted">{{ marketLabel }}</span>
       </div>
 
       <!-- compact search once results are shown: full width under the nav on phones -->
       <form v-if="view === 'analyse' && result" class="order-last w-full sm:order-none sm:flex-1 sm:max-w-md min-w-0" v-on:submit.prevent="run()">
-        <ticker-search v-model="query" placeholder="Analyse another company…" compact
+        <ticker-search v-model="query" placeholder="Analyse another company…" compact :market="market"
                        @submit="run()" @pick="pickTicker"></ticker-search>
       </form>
 
       <div class="flex items-center gap-1.5 sm:gap-3 text-[11px] text-muted ml-auto shrink-0">
         <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 :class="view === 'nifty' ? 'tab-on' : ''"
-                v-on:click="openNifty50()">Nifty</button>
+                v-on:click="openNifty50()">Screener</button>
         <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
                 :class="(view === 'tradebook' || view === 'snapshot') ? 'tab-on' : ''"
                 v-on:click="openTradebook()">Tradebook</button>
@@ -333,7 +341,7 @@ tailwind.config = {
     </div>
 
     <form v-on:submit.prevent="run()" class="space-y-3">
-      <ticker-search v-model="query" placeholder="Try RELIANCE, TCS, or 'tata motors'"
+      <ticker-search v-model="query" :placeholder="market === 'US' ? 'Try AAPL, NVDA, or \'berkshire hathaway\'' : 'Try RELIANCE, TCS, or \'tata motors\'\''" :market="market"
                      @submit="run()" @pick="pickTicker"></ticker-search>
       <button type="submit" :disabled="loading"
               class="cta w-full rounded-xl px-5 py-3.5 text-sm font-semibold border border-edge disabled:opacity-50">
@@ -401,11 +409,11 @@ tailwind.config = {
           </div>
           <div class="text-xs text-muted">
             {{ result.company.sector || '—' }}<span v-if="result.company.industry"> · {{ result.company.industry }}</span>
-            <span v-if="result.company.market_cap_cr"> · ₹{{ fmtCr(result.company.market_cap_cr) }} Cr <term-tip id="mcap" label="mcap"></term-tip></span>
+            <span v-if="result.company.market_cap_display"> · {{ result.company.market_cap_display }} <term-tip id="mcap" label="mcap"></term-tip></span>
           </div>
         </div>
         <div class="text-left sm:text-right w-full sm:w-auto sm:shrink-0">
-          <div class="text-2xl sm:text-3xl font-semibold font-mono">₹{{ num(result.price.last) }}</div>
+          <div class="text-2xl sm:text-3xl font-semibold font-mono">{{ cs }}{{ num(result.price.last) }}</div>
           <div class="text-sm font-medium" :class="result.price.day_change_pct >= 0 ? 'text-emerald-400' : 'text-red-400'">
             {{ result.price.day_change_pct >= 0 ? '▲' : '▼' }} {{ num(Math.abs(result.price.day_change_pct)) }}%
           </div>
@@ -494,13 +502,13 @@ tailwind.config = {
         </div>
 
         <div v-if="h.plan && h.plan.stop_loss" class="grid grid-cols-3 gap-1.5 text-center pt-3 border-t border-edge">
-          <div><div class="text-[9px] text-faint uppercase"><term-tip id="stop" label="Technical Stop"></term-tip></div><div class="text-[11px] font-mono text-red-400">₹{{ num(h.plan.stop_loss) }}</div></div>
-          <div><div class="text-[9px] text-faint uppercase"><term-tip id="target" label="Technical Target"></term-tip></div><div class="text-[11px] font-mono text-emerald-400">₹{{ num(h.plan.target) }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="stop" label="Technical Stop"></term-tip></div><div class="text-[11px] font-mono text-red-400">{{ cs }}{{ num(h.plan.stop_loss) }}</div></div>
+          <div><div class="text-[9px] text-faint uppercase"><term-tip id="target" label="Technical Target"></term-tip></div><div class="text-[11px] font-mono text-emerald-400">{{ cs }}{{ num(h.plan.target) }}</div></div>
           <div><div class="text-[9px] text-faint uppercase"><term-tip id="rr" label="Risk/Reward"></term-tip></div><div class="text-[11px] font-mono">{{ h.plan.risk_reward ?? '—' }}</div></div>
         </div>
         <div v-else-if="h.plan && h.plan.target" class="pt-3 border-t border-edge text-center">
           <div class="text-[9px] text-faint uppercase"><term-tip id="dcf" label="DCF fair value"></term-tip></div>
-          <div class="text-[11px] font-mono">₹{{ num(h.plan.target) }} ({{ num(h.plan.reward_pct) }}%)</div>
+          <div class="text-[11px] font-mono">{{ cs }}{{ num(h.plan.target) }} ({{ num(h.plan.reward_pct) }}%)</div>
         </div>
       </div>
     </div>
@@ -553,7 +561,7 @@ tailwind.config = {
             <span class="flex items-center gap-1"><i class="w-3 h-0.5 bg-violet-500 inline-block"></i><term-tip id="200dma" label="200-DMA"></term-tip></span>
           </div>
         </div>
-        <price-chart :series="result.technicals.series"></price-chart>
+        <price-chart :series="result.technicals.series" :cs="cs"></price-chart>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-edge">
           <div v-for="m in chartStats" :key="m.k">
             <div class="text-[10px] text-faint uppercase tracking-wide"><term-tip :id="m.id || m.k" :label="m.k"></term-tip></div>
@@ -778,7 +786,7 @@ tailwind.config = {
         </div>
         <div v-else-if="dcf" class="text-[11px] text-muted bg-inset rounded-lg p-3 border border-edge leading-relaxed">
           <span class="text-muted"><term-tip id="dcf" label="DCF"></term-tip> assumptions:</span>
-          base <term-tip id="fcf" label="FCF"></term-tip> ₹{{ fmtCr(dcf.base_fcf_cr) }} Cr, growing {{ dcf.stage1_growth_pct }}% fading to
+          base <term-tip id="fcf" label="FCF"></term-tip> {{ dcf.base_fcf_display || ('₹' + fmtCr(dcf.base_fcf_cr) + ' Cr') }}, growing {{ dcf.stage1_growth_pct }}% fading to
           <term-tip id="terminalgrowth" label="terminal growth"></term-tip> {{ dcf.terminal_growth_pct }}%,
           <term-tip id="discountrate" label="discounted"></term-tip> at {{ dcf.discount_rate_pct }}%
           (<term-tip id="beta" label="beta"></term-tip> {{ dcf.beta_used }}) over {{ dcf.horizon_years }} years.
@@ -864,7 +872,7 @@ tailwind.config = {
     </footer>
   </main>
 
-  <!-- ============ NIFTY QUANT ============ -->
+  <!-- ============ SCREENER (index quant) ============ -->
   <section v-if="view === 'nifty'" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-4 min-w-0">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
@@ -882,6 +890,9 @@ tailwind.config = {
         <button type="button" class="px-2 py-1 rounded-md border border-edge"
                 :class="niftyIndex === 'NIFTY100' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
                 v-on:click="selectNiftyIndex('NIFTY100')">Nifty 100</button>
+        <button type="button" class="px-2 py-1 rounded-md border border-edge"
+                :class="niftyIndex === 'SP500' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
+                v-on:click="selectNiftyIndex('SP500')">S&P 500</button>
         <button type="button" class="px-2 py-1 rounded-md border border-edge"
                 :class="niftyIndex === 'LOW_SCORE' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
                 v-on:click="selectNiftyIndex('LOW_SCORE')">Low-Score Validation</button>
@@ -1243,6 +1254,7 @@ const TickerSearch = {
     modelValue: String,
     placeholder: { default: '' },
     compact: Boolean,
+    market: { default: 'IN' },
   },
   emits: ['update:modelValue', 'submit', 'pick'],
   data() {
@@ -1265,9 +1277,15 @@ const TickerSearch = {
       this.timer = setTimeout(() => this.load(q), 160);
     },
     async load(q) {
+      // Only India has a local equity master for typeahead; US queries
+      // resolve through Yahoo search at analyse time, so skip suggestions.
+      if ((this.market || 'IN').toUpperCase() !== 'IN') {
+        this.hits = []; this.open = false; this.active = -1;
+        return;
+      }
       const id = ++this.seq;
       try {
-        const res = await fetch('/api/search?q=' + encodeURIComponent(q));
+        const res = await fetch('/api/search?q=' + encodeURIComponent(q) + '&market=' + encodeURIComponent(this.market || 'IN'));
         const data = await res.json();
         if (id !== this.seq) return;
         this.hits = data.matches || [];
@@ -1440,7 +1458,7 @@ const ScoreRing = {
 };
 
 const PriceChart = {
-  props: { series: Object },
+  props: { series: Object, cs: { default: '₹' } },
   computed: {
     view() {
       const s = this.series;
@@ -1484,7 +1502,7 @@ const PriceChart = {
         <path :d="view.close" fill="none" stroke="#60a5fa" stroke-width="1.8"/>
       </svg>
       <div class="flex justify-between text-[10px] text-faint mt-1">
-        <span>{{ view.first }}</span><span>₹{{ view.lo }} – ₹{{ view.hi }}</span><span>{{ view.last }}</span>
+        <span>{{ view.first }}</span><span>{{ cs }}{{ view.lo }} – {{ cs }}{{ view.hi }}</span><span>{{ view.last }}</span>
       </div>
     </div>
     <div v-else class="h-[200px] grid place-items-center text-xs text-faint">No price history available.</div>`,
@@ -1497,7 +1515,7 @@ createApp({
       query: '', result: null, loading: false, error: '', didYouMean: [], mounted: false,
       activePillar: 'growth', morphIndex: 0, loadingStep: '', loadingPct: 0,
       aiLoading: false, glossaryOpen: false, glossaryQuery: '',
-      view: 'analyse',
+      view: 'analyse', market: 'IN',
       niftyRows: [], niftyLoading: false, niftyError: '', niftyDone: 0,
       niftySortKey: 'overall', niftySortDesc: true, niftyToken: 0, niftyAsOf: null,
       niftyIndex: 'NIFTY50',
@@ -1583,6 +1601,9 @@ createApp({
       );
     },
     niftyViewSpec() { return this.niftyViewFor(this.niftyIndex); },
+    // Currency symbol of the loaded analysis (₹ for India, $ for US).
+    cs() { return (this.result && this.result.currency_symbol) || '₹'; },
+    marketLabel() { return this.market === 'US' ? 'NYSE / NASDAQ' : 'NSE / BSE'; },
     niftyIndexName() { return this.niftyViewSpec.name; },
     niftyUniverseName() { return this.niftyViewSpec.universeName; },
     niftyExpected() { return this.niftyViewSpec.expected; },
@@ -1657,7 +1678,11 @@ createApp({
       this.openNifty('NIFTY100');
     } else if (params.has('nifty50')) {
       this.openNifty50();
+    } else if (params.has('sp500')) {
+      this.openNifty('SP500');
     } else {
+      const mq = (params.get('market') || 'IN').toUpperCase();
+      this.market = mq === 'US' ? 'US' : 'IN';
       const q = params.get('q');
       if (q) { this.query = q; this.run(); }
     }
@@ -1671,6 +1696,17 @@ createApp({
       this.query = hit.symbol;
       this.run();
     },
+    setMarket(m) {
+      m = (m === 'US') ? 'US' : 'IN';
+      if (this.market === m) return;
+      this.market = m;
+      this.result = null;
+      this.error = '';
+      this.didYouMean = [];
+      this.view = 'analyse';
+      this.snapshot = null;
+      history.replaceState(null, '', '/');
+    },
     openHome() {
       this.niftyToken += 1;
       this.niftyLoading = false;
@@ -1683,9 +1719,10 @@ createApp({
     },
     niftyViewFor(id) {
       const views = {
-        NIFTY50: { id: 'NIFTY50', indexId: 'NIFTY50', name: 'Nifty 50', universeName: 'Nifty 50', param: 'nifty50', expected: 50, lowest: 0, sortDesc: true },
-        NIFTY100: { id: 'NIFTY100', indexId: 'NIFTY100', name: 'Nifty 100', universeName: 'Nifty 100', param: 'nifty100', expected: 100, lowest: 0, sortDesc: true },
-        LOW_SCORE: { id: 'LOW_SCORE', indexId: 'NIFTY500', name: 'Low-Score Validation', universeName: 'Nifty 500', param: 'lowscore', expected: 500, lowest: 50, sortDesc: false },
+        NIFTY50: { id: 'NIFTY50', indexId: 'NIFTY50', name: 'Nifty 50', universeName: 'Nifty 50', param: 'nifty50', expected: 50, lowest: 0, sortDesc: true, market: 'IN' },
+        NIFTY100: { id: 'NIFTY100', indexId: 'NIFTY100', name: 'Nifty 100', universeName: 'Nifty 100', param: 'nifty100', expected: 100, lowest: 0, sortDesc: true, market: 'IN' },
+        SP500: { id: 'SP500', indexId: 'SP500', name: 'S&P 500', universeName: 'S&P 500', param: 'sp500', expected: 500, lowest: 0, sortDesc: true, market: 'US' },
+        LOW_SCORE: { id: 'LOW_SCORE', indexId: 'NIFTY500', name: 'Low-Score Validation', universeName: 'Nifty 500', param: 'lowscore', expected: 500, lowest: 50, sortDesc: false, market: 'IN' },
       };
       return views[(id || 'NIFTY50').toUpperCase()] || views.NIFTY50;
     },
@@ -1726,11 +1763,12 @@ createApp({
         if (this.niftyToken !== token) return;
         const constituents = data.constituents || [];
         this.niftyAsOf = data.as_of || null;
+        const curSym = spec.market === 'US' ? '$' : '₹';
         this.niftyRows = constituents.map(c => ({
           symbol: c.symbol,
           name: c.name,
           price: null,
-          currency_symbol: '₹',
+          currency_symbol: curSym,
           overall_score: null,
           overall_verdict: null,
           overall_verdict_class: null,
@@ -1752,7 +1790,7 @@ createApp({
             const c = constituents[idx];
             try {
               // Quantitative only: never request a thesis (ai=false).
-              const r = await fetch(`/api/screener/quant?q=${encodeURIComponent(c.symbol)}`);
+              const r = await fetch(`/api/screener/quant?q=${encodeURIComponent(c.symbol)}&market=${encodeURIComponent(spec.market || 'IN')}`);
               const row = await r.json();
               if (this.niftyToken !== token) return;
               this.applyNiftyRow(idx, row, c);
@@ -1797,6 +1835,7 @@ createApp({
       if (!symbol) return;
       this.niftyToken += 1;
       this.niftyLoading = false;
+      this.market = (this.niftyViewSpec.market === 'US') ? 'US' : 'IN';
       this.query = symbol;
       this.snapshot = null;
       this.run();
@@ -2069,7 +2108,7 @@ createApp({
       this.tradebookMessage = '';
       this.stepThrough();
       try {
-        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&ai=false&provider=${encodeURIComponent(this.aiProvider)}`);
+        const res = await fetch(`/api/analyse?q=${encodeURIComponent(q)}&market=${encodeURIComponent(this.market)}&ai=false&provider=${encodeURIComponent(this.aiProvider)}`);
         const data = await res.json();
         if (!res.ok) {
           // 404s carry {message, suggestions}; other errors carry a plain string.
@@ -2083,7 +2122,8 @@ createApp({
         this.loadingPct = 100;
         this.result = data;
         this.activePillar = 'growth';
-        history.replaceState(null, '', `?q=${encodeURIComponent(q)}`);
+        const mq = this.market === 'US' ? `&market=US` : '';
+        history.replaceState(null, '', `?q=${encodeURIComponent(q)}${mq}`);
       } catch (e) {
         this.error = e.message;
       } finally {

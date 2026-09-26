@@ -71,6 +71,33 @@ Gamma Ltd.,Auto,CCC,EQ,INECCC
         with self.assertRaises(KeyError):
             get_index_constituents("NOTANINDEX")
 
+    def test_sp500_is_registered_as_us(self):
+        self.assertIn("SP500", INDEX_SOURCES)
+        spec = INDEX_SOURCES["SP500"]
+        self.assertEqual(spec["market"], "US")
+        self.assertEqual(spec["name"], "S&P 500")
+
+    def test_generic_csv_parses_symbol_name_files(self):
+        blob = """Symbol,Name,Sector
+AAPL,Apple Inc.,Information Technology
+MSFT,Microsoft Corporation,Information Technology
+AAPL,Apple Inc.,Information Technology
+"""
+        rows = parse_index_csv(blob, format="generic")
+        self.assertEqual([r.symbol for r in rows], ["AAPL", "MSFT"])
+        self.assertEqual(rows[0].name, "Apple Inc.")
+
+    def test_generic_csv_skips_blank_rows(self):
+        blob = "Symbol,Name,Sector\nNVDA,NVIDIA Corporation,Information Technology\n,,\n"
+        rows = parse_index_csv(blob, format="generic")
+        self.assertEqual([r.symbol for r in rows], ["NVDA"])
+
+    def test_generic_csv_accepts_security_name_column_and_hyphenates_share_classes(self):
+        blob = "Symbol,Security,GICS Sector\nBRK.B,Berkshire Hathaway,Financials\nAAPL,Apple Inc.,Information Technology\n"
+        rows = parse_index_csv(blob, format="generic")
+        self.assertEqual([(r.symbol, r.name) for r in rows],
+                         [("BRK-B", "Berkshire Hathaway"), ("AAPL", "Apple Inc.")])
+
 
 if __name__ == "__main__":
     unittest.main()

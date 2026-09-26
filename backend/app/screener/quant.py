@@ -26,6 +26,8 @@ def quant_row_from_analysis(result: dict[str, Any], *, analyzed_at: str | None =
     company = result.get("company") or {}
     price = result.get("price") or {}
     symbol = _display_symbol(result.get("symbol"))
+    market = (result.get("market") or "IN").upper()
+    href = f"/?q={symbol}" + (f"&market={market}" if market != "IN" else "")
     return {
         "symbol": symbol,
         "name": company.get("name") or symbol,
@@ -42,17 +44,24 @@ def quant_row_from_analysis(result: dict[str, Any], *, analyzed_at: str | None =
         "long_verdict_class": long.get("verdict_class"),
         "analyzed_at": analyzed_at or datetime.now(timezone.utc).isoformat(),
         "error": None,
-        "href": f"/?q={symbol}",
+        "href": href,
     }
 
 
-def failed_row(symbol: str, name: str | None = None, error: str = "unavailable") -> dict[str, Any]:
+def failed_row(
+    symbol: str,
+    name: str | None = None,
+    error: str = "unavailable",
+    currency_symbol: str = "₹",
+    market: str = "IN",
+) -> dict[str, Any]:
     symbol = _display_symbol(symbol)
+    href = f"/?q={symbol}" + (f"&market={market}" if (market or "IN").upper() != "IN" else "")
     return {
         "symbol": symbol,
         "name": name or symbol,
         "price": None,
-        "currency_symbol": "₹",
+        "currency_symbol": currency_symbol,
         "overall_score": None,
         "overall_verdict": None,
         "overall_verdict_class": None,
@@ -64,34 +73,38 @@ def failed_row(symbol: str, name: str | None = None, error: str = "unavailable")
         "long_verdict_class": None,
         "analyzed_at": None,
         "error": error,
-        "href": f"/?q={symbol}",
+        "href": href,
     }
 
 
 def analyse_quant_row(
     query: str,
     *,
+    market: str = "IN",
     name: str | None = None,
     analyse_fn: Callable[..., dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Run the existing quantitative pipeline with AI disabled."""
+    """Run the existing quantitative pipeline with AI disabled, in the given market."""
     from ..analysis import analyse as _analyse, UnknownSymbol
+    from ..config import MARKETS
 
+    cur = MARKETS.get(market, MARKETS["IN"])["symbol"]
     fn = analyse_fn or _analyse
     try:
-        result = fn(query, market="IN", use_ai=False)
+        result = fn(query, market=market, use_ai=False)
         return quant_row_from_analysis(result)
     except UnknownSymbol as exc:
         log.warning("Screener quant unavailable for %s: %s", query, exc.message)
-        return failed_row(query, name, error=str(exc.message))
+        return failed_row(query, name, error=str(exc.message), currency_symbol=cur, market=market)
     except Exception as exc:
         log.warning("Screener quant failed for %s: %s", query, exc)
-        return failed_row(query, name, error=str(exc))
+        return failed_row(query, name, error=str(exc), currency_symbol=cur, market=market)
 
 
 def analyse_universe(
     constituents: Iterable[dict[str, str] | Any],
     *,
+    market: str = "IN",
     analyse_fn: Callable[..., dict[str, Any]] | None = None,
     max_workers: int = DEFAULT_CONCURRENCY,
 ) -> list[dict[str, Any]]:
@@ -109,7 +122,9 @@ def analyse_universe(
     workers = max(1, min(max_workers, len(items)))
 
     def _one(item: dict[str, str]) -> dict[str, Any]:
-        return analyse_quant_row(item["symbol"], name=item.get("name"), analyse_fn=analyse_fn)
+        return analyse_quant_row(
+            item["symbol"], market=market, name=item.get("name"), analyse_fn=analyse_fn
+        )
 
     by_symbol: dict[str, dict[str, Any]] = {}
     with ThreadPoolExecutor(max_workers=workers) as pool:

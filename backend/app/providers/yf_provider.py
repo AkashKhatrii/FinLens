@@ -158,6 +158,16 @@ class YFinanceProvider:
             lambda: self._safe(lambda: ticker.earnings_dates, pd.DataFrame(), gaps, "earnings history"),
         )
         quote = self._build_quote(symbol, info, history)
+        # ADRs and cross-listings: the price trades in one currency while the
+        # financials report in another. Ratios that mix the two (P/B from a
+        # $-denominated price over € book value, and the like) come out
+        # distorted, so flag it as a data gap instead of scoring blindly.
+        fin_ccy = str(info.get("financialCurrency") or "").upper()
+        trade_ccy = str(quote.currency or "").upper()
+        if fin_ccy and trade_ccy and fin_ccy != trade_ccy:
+            gaps.append(
+                f"cross-currency listing: trades in {trade_ccy}, reports in {fin_ccy}"
+            )
         news = cache.memoize(
             "news", symbol, NEWS_TTL, lambda: self._fetch_news(ticker, symbol, quote.name)
         )

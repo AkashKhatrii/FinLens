@@ -1,13 +1,15 @@
 # FinLens
 
-AI-assisted equity research for Indian listed companies (NSE/BSE). Type a ticker
-and get an analyst-style workup: fundamentals from the filings, a DCF when it is
+AI-assisted equity research for **Indian (NSE/BSE)** and **US (NYSE/NASDAQ)**
+listed companies. Pick a market in the header, type a ticker and get an
+analyst-style workup: fundamentals from the filings, a DCF when it is
 valid, technicals, risk, and separate buy/hold/avoid verdicts for **swing** and
 **long-term**. Headline **Overall** is a 40/60 blend of those two — tilted toward
 the long view. DeepSeek writes the thesis by default; Claude is optional.
 
-The SPA also has a **Tradebook** (immutable recommendation journal), **Nifty Quant**
-screeners, and a Terms glossary. Layout works on a phone and on a desktop.
+The SPA also has a **Tradebook** (immutable recommendation journal), **quant
+screeners** (Nifty 50 / Nifty 100 / Nifty 500 low-score for India, S&P 500 for
+the US), and a Terms glossary. Layout works on a phone and on a desktop.
 
 ```bash
 ./run.sh          # http://127.0.0.1:8000
@@ -40,9 +42,9 @@ weightings.
 | Balance Sheet & Cash | D/E, net debt/EBITDA, interest cover, current ratio, **OCF/PAT**, FCF margin |
 | Valuation | P/E vs **its own 5-year median**, P/B, EV/EBITDA, PEG, earnings yield vs 10Y G-Sec, DCF |
 | Short-Term Setup | RSI, Bollinger %B, price vs 20-DMA, 1-week/1-month return, volume trend |
-| Trend & Relative Strength | Price vs 50/200-DMA, ADX, 3M and 1Y relative strength vs NIFTY, 52W position |
+| Trend & Relative Strength | Price vs 50/200-DMA, ADX, 3M and 1Y relative strength vs the market benchmark (NIFTY for India, S&P 500 for the US), 52W position |
 | Earnings Momentum | Beat/miss rate and average surprise over the last four quarters |
-| Sentiment & Ownership | Street rating and target, promoter holding, institutional holding |
+| Sentiment & Ownership | Street rating and target; **promoter holding (India)** or institutional ownership (US) |
 | Risk | Beta, annualised volatility, max drawdown, daily turnover, red flags |
 
 ### Horizon weights
@@ -79,8 +81,10 @@ Each score also gets a **percentile** against a stored NIFTY-grade universe so
 - **Tradebook** — recommendation journal. Adding a name copies the current
   analysis into a JSON snapshot; later price refreshes do not re-run scoring.
   Quantity is a journal field; P&L is quantity-weighted, not a ranking input.
-- **Nifty Quant** — Overall / Swing / Long for Nifty 50, Nifty 100, or the 50
-  lowest Overall scores from the current Nifty 500. Quant only; no AI.
+- **Screener** — Overall / Swing / Long for a whole index at once, quant only, no
+  AI. India: Nifty 50, Nifty 100, or the 50 lowest Overall scores from the
+  current Nifty 500. US: the full S&P 500. Shares the same engine as Analysis
+  (`market` is threaded through, not a fork).
 - **Terms** — in-app glossary for the dotted labels on a report.
 
 ---
@@ -119,10 +123,38 @@ listed as **ETERNAL**. A misspelling deliberately returns suggestions rather
 than auto-correcting — silently analysing a *different* company than the one
 asked for is the worst failure this path can have.
 
-**Banks are not scored as industrials.** Deposit-taking banks suppress EBITDA /
-ROCE / DCF-style metrics and map NIM, GNPA, CAR, loan growth and the rest onto
-the existing pillars. NBFCs and brokers stay on the default (industrial) profile
-on purpose. Horizon mix and verdict bands do not change.
+**US stocks are first-class, not an India port.** The US market toggle threads
+`market="US"` through the provider, engine and UI:
+
+- **Currency everywhere.** Money renders in `$` millions/billions/trillions;
+  India keeps `₹` crores. No currency symbol is hardcoded in the analysis view —
+  it reads `currency_symbol` from the API response.
+- **Promoter holding is an India concept.** The US has no promoter class, so the
+  low-promoter penalty is switched off for US tickers. Insider ownership is
+  displayed for context (from DEF 14A / Form 4), but it does not move the score;
+  institutional ownership is the meaningful US ownership signal.
+- **ADRs / cross-listings are flagged, not scored blindly.** A listing that
+  trades in one currency but reports financials in another (e.g. ASML) gets an
+  explicit data gap — mixed-currency ratios like P/B distort silently otherwise.
+- **US risk-free rate and DCF terminal growth differ.** The US DCF uses a 4%
+  terminal growth (5% for India) and the US risk-free rate.
+- **Typeahead is India-only.** There is no local US equity master; US queries
+  resolve through Yahoo search at analyse time. A typo in a US ticker returns a
+  suggestion rather than a silent wrong company — same policy as India.
+
+**Screener universes are chosen, not assumed.**
+
+- **US: S&P 500.** Broad, liquid, rules-based membership (roughly $20B+
+  market cap, four quarters of positive earnings, public float) maintained by
+  S&P Dow Jones. Everything current on it is screened — no subjective FinLens
+  pre-filter. ADRs are excluded by construction (S&P 500 requires US domicile),
+  which avoids the cross-currency class of errors above. Membership is fetched
+  from datahub/datasets CSVs, normalised to Yahoo's `BRK-B` hyphen format.
+- **India: Nifty 50 / 100 / 500** from NSE's own CSVs, as before.
+
+Why not Nasdaq-100? S&P 500 covers more sectors and screens out ADRs; the
+engine's weakest spot for US names is mixed-currency data, so a universe that
+can't contain it is the safer first choice.
 
 **Nothing is hidden.** Every pillar expands into its individual metrics with the
 raw value, the 0–100 score, and a one-line reading.
@@ -166,7 +198,7 @@ backend/app/
   providers/
     nse_symbols.py     NSE equity master; fuzzy resolution + "did you mean"
     yf_provider.py     yfinance adapter, symbol resolution, news filtering
-    index_constituents.py  Nifty 50 / 100 / 500 membership from NSE CSVs
+    index_constituents.py  Nifty 50 / 100 / 500 + S&P 500 membership (NSE / datahub CSVs)
     bank_*.py          bank KPI fetch/extract → canonical metrics
   engine/
     scoring.py         Swing/Long weights, 40/60 Overall, verdicts, confidence
@@ -191,11 +223,11 @@ backend/app/
 
 | Endpoint | Purpose |
 |---|---|
-| `GET /api/analyse?q=TCS` | Full quantitative analysis (`ai=true` adds the thesis) |
-| `GET /api/search?q=tata` | Typeahead over the NSE equity list |
+| `GET /api/analyse?q=TCS&market=IN` | Full quantitative analysis (`ai=true` adds the thesis; `market=US` for US tickers) |
+| `GET /api/search?q=tata&market=IN` | Typeahead over the NSE equity list (US has no local typeahead) |
 | `GET /api/resolve?q=tata%20motors` | Name → ticker |
-| `GET /api/screener/quant?q=TCS` | One Overall/Swing/Long row; never calls the AI |
-| `GET /api/indexes/{NIFTY50\|NIFTY100\|NIFTY500}/constituents` | Current membership |
+| `GET /api/screener/quant?q=TCS&market=IN` | One Overall/Swing/Long row; never calls the AI |
+| `GET /api/indexes/{NIFTY50\|NIFTY100\|NIFTY500\|SP500}/constituents` | Current membership |
 | `GET /api/tradebook` | Journal list (filters: ticker, swing, AI agreement, active/history) |
 | `POST /api/tradebook` | Record a snapshot from an analysis payload |
 | `PATCH /api/tradebook/{id}/quantity` | Journal quantity (does not re-score) |

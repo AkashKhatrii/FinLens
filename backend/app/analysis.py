@@ -15,6 +15,7 @@ from .engine import fundamentals, percentile, qualitative, scoring, technicals, 
 from .engine.accumulation import accumulation_from_analysis, public_accumulation_from_ai
 from .engine.bank_presentation import fact_pack_bank_fundamentals, public_bank_metrics
 from .engine.bank_scoring import apply_bank_metrics
+from .engine.common import fmt_money
 from .engine.sector import PROFILE_BANK, classify
 from .providers.bank_metrics import BankMetrics
 from .providers.bank_metrics_loader import load_canonical_bank_metrics
@@ -99,7 +100,8 @@ def analyse(
     val_facts, val_p = valuation.analyse(
         bundle, fund_facts, risk_facts.beta, bank_metrics=bank_metrics,
     )
-    tech_snap, tech_short_p, tech_trend_p = technicals.analyse(bundle.history, bundle.benchmark_history)
+    tech_snap, tech_short_p, tech_trend_p = technicals.analyse(
+        bundle.history, bundle.benchmark_history, market)
     earn_facts, earn_p = qualitative.earnings_analyse(bundle)
     sent_p = qualitative.sentiment_analyse(bundle, val_facts.analyst_upside_pct)
 
@@ -130,6 +132,7 @@ def analyse(
             "website": bundle.quote.website,
             "market_cap": bundle.quote.market_cap,
             "market_cap_cr": (bundle.quote.market_cap / 1e7) if bundle.quote.market_cap else None,
+            "market_cap_display": fmt_money(bundle.quote.market_cap, market),
         },
         "price": {
             "last": bundle.quote.price,

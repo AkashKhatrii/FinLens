@@ -17,7 +17,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .common import Metric, Pillar, band
+from .common import Metric, Pillar, band, fmt_price
 from .metric_weights import TECH_SHORT, TECH_TREND
 
 
@@ -126,7 +126,11 @@ class TechnicalSnapshot:
 WINDOWS = {"1w": 5, "1m": 21, "3m": 63, "6m": 126, "1y": 252}
 
 
-def analyse(history: pd.DataFrame, benchmark: pd.DataFrame) -> tuple[TechnicalSnapshot, Pillar, Pillar]:
+def analyse(
+    history: pd.DataFrame,
+    benchmark: pd.DataFrame,
+    market: str = "IN",
+) -> tuple[TechnicalSnapshot, Pillar, Pillar]:
     snap = TechnicalSnapshot()
     short = Pillar("technical_short", "Short-Term Setup")
     trend = Pillar("technical_trend", "Trend & Relative Strength")
@@ -191,7 +195,7 @@ def analyse(history: pd.DataFrame, benchmark: pd.DataFrame) -> tuple[TechnicalSn
 
     snap.series = _chart_series(df)
 
-    _build_short(snap, short)
+    _build_short(snap, short, market)
     _build_trend(snap, trend)
     return snap, short, trend
 
@@ -226,7 +230,7 @@ def _chart_series(df: pd.DataFrame, points: int = 180) -> dict[str, Any]:
     }
 
 
-def _build_short(s: TechnicalSnapshot, p: Pillar) -> None:
+def _build_short(s: TechnicalSnapshot, p: Pillar, market: str = "IN") -> None:
     from .swing_regime import classify_trend
 
     trend = classify_trend(s)
@@ -271,7 +275,7 @@ def _build_short(s: TechnicalSnapshot, p: Pillar) -> None:
         p.notes.append("MACD crossed below signal within the last week — momentum rolling over.")
     if s.suggested_stop and s.price:
         p.notes.append(
-            f"ATR-based technical stop ≈ ₹{s.suggested_stop:,.0f} "
+            f"ATR-based technical stop ≈ {fmt_price(s.suggested_stop, market)} "
             f"({(s.price / s.suggested_stop - 1) * 100:.1f}% below spot)."
         )
 
