@@ -170,7 +170,8 @@ class TestFactPack(unittest.TestCase):
         self.assertEqual(
             set(pack),
             {
-                "company", "price", "quant_scores", "pillar_scores",
+                "as_of", "company", "price", "news", "business_context",
+                "quant_scores", "pillar_scores",
                 "fundamentals", "valuation", "pe_history", "technicals",
                 "risk", "earnings", "ownership", "analysts", "data_gaps",
             },

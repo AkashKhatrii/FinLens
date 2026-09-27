@@ -176,6 +176,15 @@ class YFinanceProvider:
         ownership = cache.memoize(
             "own", symbol, FUNDAMENTAL_TTL, lambda: self._fetch_ownership(ticker, info)
         )
+        insider_summary = cache.memoize(
+            "insider", symbol, FUNDAMENTAL_TTL,
+            lambda: self._fetch_insider_summary(ticker, gaps),
+        )
+        dividend_annual, dividend_ttm = cache.memoize(
+            "dividends_v2", symbol, FUNDAMENTAL_TTL,
+            lambda: self._fetch_dividends(ticker, gaps),
+        )
+        short_interest = self._fetch_short_interest(info)
 
         return StockBundle(
             market=self.market,
@@ -188,6 +197,10 @@ class YFinanceProvider:
             earnings_history=earnings if earnings is not None else pd.DataFrame(),
             news=news or [],
             info=info,
+            insider_summary=insider_summary or {},
+            short_interest=short_interest,
+            dividend_annual=dividend_annual or [],
+            dividend_ttm=dividend_ttm,
             gaps=gaps,
         )
 
@@ -251,6 +264,141 @@ class YFinanceProvider:
                 "url": (content.get("canonicalUrl") or {}).get("url", ""),
             })
         return out[:10]
+
+    def _fetch_insider_summary(
+        self, ticker: yf.Ticker, gaps: list[str]
+    ) -> dict[str, Any]:
+        """Net insider trading over the last 6 months.
+
+        yfinance's insider_transactions column names vary, so this matches
+        columns by name fragments and bails out (with a gap note) when the
+        shape is unrecognised rather than misreading the data.
+        """
+        try:
+            df = ticker.insider_transactions
+        except Exception:
+            gaps.append("insider transactions")
+            return {}
+        if df is None or df.empty:
+            gaps.append("insider transactions")
+            return {}
+        try:
+            cols = {str(c).lower(): c for c in df.columns}
+            # "text" first: a "Transaction Date" column also contains
+            # "transaction", so it must not win the text-column search.
+            text_col = next((cols[c] for c in cols if "text" in c), None)
+            if text_col is None:
+                text_col = next(
+                    (cols[c] for c in cols
+                     if "transaction" in c and "date" not in c),
+                    None,
+                )
+            shares_col = next((cols[c] for c in cols if "share" in c), None)
+            date_col = next((cols[c] for c in cols if "date" in c), None)
+            if text_col is None or shares_col is None:
+                gaps.append("insider transactions")
+                return {}
+            work = df.copy()
+            if date_col is not None:
+                work["_d"] = pd.to_datetime(work[date_col], errors="coerce")
+            else:
+                work["_d"] = pd.to_datetime(work.index, errors="coerce")
+            work["_shares"] = pd.to_numeric(work[shares_col], errors="coerce")
+            work = work.dropna(subset=["_shares"])
+            if work.empty:
+                gaps.append("insider transactions")
+                return {}
+
+            def _direction(t: Any) -> str:
+                s = str(t).lower()
+                if "buy" in s or "purchase" in s or "acqui" in s:
+                    return "buy"
+                if "sell" in s or "sale" in s or "dispos" in s:
+                    return "sell"
+                return "other"
+
+            work["_dir"] = work[text_col].map(_direction)
+            # tz-naive comparison: yfinance transaction dates carry no tz.
+            cutoff = pd.Timestamp.now() - pd.Timedelta(days=182)
+            recent = work[work["_d"].isna() | (work["_d"] >= cutoff)]
+            buys = recent[recent["_dir"] == "buy"]["_shares"].sum()
+            sells = recent[recent["_dir"] == "sell"]["_shares"].sum()
+            buy_n = int((recent["_dir"] == "buy").sum())
+            sell_n = int((recent["_dir"] == "sell").sum())
+            latest_rows = []
+            for _, r in work.sort_values("_d", ascending=False).head(8).iterrows():
+                d = r["_d"]
+                latest_rows.append({
+                    "date": d.strftime("%Y-%m-%d") if pd.notna(d) else None,
+                    "direction": r["_dir"],
+                    "shares": int(r["_shares"]),
+                })
+            return {
+                "buys_6m": buy_n,
+                "buy_shares_6m": int(buys),
+                "sells_6m": sell_n,
+                "sell_shares_6m": int(sells),
+                "recent": latest_rows,
+            }
+        except Exception:
+            gaps.append("insider transactions")
+            return {}
+
+    def _fetch_dividends(
+        self, ticker: yf.Ticker, gaps: list[str]
+    ) -> tuple[list[dict[str, Any]], float | None]:
+        """Annual cash dividends per share (oldest first, last 10 years) plus
+        the trailing-twelve-month per-share total.
+
+        The latest calendar year is usually still in progress, so its annual
+        sum understates the run rate - cut detection must use complete years
+        only, and yield math must use the TTM figure. An empty history is
+        normal (non-payers) and is not a data gap.
+        """
+        try:
+            div = ticker.dividends
+        except Exception:
+            gaps.append("dividend history")
+            return [], None
+        if div is None or div.empty:
+            return [], None
+        try:
+            s = div.copy()
+            s.index = pd.to_datetime(s.index)
+            # Yahoo's index is tz-aware; the cutoff is naive. Normalise.
+            try:
+                s.index = s.index.tz_localize(None)
+            except (TypeError, AttributeError):
+                pass
+            annual = s.groupby(s.index.year).sum()
+            yearly = [
+                {"year": int(y), "amount": round(float(a), 4)}
+                for y, a in annual.tail(10).items()
+            ]
+            cutoff = pd.Timestamp.now() - pd.Timedelta(days=365)
+            ttm = round(float(s[s.index >= cutoff].sum()), 4)
+            return yearly, ttm
+        except Exception:
+            gaps.append("dividend history")
+            return [], None
+
+    def _fetch_short_interest(self, info: dict[str, Any]) -> dict[str, Any]:
+        """Short interest snapshot. Mostly populated for US names; absent for
+        most NSE names, which is normal and not a gap."""
+        out: dict[str, Any] = {}
+        sp = info.get("shortPercentOfFloat")
+        if sp is not None:
+            try:
+                out["pct_float"] = round(float(sp) * 100, 2)
+            except (TypeError, ValueError):
+                pass
+        sr = info.get("shortRatio")
+        if sr is not None:
+            try:
+                out["days_to_cover"] = round(float(sr), 1)
+            except (TypeError, ValueError):
+                pass
+        return out
 
     def _fetch_ownership(self, ticker: yf.Ticker, info: dict[str, Any]) -> Ownership:
         own = Ownership()

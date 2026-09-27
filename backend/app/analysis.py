@@ -7,11 +7,22 @@ from __future__ import annotations
 
 import logging
 import time
+from datetime import date
 from typing import Any
+
+import pandas as pd
 
 from .ai import analyst, stance_log
 from .config import MARKETS
-from .engine import fundamentals, percentile, qualitative, scoring, technicals, valuation
+from .engine import (
+    business_context,
+    fundamentals,
+    percentile,
+    qualitative,
+    scoring,
+    technicals,
+    valuation,
+)
 from .engine.accumulation import accumulation_from_analysis
 from .engine.bank_presentation import fact_pack_bank_fundamentals, public_bank_metrics
 from .engine.bank_scoring import apply_bank_metrics
@@ -104,6 +115,7 @@ def analyse(
         bundle.history, bundle.benchmark_history, market)
     earn_facts, earn_p = qualitative.earnings_analyse(bundle)
     sent_p = qualitative.sentiment_analyse(bundle, val_facts.analyst_upside_pct)
+    biz_ctx = business_context.analyse(bundle)
 
     pillars = {
         p.key: p for p in (growth_p, profit_p, health_p, val_p,
@@ -169,6 +181,16 @@ def analyse(
             "upside_pct": val_facts.analyst_upside_pct,
         },
         "news": bundle.news[:8],
+        "business_context": biz_ctx.to_dict(),
+        "as_of": {
+            "analysis_date": date.today().isoformat(),
+            "price_date": _last_history_date(bundle.history),
+            "fiscal_year": fund_facts.fiscal_year,
+            "note": (
+                "Price is as of price_date; fundamentals are as of fiscal_year. "
+                "Do not treat them as contemporaneous without noting the lag."
+            ),
+        },
         "data_gaps": sorted(set(bundle.gaps)),
         "disclaimer": DISCLAIMER,
     }
@@ -243,6 +265,16 @@ def debate(query: str, market: str = "IN") -> dict[str, Any]:
     }
 
 
+def _last_history_date(history) -> str | None:
+    """Latest price-bar date, so the model knows what 'current price' means."""
+    try:
+        if history is not None and not history.empty:
+            return str(pd.to_datetime(history.index.max()).date())
+    except Exception:
+        return None
+    return None
+
+
 def _debate_fact_pack(r: dict[str, Any]) -> dict[str, Any]:
     """Fact pack for the debate: DCF fields are stripped from the valuation
     section. Prompt bans were not enough — the DCF number is the most dramatic
@@ -275,9 +307,27 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
     if isinstance(summary, str) and len(summary) > 500:
         company["summary"] = summary[:500].rsplit(" ", 1)[0] + "…"
     earnings = r["earnings"] or {}
+    earn_pack = {k: v for k, v in earnings.items() if k != "surprises"}
+    # The per-quarter surprise trail is small and directly interpretable;
+    # keep the last 6 so the model can see the pattern, not just averages.
+    recent_surprises = (earnings.get("surprises") or [])[:6]
+    if recent_surprises:
+        earn_pack["recent_surprises"] = recent_surprises
+    news_pack = [
+        {
+            "title": n.get("title"),
+            "publisher": n.get("publisher"),
+            "published": str(n.get("published") or "")[:10],
+            "summary": (n.get("summary") or "")[:200],
+        }
+        for n in (r.get("news") or [])[:8]
+    ]
     pack = {
+        "as_of": r.get("as_of") or {},
         "company": company,
         "price": r["price"],
+        "news": news_pack,
+        "business_context": r.get("business_context") or {},
         "quant_scores": {
             "overall": r["overall"],
             "by_horizon": {
@@ -306,7 +356,7 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
         "pe_history": r["valuation"].get("pe_history"),
         "technicals": tech,
         "risk": r["risk"],
-        "earnings": {k: v for k, v in earnings.items() if k != "surprises"},
+        "earnings": earn_pack,
         "ownership": {k: v for k, v in r["ownership"].items() if k != "top_holders"},
         "analysts": r["analysts"],
         "data_gaps": r["data_gaps"],

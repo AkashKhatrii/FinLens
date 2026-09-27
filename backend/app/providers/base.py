@@ -95,6 +95,16 @@ class StockBundle:
     news: list[dict[str, Any]] = field(default_factory=list)
     filings: list[dict[str, Any]] = field(default_factory=list)
     info: dict[str, Any] = field(default_factory=dict)
+    # Insider trading summary (last 6 months + recent transactions), from the
+    # provider when available. Empty dict when the source has nothing.
+    insider_summary: dict[str, Any] = field(default_factory=dict)
+    # Short interest (mostly US names): {"pct_float": x, "days_to_cover": y}.
+    short_interest: dict[str, Any] = field(default_factory=dict)
+    # Annual cash dividends per share, oldest first: [{"year": y, "amount": a}].
+    # The latest year may be a partial year (still in progress).
+    dividend_annual: list[dict[str, Any]] = field(default_factory=list)
+    # Trailing-twelve-month dividends per share (avoids partial-year sums).
+    dividend_ttm: float | None = None
     # Anything a provider could not supply, so scoring can discount confidence
     # instead of silently treating missing data as neutral.
     gaps: list[str] = field(default_factory=list)

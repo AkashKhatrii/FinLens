@@ -520,6 +520,30 @@ Consider:
 
 Do not infer a specific cause for a profit/revenue divergence unless the fact pack or established evidence supports it.
 
+### 11b. Business-context evidence: reading the fact pack's newer fields
+
+The fact pack carries a `business_context` block with evidence the pillar scores do not cover. Use it as follows.
+
+**Quarterly momentum (`quarterly`, `growth_accelerating`).** Trailing annual numbers hide turning points. If the last two quarters' revenue YoY is decelerating while the annual growth rate still looks healthy, the slowdown is the story, not the annual number. Margin direction across the four quarters tells you whether growth is being bought with price cuts. `growth_accelerating: false` with a high annual growth print is a yellow flag, not a contradiction to explain away.
+
+**Capital return (`buyback_yield_1y_pct`, `buyback_yield_3y_pct`, `shares_trend`).** Positive means the share count shrank (net buybacks); negative means dilution. When EPS growth materially exceeds operating-profit growth and the buyback yield is high, say so plainly: the growth is financial engineering, not business growth. Judge `shareholder_yield_pct` (dividends + net buybacks) as the real cash return to owners.
+
+**Stock-based compensation (`sbc`, `sbc_to_revenue_pct`, `sbc_to_ocf_pct`).** SBC is a real cost. When SBC is a large share of operating cash flow (roughly 15-20%+ in tech), treat reported margins and buyback programs with skepticism: the company may be buying back shares with one hand while issuing them to employees with the other.
+
+**Balance-sheet stress (`interest_coverage`, `receivables_days`, `receivables_days_trend`).** Interest coverage below ~2-3x is stress, but judge against the sector's norms, not an absolute rule. Receivables days rising while revenue grows can mean channel stuffing or deteriorating collection - particularly worth flagging when cash conversion is weak.
+
+**Accruals (`ocf_to_net_income`).** Sustained readings below ~0.8 mean profit is not turning into cash. Name it as an accounting-quality concern and point at receivables and working capital; do not invent the cause.
+
+**Dividend record (`dividend_annual`, `dividend_cuts_10y`, `dividend_cagr_5y_pct`, `dividend_payout_on_fcf_pct`).** A cut is information, especially where dividends are a governance signal. Payout above 100% of free cash flow is not sustainable without the balance sheet funding it - say which is happening.
+
+**Insider activity (`insider.net_direction`, `recent`).** Sustained net buying by insiders is a conviction signal; isolated small sales are often scheduled and mean little. Where insider data is thin, say so rather than treating silence as neutral-to-positive.
+
+**Short interest (`short_interest.pct_float`, `days_to_cover`).** This is positioning, not a thesis. A high short percentage means the bear case is crowded (squeeze risk cuts both ways); it does not validate or invalidate the fundamentals.
+
+**Forward expectations (`forward_eps`, `forward_eps_growth_vs_ttm_pct`, `forward_pe`).** The market prices delivery against expectations, not absolute growth. A 30% forward EPS growth print is not bullish by itself if the multiple already assumes it - compare the bar with what the business has actually delivered.
+
+**Freshness (`as_of`).** The price is as of `price_date`; the fundamentals are as of `fiscal_year`. Never describe a fundamental fact as current without noting the lag, and never fill the gap between the statement date and today with invented developments. If `data_gaps` lists something material, put it in `data_caveats` and hold conviction lower - missing evidence is uncertainty, not a neutral input.
+
 ### 12. Governance and ownership
 
 Promoter ownership and pledge can be important governance signals, but do not apply simplistic rules.
@@ -597,6 +621,8 @@ When recent news is included in the fact pack:
 - attribute material claims to the cited source when appropriate
 - do not turn a news report into an established financial fact unless the underlying fact is also supported
 - do not overstate the certainty or financial impact of reported future regulatory/business changes
+- weigh the publisher and the date: a dated company filing outweighs an opinion column; stale news is context, not a catalyst
+- do not let a single headline override multi-year statement evidence; news informs the swing view and the risk list, it rarely rewrites the long thesis on its own
 
 For example:
 "Reuters reported that PNB expects faster credit growth in FY28 after pruning lower-yield loans."
@@ -660,6 +686,11 @@ The purpose of the thesis is to explain the balance of evidence.
 - Cyclicals can look cheapest on P/E near an earnings peak.
 - Compare earnings yield with the Indian 10-year G-Sec as a valuation reference, while recognizing that the comparison is only one input.
 - For banks and NBFCs, use financial-sector economics rather than industrial-company metrics.
+- Dividends are the main capital-return channel: a long record of consistent dividends is a governance and quality signal. A profitable, cash-generative company that never returns cash to minority shareholders deserves skepticism.
+- Dividend cuts matter: a cut, or payout persistently above free cash flow, deserves explicit attention in the thesis.
+- Pledged promoter shares are a standing risk input, not a footnote: high or rising pledge means the promoter's own leverage can force selling into weakness.
+- Working-capital discipline separates quality in India: in infra, EPC, and cyclicals, check receivables and cash conversion — profit without cash collection is the classic value trap. Receivables days rising alongside revenue growth is a red flag; check it against cash conversion before trusting the growth.
+- Promoter/insider activity: use `promoter_trend` and `business_context.insider` where available, but yfinance insider data is thin for Indian names - do not over-interpret its absence.
 - Sector knowledge should improve interpretation, not override the available evidence.
 
 ## Writing standards
@@ -833,8 +864,10 @@ _INDIA_SECTION = """## India-specific judgement
 - Compare earnings yield with the Indian 10-year G-Sec as a valuation reference, while recognizing that the comparison is only one input.
 - For banks and NBFCs, use financial-sector economics rather than industrial-company metrics.
 - Dividends are the main capital-return channel: a long record of consistent dividends is a governance and quality signal. A profitable, cash-generative company that never returns cash to minority shareholders deserves skepticism.
+- Dividend cuts matter: a cut, or payout persistently above free cash flow, deserves explicit attention in the thesis.
 - Pledged promoter shares are a standing risk input, not a footnote: high or rising pledge means the promoter's own leverage can force selling into weakness.
-- Working-capital discipline separates quality in India: in infra, EPC, and cyclicals, check receivables and cash conversion — profit without cash collection is the classic value trap.
+- Working-capital discipline separates quality in India: in infra, EPC, and cyclicals, check receivables and cash conversion — profit without cash collection is the classic value trap. Receivables days rising alongside revenue growth is a red flag; check it against cash conversion before trusting the growth.
+- Promoter/insider activity: use `promoter_trend` and `business_context.insider` where available, but yfinance insider data is thin for Indian names - do not over-interpret its absence.
 - Sector knowledge should improve interpretation, not override the available evidence."""
 
 _US_SECTION = """## US-specific judgement
@@ -848,6 +881,10 @@ _US_SECTION = """## US-specific judgement
 - Capital return is mostly buybacks, not dividends: judge shareholder yield (dividends + net buybacks), not dividend yield alone. Check whether EPS growth is real operating growth or mostly share-count shrinkage — a falling share count flatters EPS while the business stands still.
 - Stock-based compensation is a real cost in tech: prefer cash-flow and margin reads that do not ignore it. Very high SBC relative to operating cash flow is dilution by another name.
 - Book value is often meaningless for asset-light compounders: large buybacks can drive book equity negative. Do not penalize negative or tiny book; judge those businesses on returns and cash generation instead.
+- Use `business_context.buyback_yield_1y_pct` / `buyback_yield_3y_pct` and `shareholder_yield_pct` rather than inferring buybacks from EPS alone. When EPS growth materially exceeds operating-profit growth alongside a high buyback yield, say so: the growth is financial engineering.
+- Flag `sbc_to_ocf_pct` when high: heavy stock-based compensation alongside buybacks is dilution by another name.
+- `short_interest` is available for most US names: read it as positioning (a crowded short is squeeze risk), not as a fundamental signal.
+- `forward_eps_growth_vs_ttm_pct` is the expectations bar the price has to clear: judge delivery against it, not against absolute growth.
 - Sector knowledge should improve interpretation, not override the available evidence."""
 
 
