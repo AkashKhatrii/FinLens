@@ -864,6 +864,66 @@ tailwind.config = {
       </div>
     </div>
 
+    <!-- Peer comparison -->
+    <div v-if="result.peers && result.peers.n >= 2" class="rise panel rounded-2xl p-5" style="animation-delay:.46s">
+      <div class="flex items-baseline justify-between flex-wrap gap-2 mb-1">
+        <div class="text-sm font-semibold">Peer comparison</div>
+        <div class="text-[11px] text-faint">{{ result.peers.n }} {{ result.peers.match_level === 'sector' ? 'sector' : 'industry' }} peers · {{ result.peers.industry }}</div>
+      </div>
+      <div v-if="result.peers.match_level === 'sector'" class="text-[11px] text-muted mb-3">Broader sector peers — the industry had too few index names for a direct comparison.</div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead><tr class="text-[10px] uppercase tracking-wide text-faint border-b border-edge">
+            <th class="text-left py-2 font-medium">Company</th>
+            <th class="text-right py-2 font-medium">MCap</th>
+            <th class="text-right py-2 font-medium"><term-tip id="pe" label="P/E"></term-tip></th>
+            <th class="text-right py-2 font-medium"><term-tip id="pb" label="P/B"></term-tip></th>
+            <th class="text-right py-2 font-medium"><term-tip id="evebitda" label="EV/EBITDA"></term-tip></th>
+            <th class="text-right py-2 font-medium">Div yld</th>
+            <th class="text-right py-2 font-medium">Rev CAGR 3y</th>
+            <th class="text-right py-2 font-medium">Net margin</th>
+            <th class="text-right py-2 font-medium"><term-tip id="roe" label="ROE"></term-tip></th>
+          </tr></thead>
+          <tbody>
+            <tr class="border-b border-edge bg-inset/60">
+              <td class="py-2.5 font-semibold">{{ result.symbol }} <span class="text-faint font-normal">· this company</span></td>
+              <td class="py-2.5 text-right font-mono">{{ result.company.market_cap_display || '—' }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(result.peers.subject.pe) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(result.peers.subject.pb) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(result.peers.subject.ev_ebitda) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.subject.dividend_yield) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.subject.revenue_cagr_3y) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.subject.net_margin) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.subject.roe) }}</td>
+            </tr>
+            <tr v-for="p in result.peers.peers" :key="p.ticker" class="border-b border-edge/50">
+              <td class="py-2.5 text-fg">{{ p.ticker }} <span class="text-faint">· {{ p.name }}</span></td>
+              <td class="py-2.5 text-right font-mono">{{ p.market_cap_display || '—' }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(p.pe) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(p.pb) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(p.ev_ebitda) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(p.dividend_yield) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(p.revenue_cagr_3y) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(p.net_margin) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(p.roe) }}</td>
+            </tr>
+            <tr class="border-b border-edge/50 text-muted">
+              <td class="py-2.5 italic">Peer median</td>
+              <td class="py-2.5 text-right font-mono">—</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(result.peers.medians.pe) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(result.peers.medians.pb) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerMult(result.peers.medians.ev_ebitda) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.medians.dividend_yield) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.medians.revenue_cagr_3y) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.medians.net_margin) }}</td>
+              <td class="py-2.5 text-right font-mono">{{ peerPct(result.peers.medians.roe) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="text-[11px] text-faint mt-3 leading-relaxed">Peers: same-industry S&amp;P 500 / Nifty 500 names ranked by market-cap proximity, universe as of {{ peerDate(result.peers.as_of) }}. Multiples computed with the same engines as this company's — compare the cheapness columns against the growth/quality columns before calling anything a bargain.</div>
+    </div>
+
     <!-- Metric detail -->
     <div class="rise panel rounded-2xl p-5" style="animation-delay:.48s">
       <div class="flex items-center gap-2 flex-wrap mb-4">
@@ -2282,6 +2342,9 @@ createApp({
     verdictPill(v) {
       return { good: 'pill-good', ok: 'pill-ok', bad: 'pill-bad' }[v] || 'pill-na';
     },
+    peerMult(v) { return v == null ? '—' : v.toFixed(1) + 'x'; },
+    peerPct(v) { return v == null ? '—' : v.toFixed(1) + '%'; },
+    peerDate(iso) { return iso ? String(iso).slice(0, 10) : '—'; },
   },
 }).mount('#app');
 </script>

@@ -544,6 +544,18 @@ The fact pack carries a `business_context` block with evidence the pillar scores
 
 **Freshness (`as_of`).** The price is as of `price_date`; the fundamentals are as of `fiscal_year`. Never describe a fundamental fact as current without noting the lag, and never fill the gap between the statement date and today with invented developments. If `data_gaps` lists something material, put it in `data_caveats` and hold conviction lower - missing evidence is uncertainty, not a neutral input.
 
+### 11c. Peer comparison: reading the `peers` block
+
+When present, the `peers` block holds up to 5 same-industry peers (from the S&P 500 / Nifty 500) snapshotted with the same fundamentals and valuation engines as the subject, so the comparison is apples-to-apples by construction. This is the ONLY basis on which relative claims are allowed - the standing ban on peer-superiority language otherwise stays in force.
+
+**How to read it.** The table has two halves: cheapness (`pe`, `pb`, `ev_ebitda`, `dividend_yield`) and whether the cheapness is deserved (`revenue_cagr_3y`, `net_margin`, `roe`). A low multiple alongside weak growth and returns is a value-trap candidate, not a bargain - say which half of the table the subject wins on before calling anything attractive.
+
+**How to cite it.** Every relative claim must carry the metric, the peer count, and the industry: "Its P/E of 22x is the lowest of the 5 software-infrastructure peers shown (peer median 31x)." Never generalize a 5-peer set into "industry-leading", "best-in-class", or "dominant" - those claim far more than the block can support.
+
+**`match_level`.** `"industry"` means direct industry peers. `"sector"` means the industry had too few names and the set fell back to broader sector peers - disclose this ("among broader sector peers, not direct competitors") and hold relative claims lighter.
+
+**Limits.** Five large-cap index peers are not the whole industry; private competitors, smaller listed names, and foreign listings are absent. If the block is missing (or `data_gaps` lists "peer comparison"), make no relative claims at all - discuss the company's own history instead. Do not rank peers against each other or issue verdicts on them; the section exists to contextualize the subject, not to pick among peers.
+
 ### 12. Governance and ownership
 
 Promoter ownership and pledge can be important governance signals, but do not apply simplistic rules.
@@ -771,6 +783,8 @@ GOOD:
 
 If peer data exists:
 "ROA is below the supplied peer median of X%."
+
+When the fact pack carries a `peers` block, ground every relative claim in it: cite the metric, the peer count, and the industry (e.g. "P/E of 22x is the lowest of the 5 software-infrastructure peers shown, peer median 31x"). A 5-peer set never supports "industry-leading" or "best-in-class". If `match_level` is "sector", say the peers are broader sector names, not direct competitors.
 
 Do not invent or assume peer values.
 

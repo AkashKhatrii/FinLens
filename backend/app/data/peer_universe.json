@@ -1,0 +1,7031 @@
+{
+ "as_of": "2026-09-27T01:37:40.245853+00:00",
+ "sources": {
+  "SP500": {
+   "name": "S&P 500",
+   "count": 503
+  },
+  "NIFTY500": {
+   "name": "Nifty 500",
+   "count": 501
+  }
+ },
+ "US": [
+  {
+   "symbol": "A",
+   "name": "Agilent Technologies",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 48714485760
+  },
+  {
+   "symbol": "AAPL",
+   "name": "Apple Inc.",
+   "industry": "Consumer Electronics",
+   "sector": "Technology",
+   "market_cap": 4977636933632
+  },
+  {
+   "symbol": "ABBV",
+   "name": "AbbVie",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 467119767552
+  },
+  {
+   "symbol": "ABNB",
+   "name": "Airbnb",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 94290780160
+  },
+  {
+   "symbol": "ABT",
+   "name": "Abbott Laboratories",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 176428253184
+  },
+  {
+   "symbol": "ACGL",
+   "name": "Arch Capital Group",
+   "industry": "Insurance - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 32279060480
+  },
+  {
+   "symbol": "ACN",
+   "name": "Accenture",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 107769118720
+  },
+  {
+   "symbol": "ADBE",
+   "name": "Adobe Inc.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 93599326208
+  },
+  {
+   "symbol": "ADI",
+   "name": "Analog Devices",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 190724980736
+  },
+  {
+   "symbol": "ADM",
+   "name": "Archer Daniels Midland",
+   "industry": "Farm Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 39096311808
+  },
+  {
+   "symbol": "ADP",
+   "name": "Automatic Data Processing",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 104479653888
+  },
+  {
+   "symbol": "ADSK",
+   "name": "Autodesk",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 43764596736
+  },
+  {
+   "symbol": "AEE",
+   "name": "Ameren",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 27515451392
+  },
+  {
+   "symbol": "AEP",
+   "name": "American Electric Power",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 64429428736
+  },
+  {
+   "symbol": "AES",
+   "name": "AES Corporation",
+   "industry": "Utilities - Diversified",
+   "sector": "Utilities",
+   "market_cap": 10604654592
+  },
+  {
+   "symbol": "AFL",
+   "name": "Aflac",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 57012760576
+  },
+  {
+   "symbol": "AIG",
+   "name": "American International Group",
+   "industry": "Insurance - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 38782988288
+  },
+  {
+   "symbol": "AIZ",
+   "name": "Assurant",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 13070798848
+  },
+  {
+   "symbol": "AJG",
+   "name": "Arthur J. Gallagher & Co.",
+   "industry": "Insurance Brokers",
+   "sector": "Financial Services",
+   "market_cap": 59240402944
+  },
+  {
+   "symbol": "AKAM",
+   "name": "Akamai Technologies",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 16375070720
+  },
+  {
+   "symbol": "ALB",
+   "name": "Albemarle Corporation",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 12948695040
+  },
+  {
+   "symbol": "ALGN",
+   "name": "Align Technology",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 10427230208
+  },
+  {
+   "symbol": "ALL",
+   "name": "Allstate",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 57550471168
+  },
+  {
+   "symbol": "ALLE",
+   "name": "Allegion",
+   "industry": "Security & Protection Services",
+   "sector": "Industrials",
+   "market_cap": 13135632384
+  },
+  {
+   "symbol": "AMAT",
+   "name": "Applied Materials",
+   "industry": "Semiconductor Equipment & Materials",
+   "sector": "Technology",
+   "market_cap": 384894763008
+  },
+  {
+   "symbol": "AMCR",
+   "name": "Amcor",
+   "industry": "Packaging & Containers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 19654313984
+  },
+  {
+   "symbol": "AMD",
+   "name": "Advanced Micro Devices",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 1029487722496
+  },
+  {
+   "symbol": "AME",
+   "name": "Ametek",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 57470361600
+  },
+  {
+   "symbol": "AMGN",
+   "name": "Amgen",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 224151420928
+  },
+  {
+   "symbol": "AMP",
+   "name": "Ameriprise Financial",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 43581198336
+  },
+  {
+   "symbol": "AMT",
+   "name": "American Tower",
+   "industry": "REIT - Specialty",
+   "sector": "Real Estate",
+   "market_cap": 78761230336
+  },
+  {
+   "symbol": "AMZN",
+   "name": "Amazon",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 2693018681344
+  },
+  {
+   "symbol": "ANET",
+   "name": "Arista Networks",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 260505960448
+  },
+  {
+   "symbol": "AON",
+   "name": "Aon plc",
+   "industry": "Insurance Brokers",
+   "sector": "Financial Services",
+   "market_cap": 58968748032
+  },
+  {
+   "symbol": "AOS",
+   "name": "A. O. Smith",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 7971038208
+  },
+  {
+   "symbol": "APA",
+   "name": "APA Corporation",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 14974024704
+  },
+  {
+   "symbol": "APD",
+   "name": "Air Products",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 62743879680
+  },
+  {
+   "symbol": "APH",
+   "name": "Amphenol",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 207363145728
+  },
+  {
+   "symbol": "APO",
+   "name": "Apollo Global Management",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 71863197696
+  },
+  {
+   "symbol": "APP",
+   "name": "AppLovin",
+   "industry": "Advertising Agencies",
+   "sector": "Communication Services",
+   "market_cap": 103992647680
+  },
+  {
+   "symbol": "APTV",
+   "name": "Aptiv",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 9478483968
+  },
+  {
+   "symbol": "ARE",
+   "name": "Alexandria Real Estate Equities",
+   "industry": "REIT - Office",
+   "sector": "Real Estate",
+   "market_cap": 8592717824
+  },
+  {
+   "symbol": "ARES",
+   "name": "Ares Management",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 40479981568
+  },
+  {
+   "symbol": "ATO",
+   "name": "Atmos Energy",
+   "industry": "Utilities - Regulated Gas",
+   "sector": "Utilities",
+   "market_cap": 26566692864
+  },
+  {
+   "symbol": "AVGO",
+   "name": "Broadcom",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 1684184367104
+  },
+  {
+   "symbol": "AVY",
+   "name": "Avery Dennison",
+   "industry": "Packaging & Containers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 13029371904
+  },
+  {
+   "symbol": "AWK",
+   "name": "American Water Works",
+   "industry": "Utilities - Regulated Water",
+   "sector": "Utilities",
+   "market_cap": 26015612928
+  },
+  {
+   "symbol": "AXON",
+   "name": "Axon Enterprise",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 34941022208
+  },
+  {
+   "symbol": "AXP",
+   "name": "American Express",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 208596467712
+  },
+  {
+   "symbol": "AZO",
+   "name": "AutoZone",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 46451441664
+  },
+  {
+   "symbol": "BA",
+   "name": "Boeing",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 156434202624
+  },
+  {
+   "symbol": "BAC",
+   "name": "Bank of America",
+   "industry": "Banks - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 396488835072
+  },
+  {
+   "symbol": "BALL",
+   "name": "Ball Corporation",
+   "industry": "Packaging & Containers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 15130789888
+  },
+  {
+   "symbol": "BAX",
+   "name": "Baxter International",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 12082196480
+  },
+  {
+   "symbol": "BBY",
+   "name": "Best Buy",
+   "industry": "Specialty Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 18982453248
+  },
+  {
+   "symbol": "BDX",
+   "name": "Becton Dickinson",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 50070147072
+  },
+  {
+   "symbol": "BE",
+   "name": "Bloom Energy",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 85030051840
+  },
+  {
+   "symbol": "BEN",
+   "name": "Franklin Resources",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 16776698880
+  },
+  {
+   "symbol": "BF-B",
+   "name": "Brown\u2013Forman",
+   "industry": "Beverages - Wineries & Distilleries",
+   "sector": "Consumer Defensive",
+   "market_cap": 12003889152
+  },
+  {
+   "symbol": "BG",
+   "name": "Bunge Global",
+   "industry": "Farm Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 20940984320
+  },
+  {
+   "symbol": "BIIB",
+   "name": "Biogen",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 33628811264
+  },
+  {
+   "symbol": "BKNG",
+   "name": "Booking Holdings",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 127041323008
+  },
+  {
+   "symbol": "BKR",
+   "name": "Baker Hughes",
+   "industry": "Oil & Gas Equipment & Services",
+   "sector": "Energy",
+   "market_cap": 57406341120
+  },
+  {
+   "symbol": "BLK",
+   "name": "BlackRock",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 176499523584
+  },
+  {
+   "symbol": "BMY",
+   "name": "Bristol Myers Squibb",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 128405045248
+  },
+  {
+   "symbol": "BNY",
+   "name": "BNY Mellon",
+   "industry": "Banks - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 101877391360
+  },
+  {
+   "symbol": "BR",
+   "name": "Broadridge Financial Solutions",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 18941360128
+  },
+  {
+   "symbol": "BRK-B",
+   "name": "Berkshire Hathaway",
+   "industry": "Insurance - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 1082085998592
+  },
+  {
+   "symbol": "BRO",
+   "name": "Brown & Brown",
+   "industry": "Insurance Brokers",
+   "sector": "Financial Services",
+   "market_cap": 20351002624
+  },
+  {
+   "symbol": "BSX",
+   "name": "Boston Scientific",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 63650160640
+  },
+  {
+   "symbol": "BX",
+   "name": "Blackstone Inc.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 141547159552
+  },
+  {
+   "symbol": "BXP",
+   "name": "BXP, Inc.",
+   "industry": "REIT - Office",
+   "sector": "Real Estate",
+   "market_cap": 11467628544
+  },
+  {
+   "symbol": "C",
+   "name": "Citigroup",
+   "industry": "Banks - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 225246216192
+  },
+  {
+   "symbol": "CAH",
+   "name": "Cardinal Health",
+   "industry": "Medical Distribution",
+   "sector": "Healthcare",
+   "market_cap": 50993999872
+  },
+  {
+   "symbol": "CARR",
+   "name": "Carrier Global",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 46819815424
+  },
+  {
+   "symbol": "CASY",
+   "name": "Casey's",
+   "industry": "Specialty Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 22119182336
+  },
+  {
+   "symbol": "CAT",
+   "name": "Caterpillar Inc.",
+   "industry": "Farm & Heavy Construction Machinery",
+   "sector": "Industrials",
+   "market_cap": 377659686912
+  },
+  {
+   "symbol": "CB",
+   "name": "Chubb Limited",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 128614105088
+  },
+  {
+   "symbol": "CBOE",
+   "name": "Cboe Global Markets",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 26946334720
+  },
+  {
+   "symbol": "CBRE",
+   "name": "CBRE Group",
+   "industry": "Real Estate Services",
+   "sector": "Real Estate",
+   "market_cap": 38962356224
+  },
+  {
+   "symbol": "CCI",
+   "name": "Crown Castle",
+   "industry": "REIT - Specialty",
+   "sector": "Real Estate",
+   "market_cap": 28862894080
+  },
+  {
+   "symbol": "CCL",
+   "name": "Carnival Corporation",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 30474694656
+  },
+  {
+   "symbol": "CDNS",
+   "name": "Cadence Design Systems",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 89951870976
+  },
+  {
+   "symbol": "CDW",
+   "name": "CDW Corporation",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 16931108864
+  },
+  {
+   "symbol": "CEG",
+   "name": "Constellation Energy",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 93278502912
+  },
+  {
+   "symbol": "CF",
+   "name": "CF Industries",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 17353943040
+  },
+  {
+   "symbol": "CFG",
+   "name": "Citizens Financial Group",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 27599714304
+  },
+  {
+   "symbol": "CHD",
+   "name": "Church & Dwight",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 22861711360
+  },
+  {
+   "symbol": "CHRW",
+   "name": "C.H. Robinson",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 17188820992
+  },
+  {
+   "symbol": "CHTR",
+   "name": "Charter Communications",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 14673513472
+  },
+  {
+   "symbol": "CI",
+   "name": "Cigna",
+   "industry": "Healthcare Plans",
+   "sector": "Healthcare",
+   "market_cap": 71876059136
+  },
+  {
+   "symbol": "CIEN",
+   "name": "Ciena",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 50612883456
+  },
+  {
+   "symbol": "CINF",
+   "name": "Cincinnati Financial",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 24946321408
+  },
+  {
+   "symbol": "CL",
+   "name": "Colgate-Palmolive",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 68604690432
+  },
+  {
+   "symbol": "CLX",
+   "name": "Clorox",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 10134019072
+  },
+  {
+   "symbol": "CMCSA",
+   "name": "Comcast",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 77750632448
+  },
+  {
+   "symbol": "CME",
+   "name": "CME Group",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 95101526016
+  },
+  {
+   "symbol": "CMG",
+   "name": "Chipotle Mexican Grill",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 39645544448
+  },
+  {
+   "symbol": "CMI",
+   "name": "Cummins",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 72452538368
+  },
+  {
+   "symbol": "CMS",
+   "name": "CMS Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 19446489088
+  },
+  {
+   "symbol": "CNC",
+   "name": "Centene Corporation",
+   "industry": "Healthcare Plans",
+   "sector": "Healthcare",
+   "market_cap": 30538770432
+  },
+  {
+   "symbol": "CNP",
+   "name": "CenterPoint Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 24267253760
+  },
+  {
+   "symbol": "COF",
+   "name": "Capital One",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 122822705152
+  },
+  {
+   "symbol": "COHR",
+   "name": "Coherent Corp.",
+   "industry": "Scientific & Technical Instruments",
+   "sector": "Technology",
+   "market_cap": 57933049856
+  },
+  {
+   "symbol": "COIN",
+   "name": "Coinbase",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 51477221376
+  },
+  {
+   "symbol": "COO",
+   "name": "Cooper Companies (The)",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 10530800640
+  },
+  {
+   "symbol": "COP",
+   "name": "ConocoPhillips",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 152930271232
+  },
+  {
+   "symbol": "COR",
+   "name": "Cencora",
+   "industry": "Medical Distribution",
+   "sector": "Healthcare",
+   "market_cap": 58568675328
+  },
+  {
+   "symbol": "COST",
+   "name": "Costco",
+   "industry": "Discount Stores",
+   "sector": "Consumer Defensive",
+   "market_cap": 409030328320
+  },
+  {
+   "symbol": "CPAY",
+   "name": "Corpay",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 26139742208
+  },
+  {
+   "symbol": "CPRT",
+   "name": "Copart",
+   "industry": "Specialty Business Services",
+   "sector": "Industrials",
+   "market_cap": 26577678336
+  },
+  {
+   "symbol": "CPT",
+   "name": "Camden Property Trust",
+   "industry": "REIT - Residential",
+   "sector": "Real Estate",
+   "market_cap": 9864921088
+  },
+  {
+   "symbol": "CRH",
+   "name": "CRH plc",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 56575791104
+  },
+  {
+   "symbol": "CRL",
+   "name": "Charles River Laboratories",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 13979850752
+  },
+  {
+   "symbol": "CRM",
+   "name": "Salesforce",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 192598458368
+  },
+  {
+   "symbol": "CRWD",
+   "name": "CrowdStrike",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 258164703232
+  },
+  {
+   "symbol": "CSCO",
+   "name": "Cisco",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 420674011136
+  },
+  {
+   "symbol": "CSGP",
+   "name": "CoStar Group",
+   "industry": "Real Estate Services",
+   "sector": "Real Estate",
+   "market_cap": 11382000640
+  },
+  {
+   "symbol": "CSX",
+   "name": "CSX Corporation",
+   "industry": "Railroads",
+   "sector": "Industrials",
+   "market_cap": 86658768896
+  },
+  {
+   "symbol": "CTAS",
+   "name": "Cintas",
+   "industry": "Specialty Business Services",
+   "sector": "Industrials",
+   "market_cap": 79867445248
+  },
+  {
+   "symbol": "CTSH",
+   "name": "Cognizant",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 27117090816
+  },
+  {
+   "symbol": "CTVA",
+   "name": "Corteva",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 52388229120
+  },
+  {
+   "symbol": "CVNA",
+   "name": "Carvana",
+   "industry": "Auto & Truck Dealerships",
+   "sector": "Consumer Cyclical",
+   "market_cap": 72116649984
+  },
+  {
+   "symbol": "CVS",
+   "name": "CVS Health",
+   "industry": "Healthcare Plans",
+   "sector": "Healthcare",
+   "market_cap": 113994629120
+  },
+  {
+   "symbol": "CVX",
+   "name": "Chevron Corporation",
+   "industry": "Oil & Gas Integrated",
+   "sector": "Energy",
+   "market_cap": 401049780224
+  },
+  {
+   "symbol": "D",
+   "name": "Dominion Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 53369634816
+  },
+  {
+   "symbol": "DAL",
+   "name": "Delta Air Lines",
+   "industry": "Airlines",
+   "sector": "Industrials",
+   "market_cap": 55858503680
+  },
+  {
+   "symbol": "DASH",
+   "name": "DoorDash",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 83782492160
+  },
+  {
+   "symbol": "DD",
+   "name": "DuPont",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 17783406592
+  },
+  {
+   "symbol": "DDOG",
+   "name": "Datadog",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 96278781952
+  },
+  {
+   "symbol": "DE",
+   "name": "Deere & Company",
+   "industry": "Farm & Heavy Construction Machinery",
+   "sector": "Industrials",
+   "market_cap": 186165559296
+  },
+  {
+   "symbol": "DECK",
+   "name": "Deckers Brands",
+   "industry": "Footwear & Accessories",
+   "sector": "Consumer Cyclical",
+   "market_cap": 10713425920
+  },
+  {
+   "symbol": "DELL",
+   "name": "Dell Technologies",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 357892653056
+  },
+  {
+   "symbol": "DG",
+   "name": "Dollar General",
+   "industry": "Discount Stores",
+   "sector": "Consumer Defensive",
+   "market_cap": 27541798912
+  },
+  {
+   "symbol": "DGX",
+   "name": "Quest Diagnostics",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 26083432448
+  },
+  {
+   "symbol": "DHI",
+   "name": "D. R. Horton",
+   "industry": "Residential Construction",
+   "sector": "Consumer Cyclical",
+   "market_cap": 39580528640
+  },
+  {
+   "symbol": "DHR",
+   "name": "Danaher Corporation",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 157813342208
+  },
+  {
+   "symbol": "DIS",
+   "name": "Walt Disney Company (The)",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 183287808000
+  },
+  {
+   "symbol": "DLR",
+   "name": "Digital Realty",
+   "industry": "REIT - Specialty",
+   "sector": "Real Estate",
+   "market_cap": 67454517248
+  },
+  {
+   "symbol": "DLTR",
+   "name": "Dollar Tree",
+   "industry": "Discount Stores",
+   "sector": "Consumer Defensive",
+   "market_cap": 21402988544
+  },
+  {
+   "symbol": "DOC",
+   "name": "Healthpeak Properties",
+   "industry": "REIT - Healthcare Facilities",
+   "sector": "Real Estate",
+   "market_cap": 14398718976
+  },
+  {
+   "symbol": "DOV",
+   "name": "Dover Corporation",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 25842442240
+  },
+  {
+   "symbol": "DOW",
+   "name": "Dow Inc.",
+   "industry": "Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 20239988736
+  },
+  {
+   "symbol": "DPZ",
+   "name": "Domino's",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 9664498688
+  },
+  {
+   "symbol": "DRI",
+   "name": "Darden Restaurants",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 22679965696
+  },
+  {
+   "symbol": "DTE",
+   "name": "DTE Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 25270214656
+  },
+  {
+   "symbol": "DUK",
+   "name": "Duke Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 88379244544
+  },
+  {
+   "symbol": "DVA",
+   "name": "DaVita",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 11455096832
+  },
+  {
+   "symbol": "DVN",
+   "name": "Devon Energy",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 51754999808
+  },
+  {
+   "symbol": "DXCM",
+   "name": "Dexcom",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 32686991360
+  },
+  {
+   "symbol": "EBAY",
+   "name": "eBay Inc.",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 48015499264
+  },
+  {
+   "symbol": "ECHO",
+   "name": "EchoStar",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 26205415424
+  },
+  {
+   "symbol": "ECL",
+   "name": "Ecolab",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 78349041664
+  },
+  {
+   "symbol": "ED",
+   "name": "Consolidated Edison",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 38129332224
+  },
+  {
+   "symbol": "EFX",
+   "name": "Equifax",
+   "industry": "Consulting Services",
+   "sector": "Industrials",
+   "market_cap": 17400688640
+  },
+  {
+   "symbol": "EG",
+   "name": "Everest Group",
+   "industry": "Insurance - Reinsurance",
+   "sector": "Financial Services",
+   "market_cap": 14203299840
+  },
+  {
+   "symbol": "EIX",
+   "name": "Edison International",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 20260456448
+  },
+  {
+   "symbol": "EL",
+   "name": "Est\u00e9e Lauder Companies (The)",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 34178764800
+  },
+  {
+   "symbol": "ELV",
+   "name": "Elevance Health",
+   "industry": "Healthcare Plans",
+   "sector": "Healthcare",
+   "market_cap": 85899755520
+  },
+  {
+   "symbol": "EME",
+   "name": "Emcor",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 33621008384
+  },
+  {
+   "symbol": "EMR",
+   "name": "Emerson Electric",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 88624619520
+  },
+  {
+   "symbol": "EOG",
+   "name": "EOG Resources",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 74754416640
+  },
+  {
+   "symbol": "EQIX",
+   "name": "Equinix",
+   "industry": "REIT - Specialty",
+   "sector": "Real Estate",
+   "market_cap": 99468959744
+  },
+  {
+   "symbol": "EQT",
+   "name": "EQT Corporation",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 31782469632
+  },
+  {
+   "symbol": "ERIE",
+   "name": "Erie Indemnity",
+   "industry": "Insurance Brokers",
+   "sector": "Financial Services",
+   "market_cap": 11653319680
+  },
+  {
+   "symbol": "ES",
+   "name": "Eversource Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 23982880768
+  },
+  {
+   "symbol": "ESS",
+   "name": "Essex Property Trust",
+   "industry": "REIT - Residential",
+   "sector": "Real Estate",
+   "market_cap": 18721042432
+  },
+  {
+   "symbol": "ETN",
+   "name": "Eaton Corporation",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 170844241920
+  },
+  {
+   "symbol": "ETR",
+   "name": "Entergy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 47094525952
+  },
+  {
+   "symbol": "EVRG",
+   "name": "Evergy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 17993461760
+  },
+  {
+   "symbol": "EW",
+   "name": "Edwards Lifesciences",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 49685782528
+  },
+  {
+   "symbol": "EXC",
+   "name": "Exelon",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 41560444928
+  },
+  {
+   "symbol": "EXE",
+   "name": "Expand Energy",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 20774631424
+  },
+  {
+   "symbol": "EXPD",
+   "name": "Expeditors International",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 24368044032
+  },
+  {
+   "symbol": "EXPE",
+   "name": "Expedia Group",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 31705511936
+  },
+  {
+   "symbol": "EXR",
+   "name": "Extra Space Storage",
+   "industry": "REIT - Industrial",
+   "sector": "Real Estate",
+   "market_cap": 29430685696
+  },
+  {
+   "symbol": "F",
+   "name": "Ford Motor Company",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 50682343424
+  },
+  {
+   "symbol": "FANG",
+   "name": "Diamondback Energy",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 52512755712
+  },
+  {
+   "symbol": "FAST",
+   "name": "Fastenal",
+   "industry": "Industrial Distribution",
+   "sector": "Industrials",
+   "market_cap": 57868304384
+  },
+  {
+   "symbol": "FCX",
+   "name": "Freeport-McMoRan",
+   "industry": "Copper",
+   "sector": "Basic Materials",
+   "market_cap": 103838425088
+  },
+  {
+   "symbol": "FDS",
+   "name": "FactSet",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 9712238592
+  },
+  {
+   "symbol": "FDX",
+   "name": "FedEx",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 67652243456
+  },
+  {
+   "symbol": "FDXF",
+   "name": "FedEx Freight",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 16922462208
+  },
+  {
+   "symbol": "FE",
+   "name": "FirstEnergy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 25046069248
+  },
+  {
+   "symbol": "FERG",
+   "name": "Ferguson Enterprises",
+   "industry": "Industrial Distribution",
+   "sector": "Industrials",
+   "market_cap": 43089661952
+  },
+  {
+   "symbol": "FFIV",
+   "name": "F5, Inc.",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 25089239040
+  },
+  {
+   "symbol": "FICO",
+   "name": "Fair Isaac",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 18640703488
+  },
+  {
+   "symbol": "FIS",
+   "name": "Fidelity National Information Services",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 18302689280
+  },
+  {
+   "symbol": "FITB",
+   "name": "Fifth Third Bancorp",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 47232450560
+  },
+  {
+   "symbol": "FIX",
+   "name": "Comfort Systems USA",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 58384224256
+  },
+  {
+   "symbol": "FLEX",
+   "name": "Flex Ltd.",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 42363133952
+  },
+  {
+   "symbol": "FOX",
+   "name": "Fox Corporation (Class B)",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 23841427456
+  },
+  {
+   "symbol": "FOXA",
+   "name": "Fox Corporation (Class A)",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 26594955264
+  },
+  {
+   "symbol": "FRT",
+   "name": "Federal Realty Investment Trust",
+   "industry": "REIT - Retail",
+   "sector": "Real Estate",
+   "market_cap": 9606220800
+  },
+  {
+   "symbol": "FSLR",
+   "name": "First Solar",
+   "industry": "Solar",
+   "sector": "Technology",
+   "market_cap": 19098458112
+  },
+  {
+   "symbol": "FTNT",
+   "name": "Fortinet",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 127269978112
+  },
+  {
+   "symbol": "FTV",
+   "name": "Fortive",
+   "industry": "Scientific & Technical Instruments",
+   "sector": "Technology",
+   "market_cap": 17099655168
+  },
+  {
+   "symbol": "GD",
+   "name": "General Dynamics",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 91102011392
+  },
+  {
+   "symbol": "GDDY",
+   "name": "GoDaddy",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 12302558208
+  },
+  {
+   "symbol": "GE",
+   "name": "GE Aerospace",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 339376308224
+  },
+  {
+   "symbol": "GEHC",
+   "name": "GE HealthCare",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 30309437440
+  },
+  {
+   "symbol": "GEN",
+   "name": "Gen Digital",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 12941451264
+  },
+  {
+   "symbol": "GEV",
+   "name": "GE Vernova",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 255049023488
+  },
+  {
+   "symbol": "GILD",
+   "name": "Gilead Sciences",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 187146436608
+  },
+  {
+   "symbol": "GIS",
+   "name": "General Mills",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 17986875392
+  },
+  {
+   "symbol": "GL",
+   "name": "Globe Life",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 12836931584
+  },
+  {
+   "symbol": "GLW",
+   "name": "Corning Inc.",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 134739640320
+  },
+  {
+   "symbol": "GM",
+   "name": "General Motors",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 74734829568
+  },
+  {
+   "symbol": "GNRC",
+   "name": "Generac",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 12293567488
+  },
+  {
+   "symbol": "GOOG",
+   "name": "Alphabet Inc. (Class C)",
+   "industry": "Internet Content & Information",
+   "sector": "Communication Services",
+   "market_cap": 4171386060800
+  },
+  {
+   "symbol": "GOOGL",
+   "name": "Alphabet Inc. (Class A)",
+   "industry": "Internet Content & Information",
+   "sector": "Communication Services",
+   "market_cap": 4206119354368
+  },
+  {
+   "symbol": "GPC",
+   "name": "Genuine Parts Company",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 17868003328
+  },
+  {
+   "symbol": "GPN",
+   "name": "Global Payments",
+   "industry": "Specialty Business Services",
+   "sector": "Industrials",
+   "market_cap": 22886844416
+  },
+  {
+   "symbol": "GRMN",
+   "name": "Garmin",
+   "industry": "Scientific & Technical Instruments",
+   "sector": "Technology",
+   "market_cap": 56726728704
+  },
+  {
+   "symbol": "GS",
+   "name": "Goldman Sachs",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 272376283136
+  },
+  {
+   "symbol": "GWW",
+   "name": "W. W. Grainger",
+   "industry": "Industrial Distribution",
+   "sector": "Industrials",
+   "market_cap": 58689212416
+  },
+  {
+   "symbol": "HAL",
+   "name": "Halliburton",
+   "industry": "Oil & Gas Equipment & Services",
+   "sector": "Energy",
+   "market_cap": 27367628800
+  },
+  {
+   "symbol": "HAS",
+   "name": "Hasbro",
+   "industry": "Leisure",
+   "sector": "Consumer Cyclical",
+   "market_cap": 12424606720
+  },
+  {
+   "symbol": "HBAN",
+   "name": "Huntington Bancshares",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 31599288320
+  },
+  {
+   "symbol": "HCA",
+   "name": "HCA Healthcare",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 96635633664
+  },
+  {
+   "symbol": "HD",
+   "name": "Home Depot (The)",
+   "industry": "Home Improvement Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 292522590208
+  },
+  {
+   "symbol": "HIG",
+   "name": "Hartford (The)",
+   "industry": "Insurance - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 33650429952
+  },
+  {
+   "symbol": "HII",
+   "name": "Huntington Ingalls Industries",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 10403602432
+  },
+  {
+   "symbol": "HLT",
+   "name": "Hilton Worldwide",
+   "industry": "Lodging",
+   "sector": "Consumer Cyclical",
+   "market_cap": 70661373952
+  },
+  {
+   "symbol": "HON",
+   "name": "Honeywell Technologies",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 67365597184
+  },
+  {
+   "symbol": "HONA",
+   "name": "Honeywell Aerospace",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 50325753856
+  },
+  {
+   "symbol": "HOOD",
+   "name": "Robinhood Markets",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 107350425600
+  },
+  {
+   "symbol": "HPE",
+   "name": "Hewlett Packard Enterprise",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 83550633984
+  },
+  {
+   "symbol": "HPQ",
+   "name": "HP Inc.",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 28226056192
+  },
+  {
+   "symbol": "HRL",
+   "name": "Hormel Foods",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 10847413248
+  },
+  {
+   "symbol": "HSIC",
+   "name": "Henry Schein",
+   "industry": "Medical Distribution",
+   "sector": "Healthcare",
+   "market_cap": 9838991360
+  },
+  {
+   "symbol": "HST",
+   "name": "Host Hotels & Resorts",
+   "industry": "REIT - Hotel & Motel",
+   "sector": "Real Estate",
+   "market_cap": 15575767040
+  },
+  {
+   "symbol": "HSY",
+   "name": "Hershey Company (The)",
+   "industry": "Confectioners",
+   "sector": "Consumer Defensive",
+   "market_cap": 33428000768
+  },
+  {
+   "symbol": "HUBB",
+   "name": "Hubbell Incorporated",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 24657029120
+  },
+  {
+   "symbol": "HUM",
+   "name": "Humana",
+   "industry": "Healthcare Plans",
+   "sector": "Healthcare",
+   "market_cap": 47783555072
+  },
+  {
+   "symbol": "HWM",
+   "name": "Howmet Aerospace",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 92713353216
+  },
+  {
+   "symbol": "IBKR",
+   "name": "Interactive Brokers",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 152048500736
+  },
+  {
+   "symbol": "IBM",
+   "name": "IBM",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 212460716032
+  },
+  {
+   "symbol": "ICE",
+   "name": "Intercontinental Exchange",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 86628786176
+  },
+  {
+   "symbol": "IDXX",
+   "name": "Idexx Laboratories",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 40960786432
+  },
+  {
+   "symbol": "IEX",
+   "name": "IDEX Corporation",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 16961473536
+  },
+  {
+   "symbol": "IFF",
+   "name": "International Flavors & Fragrances",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 21876955136
+  },
+  {
+   "symbol": "ILMN",
+   "name": "Illumina, Inc.",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 40769998848
+  },
+  {
+   "symbol": "INCY",
+   "name": "Incyte",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 25112223744
+  },
+  {
+   "symbol": "INTC",
+   "name": "Intel",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 650190913536
+  },
+  {
+   "symbol": "INTU",
+   "name": "Intuit",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 73701015552
+  },
+  {
+   "symbol": "INVH",
+   "name": "Invitation Homes",
+   "industry": "REIT - Residential",
+   "sector": "Real Estate",
+   "market_cap": 15722390528
+  },
+  {
+   "symbol": "IP",
+   "name": "International Paper",
+   "industry": "Packaging & Containers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 18545537024
+  },
+  {
+   "symbol": "IQV",
+   "name": "IQVIA",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 44502900736
+  },
+  {
+   "symbol": "IR",
+   "name": "Ingersoll Rand",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 29518997504
+  },
+  {
+   "symbol": "IRM",
+   "name": "Iron Mountain",
+   "industry": "REIT - Specialty",
+   "sector": "Real Estate",
+   "market_cap": 33158137856
+  },
+  {
+   "symbol": "ISRG",
+   "name": "Intuitive Surgical",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 145167089664
+  },
+  {
+   "symbol": "IT",
+   "name": "Gartner",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 11865692160
+  },
+  {
+   "symbol": "ITW",
+   "name": "Illinois Tool Works",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 78126342144
+  },
+  {
+   "symbol": "IVZ",
+   "name": "Invesco",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 13651173376
+  },
+  {
+   "symbol": "J",
+   "name": "Jacobs Solutions",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 16338850816
+  },
+  {
+   "symbol": "JBHT",
+   "name": "J.B. Hunt",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 21170694144
+  },
+  {
+   "symbol": "JBL",
+   "name": "Jabil",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 33190260736
+  },
+  {
+   "symbol": "JCI",
+   "name": "Johnson Controls",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 90982359040
+  },
+  {
+   "symbol": "JKHY",
+   "name": "Jack Henry & Associates",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 10361942016
+  },
+  {
+   "symbol": "JNJ",
+   "name": "Johnson & Johnson",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 653612679168
+  },
+  {
+   "symbol": "JPM",
+   "name": "JPMorgan Chase",
+   "industry": "Banks - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 911917383680
+  },
+  {
+   "symbol": "KDP",
+   "name": "Keurig Dr Pepper",
+   "industry": "Beverages - Non-Alcoholic",
+   "sector": "Consumer Defensive",
+   "market_cap": 43478392832
+  },
+  {
+   "symbol": "KEY",
+   "name": "KeyCorp",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 21993521152
+  },
+  {
+   "symbol": "KEYS",
+   "name": "Keysight Technologies",
+   "industry": "Scientific & Technical Instruments",
+   "sector": "Technology",
+   "market_cap": 61654134784
+  },
+  {
+   "symbol": "KHC",
+   "name": "Kraft Heinz",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 28021014528
+  },
+  {
+   "symbol": "KIM",
+   "name": "Kimco Realty",
+   "industry": "REIT - Retail",
+   "sector": "Real Estate",
+   "market_cap": 15052514304
+  },
+  {
+   "symbol": "KKR",
+   "name": "KKR & Co.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 89283493888
+  },
+  {
+   "symbol": "KLAC",
+   "name": "KLA Corporation",
+   "industry": "Semiconductor Equipment & Materials",
+   "sector": "Technology",
+   "market_cap": 245236809728
+  },
+  {
+   "symbol": "KMB",
+   "name": "Kimberly-Clark",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 32672888832
+  },
+  {
+   "symbol": "KMI",
+   "name": "Kinder Morgan",
+   "industry": "Oil & Gas Midstream",
+   "sector": "Energy",
+   "market_cap": 68413394944
+  },
+  {
+   "symbol": "KO",
+   "name": "Coca-Cola Company (The)",
+   "industry": "Beverages - Non-Alcoholic",
+   "sector": "Consumer Defensive",
+   "market_cap": 377806815232
+  },
+  {
+   "symbol": "KR",
+   "name": "Kroger",
+   "industry": "Grocery Stores",
+   "sector": "Consumer Defensive",
+   "market_cap": 34691178496
+  },
+  {
+   "symbol": "KVUE",
+   "name": "Kenvue",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 34189766656
+  },
+  {
+   "symbol": "L",
+   "name": "Loews Corporation",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 21428113408
+  },
+  {
+   "symbol": "LDOS",
+   "name": "Leidos",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 15548341248
+  },
+  {
+   "symbol": "LEN",
+   "name": "Lennar",
+   "industry": "Residential Construction",
+   "sector": "Consumer Cyclical",
+   "market_cap": 19789535232
+  },
+  {
+   "symbol": "LH",
+   "name": "Labcorp",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 25111805952
+  },
+  {
+   "symbol": "LHX",
+   "name": "L3Harris",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 44261355520
+  },
+  {
+   "symbol": "LII",
+   "name": "Lennox International",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 12917743616
+  },
+  {
+   "symbol": "LIN",
+   "name": "Linde plc",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 216609980416
+  },
+  {
+   "symbol": "LITE",
+   "name": "Lumentum",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 84466008064
+  },
+  {
+   "symbol": "LLY",
+   "name": "Lilly (Eli)",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 1054885412864
+  },
+  {
+   "symbol": "LMT",
+   "name": "Lockheed Martin",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 119909646336
+  },
+  {
+   "symbol": "LNT",
+   "name": "Alliant Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 16490507264
+  },
+  {
+   "symbol": "LOW",
+   "name": "Lowe's",
+   "industry": "Home Improvement Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 106196303872
+  },
+  {
+   "symbol": "LRCX",
+   "name": "Lam Research",
+   "industry": "Semiconductor Equipment & Materials",
+   "sector": "Technology",
+   "market_cap": 394461478912
+  },
+  {
+   "symbol": "LULU",
+   "name": "Lululemon Athletica",
+   "industry": "Apparel Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 11214925824
+  },
+  {
+   "symbol": "LUV",
+   "name": "Southwest Airlines",
+   "industry": "Airlines",
+   "sector": "Industrials",
+   "market_cap": 20879405056
+  },
+  {
+   "symbol": "LVS",
+   "name": "Las Vegas Sands",
+   "industry": "Resorts & Casinos",
+   "sector": "Consumer Cyclical",
+   "market_cap": 25253869568
+  },
+  {
+   "symbol": "LYB",
+   "name": "LyondellBasell",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 18781425664
+  },
+  {
+   "symbol": "LYV",
+   "name": "Live Nation Entertainment",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 39805788160
+  },
+  {
+   "symbol": "MA",
+   "name": "Mastercard",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 497267048448
+  },
+  {
+   "symbol": "MAA",
+   "name": "Mid-America Apartment Communities",
+   "industry": "REIT - Residential",
+   "sector": "Real Estate",
+   "market_cap": 14122307584
+  },
+  {
+   "symbol": "MAR",
+   "name": "Marriott International",
+   "industry": "Lodging",
+   "sector": "Consumer Cyclical",
+   "market_cap": 91797553152
+  },
+  {
+   "symbol": "MAS",
+   "name": "Masco",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 13576353792
+  },
+  {
+   "symbol": "MCD",
+   "name": "McDonald's",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 167357218816
+  },
+  {
+   "symbol": "MCHP",
+   "name": "Microchip Technology",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 42729357312
+  },
+  {
+   "symbol": "MCK",
+   "name": "McKesson Corporation",
+   "industry": "Medical Distribution",
+   "sector": "Healthcare",
+   "market_cap": 101041872896
+  },
+  {
+   "symbol": "MCO",
+   "name": "Moody's Corporation",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 81169932288
+  },
+  {
+   "symbol": "MDLZ",
+   "name": "Mondelez International",
+   "industry": "Confectioners",
+   "sector": "Consumer Defensive",
+   "market_cap": 77339901952
+  },
+  {
+   "symbol": "MDT",
+   "name": "Medtronic",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 113382785024
+  },
+  {
+   "symbol": "MET",
+   "name": "MetLife",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 62086094848
+  },
+  {
+   "symbol": "META",
+   "name": "Meta Platforms",
+   "industry": "Internet Content & Information",
+   "sector": "Communication Services",
+   "market_cap": 1914858373120
+  },
+  {
+   "symbol": "MGM",
+   "name": "MGM Resorts",
+   "industry": "Resorts & Casinos",
+   "sector": "Consumer Cyclical",
+   "market_cap": 8196892160
+  },
+  {
+   "symbol": "MKC",
+   "name": "McCormick & Company",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 12888742912
+  },
+  {
+   "symbol": "MLM",
+   "name": "Martin Marietta Materials",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 34394685440
+  },
+  {
+   "symbol": "MMM",
+   "name": "3M",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 87440736256
+  },
+  {
+   "symbol": "MNST",
+   "name": "Monster Beverage",
+   "industry": "Beverages - Non-Alcoholic",
+   "sector": "Consumer Defensive",
+   "market_cap": 84454719488
+  },
+  {
+   "symbol": "MO",
+   "name": "Altria",
+   "industry": "Tobacco",
+   "sector": "Consumer Defensive",
+   "market_cap": 114911772672
+  },
+  {
+   "symbol": "MOS",
+   "name": "Mosaic Company (The)",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 7314779136
+  },
+  {
+   "symbol": "MPC",
+   "name": "Marathon Petroleum",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 114882904064
+  },
+  {
+   "symbol": "MPWR",
+   "name": "Monolithic Power Systems",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 67199614976
+  },
+  {
+   "symbol": "MRK",
+   "name": "Merck & Co.",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 367065792512
+  },
+  {
+   "symbol": "MRNA",
+   "name": "Moderna",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 79400042496
+  },
+  {
+   "symbol": "MRSH",
+   "name": "Marsh McLennan",
+   "industry": "Insurance Brokers",
+   "sector": "Financial Services",
+   "market_cap": 81660387328
+  },
+  {
+   "symbol": "MRVL",
+   "name": "Marvell Technology",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 235402199040
+  },
+  {
+   "symbol": "MS",
+   "name": "Morgan Stanley",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 308317847552
+  },
+  {
+   "symbol": "MSCI",
+   "name": "MSCI",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 40083869696
+  },
+  {
+   "symbol": "MSFT",
+   "name": "Microsoft",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 3832843862016
+  },
+  {
+   "symbol": "MSI",
+   "name": "Motorola Solutions",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 75610808320
+  },
+  {
+   "symbol": "MTB",
+   "name": "M&T Bank",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 32057729024
+  },
+  {
+   "symbol": "MTD",
+   "name": "Mettler Toledo",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 30288066560
+  },
+  {
+   "symbol": "MU",
+   "name": "Micron Technology",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 1222319669248
+  },
+  {
+   "symbol": "NCLH",
+   "name": "Norwegian Cruise Line Holdings",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 6708733952
+  },
+  {
+   "symbol": "NDAQ",
+   "name": "Nasdaq, Inc.",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 52292333568
+  },
+  {
+   "symbol": "NDSN",
+   "name": "Nordson Corporation",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 18151235584
+  },
+  {
+   "symbol": "NEE",
+   "name": "NextEra Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 158672863232
+  },
+  {
+   "symbol": "NEM",
+   "name": "Newmont",
+   "industry": "Gold",
+   "sector": "Basic Materials",
+   "market_cap": 127949856768
+  },
+  {
+   "symbol": "NFLX",
+   "name": "Netflix",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 296243462144
+  },
+  {
+   "symbol": "NI",
+   "name": "NiSource",
+   "industry": "Utilities - Regulated Gas",
+   "sector": "Utilities",
+   "market_cap": 18904258560
+  },
+  {
+   "symbol": "NKE",
+   "name": "Nike, Inc.",
+   "industry": "Footwear & Accessories",
+   "sector": "Consumer Cyclical",
+   "market_cap": 53035081728
+  },
+  {
+   "symbol": "NOC",
+   "name": "Northrop Grumman",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 72526012416
+  },
+  {
+   "symbol": "NOW",
+   "name": "ServiceNow",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 140212355072
+  },
+  {
+   "symbol": "NRG",
+   "name": "NRG Energy",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 21098825728
+  },
+  {
+   "symbol": "NSC",
+   "name": "Norfolk Southern",
+   "industry": "Railroads",
+   "sector": "Industrials",
+   "market_cap": 70302416896
+  },
+  {
+   "symbol": "NTAP",
+   "name": "NetApp",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 39508701184
+  },
+  {
+   "symbol": "NTRS",
+   "name": "Northern Trust",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 32150794240
+  },
+  {
+   "symbol": "NUE",
+   "name": "Nucor",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 56095010816
+  },
+  {
+   "symbol": "NVDA",
+   "name": "Nvidia",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 5434765213696
+  },
+  {
+   "symbol": "NVR",
+   "name": "NVR, Inc.",
+   "industry": "Residential Construction",
+   "sector": "Consumer Cyclical",
+   "market_cap": 16782222336
+  },
+  {
+   "symbol": "NWS",
+   "name": "News Corp (Class B)",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 17132903424
+  },
+  {
+   "symbol": "NWSA",
+   "name": "News Corp (Class A)",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 15373745152
+  },
+  {
+   "symbol": "NXPI",
+   "name": "NXP Semiconductors",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 60035248128
+  },
+  {
+   "symbol": "O",
+   "name": "Realty Income",
+   "industry": "REIT - Retail",
+   "sector": "Real Estate",
+   "market_cap": 52552949760
+  },
+  {
+   "symbol": "ODFL",
+   "name": "Old Dominion",
+   "industry": "Trucking",
+   "sector": "Industrials",
+   "market_cap": 35934904320
+  },
+  {
+   "symbol": "OKE",
+   "name": "Oneok",
+   "industry": "Oil & Gas Midstream",
+   "sector": "Energy",
+   "market_cap": 55873167360
+  },
+  {
+   "symbol": "OMC",
+   "name": "Omnicom Group",
+   "industry": "Advertising Agencies",
+   "sector": "Communication Services",
+   "market_cap": 21703223296
+  },
+  {
+   "symbol": "ON",
+   "name": "ON Semiconductor",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 30055397376
+  },
+  {
+   "symbol": "ORCL",
+   "name": "Oracle Corporation",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 414554226688
+  },
+  {
+   "symbol": "ORLY",
+   "name": "O'Reilly Automotive",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 69663653888
+  },
+  {
+   "symbol": "OTIS",
+   "name": "Otis Worldwide",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 25101336576
+  },
+  {
+   "symbol": "OXY",
+   "name": "Occidental Petroleum",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 56839380992
+  },
+  {
+   "symbol": "P",
+   "name": "Everpure",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 41986633728
+  },
+  {
+   "symbol": "PANW",
+   "name": "Palo Alto Networks",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 306537299968
+  },
+  {
+   "symbol": "PAYX",
+   "name": "Paychex",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 36085743616
+  },
+  {
+   "symbol": "PCAR",
+   "name": "Paccar",
+   "industry": "Farm & Heavy Construction Machinery",
+   "sector": "Industrials",
+   "market_cap": 58589683712
+  },
+  {
+   "symbol": "PCG",
+   "name": "PG&E Corporation",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 37049208832
+  },
+  {
+   "symbol": "PEG",
+   "name": "Public Service Enterprise Group",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 33397499904
+  },
+  {
+   "symbol": "PEP",
+   "name": "PepsiCo",
+   "industry": "Beverages - Non-Alcoholic",
+   "sector": "Consumer Defensive",
+   "market_cap": 175708585984
+  },
+  {
+   "symbol": "PFE",
+   "name": "Pfizer",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 163409641472
+  },
+  {
+   "symbol": "PFG",
+   "name": "Principal Financial Group",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 24572788736
+  },
+  {
+   "symbol": "PG",
+   "name": "Procter & Gamble",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 339901841408
+  },
+  {
+   "symbol": "PGR",
+   "name": "Progressive Corporation",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 119272202240
+  },
+  {
+   "symbol": "PH",
+   "name": "Parker Hannifin",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 123379564544
+  },
+  {
+   "symbol": "PHM",
+   "name": "PulteGroup",
+   "industry": "Residential Construction",
+   "sector": "Consumer Cyclical",
+   "market_cap": 22829789184
+  },
+  {
+   "symbol": "PKG",
+   "name": "Packaging Corporation of America",
+   "industry": "Packaging & Containers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 21132333056
+  },
+  {
+   "symbol": "PLD",
+   "name": "Prologis",
+   "industry": "REIT - Industrial",
+   "sector": "Real Estate",
+   "market_cap": 129336762368
+  },
+  {
+   "symbol": "PLTR",
+   "name": "Palantir Technologies",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 455788101632
+  },
+  {
+   "symbol": "PM",
+   "name": "Philip Morris International",
+   "industry": "Tobacco",
+   "sector": "Consumer Defensive",
+   "market_cap": 296884666368
+  },
+  {
+   "symbol": "PNC",
+   "name": "PNC Financial Services",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 90017652736
+  },
+  {
+   "symbol": "PNR",
+   "name": "Pentair",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 8671753216
+  },
+  {
+   "symbol": "PNW",
+   "name": "Pinnacle West Capital",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 11118633984
+  },
+  {
+   "symbol": "PODD",
+   "name": "Insulet Corporation",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 9441187840
+  },
+  {
+   "symbol": "PPG",
+   "name": "PPG Industries",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 23901696000
+  },
+  {
+   "symbol": "PPL",
+   "name": "PPL Corporation",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 24104009728
+  },
+  {
+   "symbol": "PRU",
+   "name": "Prudential Financial",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 41210249216
+  },
+  {
+   "symbol": "PSA",
+   "name": "Public Storage",
+   "industry": "REIT - Industrial",
+   "sector": "Real Estate",
+   "market_cap": 53807853568
+  },
+  {
+   "symbol": "PSKY",
+   "name": "Paramount Skydance Corporation",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 11146963968
+  },
+  {
+   "symbol": "PSX",
+   "name": "Phillips 66",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 102049603584
+  },
+  {
+   "symbol": "PTC",
+   "name": "PTC Inc.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 14986885120
+  },
+  {
+   "symbol": "PWR",
+   "name": "Quanta Services",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 97592410112
+  },
+  {
+   "symbol": "PYPL",
+   "name": "PayPal",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 47444480000
+  },
+  {
+   "symbol": "Q",
+   "name": "Qnity Electronics",
+   "industry": "Semiconductor Equipment & Materials",
+   "sector": "Technology",
+   "market_cap": 26102505472
+  },
+  {
+   "symbol": "QCOM",
+   "name": "Qualcomm",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 215716184064
+  },
+  {
+   "symbol": "RCL",
+   "name": "Royal Caribbean Group",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 64910618624
+  },
+  {
+   "symbol": "RDDT",
+   "name": "Reddit",
+   "industry": "Internet Content & Information",
+   "sector": "Communication Services",
+   "market_cap": 28828692480
+  },
+  {
+   "symbol": "REG",
+   "name": "Regency Centers",
+   "industry": "REIT - Retail",
+   "sector": "Real Estate",
+   "market_cap": 13690988544
+  },
+  {
+   "symbol": "REGN",
+   "name": "Regeneron Pharmaceuticals",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 81132650496
+  },
+  {
+   "symbol": "RF",
+   "name": "Regions Financial Corporation",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 23530295296
+  },
+  {
+   "symbol": "RJF",
+   "name": "Raymond James Financial",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 30752866304
+  },
+  {
+   "symbol": "RL",
+   "name": "Ralph Lauren Corporation",
+   "industry": "Apparel Manufacturing",
+   "sector": "Consumer Cyclical",
+   "market_cap": 21276817408
+  },
+  {
+   "symbol": "RMD",
+   "name": "ResMed|",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 32024010752
+  },
+  {
+   "symbol": "ROK",
+   "name": "Rockwell Automation",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 48211779584
+  },
+  {
+   "symbol": "ROL",
+   "name": "Rollins, Inc.",
+   "industry": "Personal Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 14448796672
+  },
+  {
+   "symbol": "ROP",
+   "name": "Roper Technologies",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 35461898240
+  },
+  {
+   "symbol": "ROST",
+   "name": "Ross Stores",
+   "industry": "Apparel Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 75429265408
+  },
+  {
+   "symbol": "RSG",
+   "name": "Republic Services",
+   "industry": "Waste Management",
+   "sector": "Industrials",
+   "market_cap": 64947777536
+  },
+  {
+   "symbol": "RTX",
+   "name": "RTX Corporation",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 255265374208
+  },
+  {
+   "symbol": "RVTY",
+   "name": "Revvity",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 16861820928
+  },
+  {
+   "symbol": "SBAC",
+   "name": "SBA Communications",
+   "industry": "REIT - Specialty",
+   "sector": "Real Estate",
+   "market_cap": 17626540032
+  },
+  {
+   "symbol": "SBUX",
+   "name": "Starbucks",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 108140404736
+  },
+  {
+   "symbol": "SCHW",
+   "name": "Charles Schwab Corporation",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 171256102912
+  },
+  {
+   "symbol": "SHW",
+   "name": "Sherwin-Williams",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 79891709952
+  },
+  {
+   "symbol": "SJM",
+   "name": "J.M. Smucker Company (The)",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 12925604864
+  },
+  {
+   "symbol": "SLB",
+   "name": "Schlumberger",
+   "industry": "Oil & Gas Equipment & Services",
+   "sector": "Energy",
+   "market_cap": 76492742656
+  },
+  {
+   "symbol": "SMCI",
+   "name": "Supermicro",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 27983726592
+  },
+  {
+   "symbol": "SNA",
+   "name": "Snap-on",
+   "industry": "Tools & Accessories",
+   "sector": "Industrials",
+   "market_cap": 19097655296
+  },
+  {
+   "symbol": "SNDK",
+   "name": "Sandisk",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 260303716352
+  },
+  {
+   "symbol": "SNPS",
+   "name": "Synopsys",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 81591214080
+  },
+  {
+   "symbol": "SO",
+   "name": "Southern Company",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 95342084096
+  },
+  {
+   "symbol": "SOLV",
+   "name": "Solventum",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 15235023872
+  },
+  {
+   "symbol": "SPG",
+   "name": "Simon Property Group",
+   "industry": "REIT - Retail",
+   "sector": "Real Estate",
+   "market_cap": 77754482688
+  },
+  {
+   "symbol": "SPGI",
+   "name": "S&P Global",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 118892838912
+  },
+  {
+   "symbol": "SRE",
+   "name": "Sempra",
+   "industry": "Utilities - Diversified",
+   "sector": "Utilities",
+   "market_cap": 50958454784
+  },
+  {
+   "symbol": "STE",
+   "name": "Steris",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 20370698240
+  },
+  {
+   "symbol": "STLD",
+   "name": "Steel Dynamics",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 33490042880
+  },
+  {
+   "symbol": "STT",
+   "name": "State Street Corporation",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 49814417408
+  },
+  {
+   "symbol": "STX",
+   "name": "Seagate Technology",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 208480731136
+  },
+  {
+   "symbol": "STZ",
+   "name": "Constellation Brands",
+   "industry": "Beverages - Brewers",
+   "sector": "Consumer Defensive",
+   "market_cap": 19408498688
+  },
+  {
+   "symbol": "SW",
+   "name": "Smurfit Westrock",
+   "industry": "Packaging & Containers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 24343107584
+  },
+  {
+   "symbol": "SWK",
+   "name": "Stanley Black & Decker",
+   "industry": "Tools & Accessories",
+   "sector": "Industrials",
+   "market_cap": 13802920960
+  },
+  {
+   "symbol": "SWKS",
+   "name": "Skyworks Solutions",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 13437268992
+  },
+  {
+   "symbol": "SYF",
+   "name": "Synchrony Financial",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 23732549632
+  },
+  {
+   "symbol": "SYK",
+   "name": "Stryker Corporation",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 104469954560
+  },
+  {
+   "symbol": "SYY",
+   "name": "Sysco",
+   "industry": "Food Distribution",
+   "sector": "Consumer Defensive",
+   "market_cap": 37626929152
+  },
+  {
+   "symbol": "T",
+   "name": "AT&T",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 173913538560
+  },
+  {
+   "symbol": "TDG",
+   "name": "TransDigm Group",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 62433062912
+  },
+  {
+   "symbol": "TDY",
+   "name": "Teledyne Technologies",
+   "industry": "Scientific & Technical Instruments",
+   "sector": "Technology",
+   "market_cap": 28453040128
+  },
+  {
+   "symbol": "TECH",
+   "name": "Bio-Techne",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 11386572800
+  },
+  {
+   "symbol": "TEL",
+   "name": "TE Connectivity",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 63378128896
+  },
+  {
+   "symbol": "TER",
+   "name": "Teradyne",
+   "industry": "Semiconductor Equipment & Materials",
+   "sector": "Technology",
+   "market_cap": 62283030528
+  },
+  {
+   "symbol": "TFC",
+   "name": "Truist Financial",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 58222706688
+  },
+  {
+   "symbol": "TGT",
+   "name": "Target Corporation",
+   "industry": "Discount Stores",
+   "sector": "Consumer Defensive",
+   "market_cap": 71528185856
+  },
+  {
+   "symbol": "TJX",
+   "name": "TJX Companies",
+   "industry": "Apparel Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 143677849600
+  },
+  {
+   "symbol": "TKO",
+   "name": "TKO Group Holdings",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 34573897728
+  },
+  {
+   "symbol": "TMO",
+   "name": "Thermo Fisher Scientific",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 249579421696
+  },
+  {
+   "symbol": "TMUS",
+   "name": "T-Mobile US",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 177452056576
+  },
+  {
+   "symbol": "TPL",
+   "name": "Texas Pacific Land Corporation",
+   "industry": "Oil & Gas E&P",
+   "sector": "Energy",
+   "market_cap": 23525193728
+  },
+  {
+   "symbol": "TPR",
+   "name": "Tapestry, Inc.",
+   "industry": "Luxury Goods",
+   "sector": "Consumer Cyclical",
+   "market_cap": 22706724864
+  },
+  {
+   "symbol": "TRGP",
+   "name": "Targa Resources",
+   "industry": "Oil & Gas Midstream",
+   "sector": "Energy",
+   "market_cap": 59577516032
+  },
+  {
+   "symbol": "TRMB",
+   "name": "Trimble Inc.",
+   "industry": "Scientific & Technical Instruments",
+   "sector": "Technology",
+   "market_cap": 13489453056
+  },
+  {
+   "symbol": "TROW",
+   "name": "T. Rowe Price",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 22506956800
+  },
+  {
+   "symbol": "TRV",
+   "name": "Travelers Companies (The)",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 75721080832
+  },
+  {
+   "symbol": "TSCO",
+   "name": "Tractor Supply",
+   "industry": "Specialty Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 16813965312
+  },
+  {
+   "symbol": "TSLA",
+   "name": "Tesla, Inc.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1469666033664
+  },
+  {
+   "symbol": "TSN",
+   "name": "Tyson Foods",
+   "industry": "Farm Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 17913731072
+  },
+  {
+   "symbol": "TT",
+   "name": "Trane Technologies",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 99987333120
+  },
+  {
+   "symbol": "TTWO",
+   "name": "Take-Two Interactive",
+   "industry": "Electronic Gaming & Multimedia",
+   "sector": "Communication Services",
+   "market_cap": 37665341440
+  },
+  {
+   "symbol": "TXN",
+   "name": "Texas Instruments",
+   "industry": "Semiconductors",
+   "sector": "Technology",
+   "market_cap": 253946789888
+  },
+  {
+   "symbol": "TXT",
+   "name": "Textron",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 13318156288
+  },
+  {
+   "symbol": "TYL",
+   "name": "Tyler Technologies",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 13332831232
+  },
+  {
+   "symbol": "UAL",
+   "name": "United Airlines Holdings",
+   "industry": "Airlines",
+   "sector": "Industrials",
+   "market_cap": 36997701632
+  },
+  {
+   "symbol": "UBER",
+   "name": "Uber",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 142203043840
+  },
+  {
+   "symbol": "UDR",
+   "name": "UDR, Inc.",
+   "industry": "REIT - Residential",
+   "sector": "Real Estate",
+   "market_cap": 12538249216
+  },
+  {
+   "symbol": "UHS",
+   "name": "Universal Health Services",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 10541385728
+  },
+  {
+   "symbol": "ULTA",
+   "name": "Ulta Beauty",
+   "industry": "Specialty Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 23311374336
+  },
+  {
+   "symbol": "UNH",
+   "name": "UnitedHealth Group",
+   "industry": "Healthcare Plans",
+   "sector": "Healthcare",
+   "market_cap": 338025218048
+  },
+  {
+   "symbol": "UNP",
+   "name": "Union Pacific Corporation",
+   "industry": "Railroads",
+   "sector": "Industrials",
+   "market_cap": 162651947008
+  },
+  {
+   "symbol": "UPS",
+   "name": "United Parcel Service",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 79939436544
+  },
+  {
+   "symbol": "URI",
+   "name": "United Rentals",
+   "industry": "Rental & Leasing Services",
+   "sector": "Industrials",
+   "market_cap": 65171623936
+  },
+  {
+   "symbol": "USB",
+   "name": "U.S. Bancorp",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 92439199744
+  },
+  {
+   "symbol": "V",
+   "name": "Visa Inc.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 689702764544
+  },
+  {
+   "symbol": "VEEV",
+   "name": "Veeva Systems",
+   "industry": "Health Information Services",
+   "sector": "Healthcare",
+   "market_cap": 45444575232
+  },
+  {
+   "symbol": "VICI",
+   "name": "Vici Properties",
+   "industry": "REIT - Diversified",
+   "sector": "Real Estate",
+   "market_cap": 25886332928
+  },
+  {
+   "symbol": "VLO",
+   "name": "Valero Energy",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 111479750656
+  },
+  {
+   "symbol": "VLTO",
+   "name": "Veralto",
+   "industry": "Pollution & Treatment Controls",
+   "sector": "Industrials",
+   "market_cap": 23682084864
+  },
+  {
+   "symbol": "VMC",
+   "name": "Vulcan Materials Company",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 31746789376
+  },
+  {
+   "symbol": "VMRK",
+   "name": "Vivmark Residential",
+   "industry": "REIT - Residential",
+   "sector": "Real Estate",
+   "market_cap": 47595151360
+  },
+  {
+   "symbol": "VRSK",
+   "name": "Verisk Analytics",
+   "industry": "Consulting Services",
+   "sector": "Industrials",
+   "market_cap": 22170206208
+  },
+  {
+   "symbol": "VRSN",
+   "name": "Verisign",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 25967400960
+  },
+  {
+   "symbol": "VRT",
+   "name": "Vertiv",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 97509801984
+  },
+  {
+   "symbol": "VRTX",
+   "name": "Vertex Pharmaceuticals",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 133283930112
+  },
+  {
+   "symbol": "VST",
+   "name": "Vistra Corp.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 46472052736
+  },
+  {
+   "symbol": "VTR",
+   "name": "Ventas",
+   "industry": "REIT - Healthcare Facilities",
+   "sector": "Real Estate",
+   "market_cap": 44416024576
+  },
+  {
+   "symbol": "VTRS",
+   "name": "Viatris",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 20479375360
+  },
+  {
+   "symbol": "VZ",
+   "name": "Verizon",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 195606822912
+  },
+  {
+   "symbol": "WAB",
+   "name": "Wabtec",
+   "industry": "Railroads",
+   "sector": "Industrials",
+   "market_cap": 48646324224
+  },
+  {
+   "symbol": "WAT",
+   "name": "Waters Corporation",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 42567495680
+  },
+  {
+   "symbol": "WBD",
+   "name": "Warner Bros. Discovery",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 77370245120
+  },
+  {
+   "symbol": "WDAY",
+   "name": "Workday, Inc.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 45657448448
+  },
+  {
+   "symbol": "WDC",
+   "name": "Western Digital",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 164698701824
+  },
+  {
+   "symbol": "WEC",
+   "name": "WEC Energy Group",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 33057417216
+  },
+  {
+   "symbol": "WELL",
+   "name": "Welltower",
+   "industry": "REIT - Healthcare Facilities",
+   "sector": "Real Estate",
+   "market_cap": 166718750720
+  },
+  {
+   "symbol": "WFC",
+   "name": "Wells Fargo",
+   "industry": "Banks - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 250901217280
+  },
+  {
+   "symbol": "WM",
+   "name": "Waste Management",
+   "industry": "Waste Management",
+   "sector": "Industrials",
+   "market_cap": 82673098752
+  },
+  {
+   "symbol": "WMB",
+   "name": "Williams Companies",
+   "industry": "Oil & Gas Midstream",
+   "sector": "Energy",
+   "market_cap": 84716584960
+  },
+  {
+   "symbol": "WMT",
+   "name": "Walmart",
+   "industry": "Discount Stores",
+   "sector": "Consumer Defensive",
+   "market_cap": 856685936640
+  },
+  {
+   "symbol": "WRB",
+   "name": "W. R. Berkley Corporation",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 24805423104
+  },
+  {
+   "symbol": "WSM",
+   "name": "Williams-Sonoma, Inc.",
+   "industry": "Specialty Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 27310399488
+  },
+  {
+   "symbol": "WST",
+   "name": "West Pharmaceutical Services",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 26069997568
+  },
+  {
+   "symbol": "WTW",
+   "name": "Willis Towers Watson",
+   "industry": "Insurance Brokers",
+   "sector": "Financial Services",
+   "market_cap": 27303419904
+  },
+  {
+   "symbol": "WY",
+   "name": "Weyerhaeuser",
+   "industry": "REIT - Specialty",
+   "sector": "Real Estate",
+   "market_cap": 14421927936
+  },
+  {
+   "symbol": "WYNN",
+   "name": "Wynn Resorts",
+   "industry": "Resorts & Casinos",
+   "sector": "Consumer Cyclical",
+   "market_cap": 8353242112
+  },
+  {
+   "symbol": "XEL",
+   "name": "Xcel Energy",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 43599474688
+  },
+  {
+   "symbol": "XOM",
+   "name": "ExxonMobil",
+   "industry": "Oil & Gas Integrated",
+   "sector": "Energy",
+   "market_cap": 660331954176
+  },
+  {
+   "symbol": "XYL",
+   "name": "Xylem Inc.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 23962750976
+  },
+  {
+   "symbol": "XYZ",
+   "name": "Block, Inc.",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 45912752128
+  },
+  {
+   "symbol": "YUM",
+   "name": "Yum! Brands",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 37832278016
+  },
+  {
+   "symbol": "ZBH",
+   "name": "Zimmer Biomet",
+   "industry": "Medical Devices",
+   "sector": "Healthcare",
+   "market_cap": 17364760576
+  },
+  {
+   "symbol": "ZBRA",
+   "name": "Zebra Technologies",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 17626261504
+  },
+  {
+   "symbol": "ZTS",
+   "name": "Zoetis",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 29359538176
+  }
+ ],
+ "IN": [
+  {
+   "symbol": "360ONE.NS",
+   "name": "360 ONE WAM Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 437691940864
+  },
+  {
+   "symbol": "3MINDIA.NS",
+   "name": "3M India Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 382167515136
+  },
+  {
+   "symbol": "AADHARHFC.NS",
+   "name": "Aadhar Housing Finance Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 194865758208
+  },
+  {
+   "symbol": "AARTIIND.NS",
+   "name": "Aarti Industries Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 177471225856
+  },
+  {
+   "symbol": "AAVAS.NS",
+   "name": "Aavas Financiers Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 100521418752
+  },
+  {
+   "symbol": "ABB.NS",
+   "name": "ABB India Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 1494483730432
+  },
+  {
+   "symbol": "ABBOTINDIA.NS",
+   "name": "Abbott India Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 572774940672
+  },
+  {
+   "symbol": "ABCAPITAL.NS",
+   "name": "Aditya Birla Capital Ltd.",
+   "industry": "Financial Conglomerates",
+   "sector": "Financial Services",
+   "market_cap": 1067740364800
+  },
+  {
+   "symbol": "ABDL.NS",
+   "name": "Allied Blenders and Distillers Ltd.",
+   "industry": "Beverages - Wineries & Distilleries",
+   "sector": "Consumer Defensive",
+   "market_cap": 200006729728
+  },
+  {
+   "symbol": "ABFRL.NS",
+   "name": "Aditya Birla Fashion and Retail Ltd.",
+   "industry": "Apparel Manufacturing",
+   "sector": "Consumer Cyclical",
+   "market_cap": 59792433152
+  },
+  {
+   "symbol": "ABLBL.NS",
+   "name": "Aditya Birla Lifestyle Brands Ltd.",
+   "industry": "Apparel Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 95616319488
+  },
+  {
+   "symbol": "ABREL.NS",
+   "name": "Aditya Birla Real Estate Ltd.",
+   "industry": "Real Estate Services",
+   "sector": "Real Estate",
+   "market_cap": 136110268416
+  },
+  {
+   "symbol": "ABSLAMC.NS",
+   "name": "Aditya Birla Sun Life AMC Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 293571067904
+  },
+  {
+   "symbol": "ACC.NS",
+   "name": "ACC Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 232180170752
+  },
+  {
+   "symbol": "ACE.NS",
+   "name": "Action Construction Equipment Ltd.",
+   "industry": "Farm & Heavy Construction Machinery",
+   "sector": "Industrials",
+   "market_cap": 145999609856
+  },
+  {
+   "symbol": "ACMESOLAR.NS",
+   "name": "ACME Solar Holdings Ltd.",
+   "industry": "Utilities - Renewable",
+   "sector": "Utilities",
+   "market_cap": 312816467968
+  },
+  {
+   "symbol": "ACUTAAS.NS",
+   "name": "Acutaas Chemicals Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 267923243008
+  },
+  {
+   "symbol": "ADANIENSOL.NS",
+   "name": "Adani Energy Solutions Ltd.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 1636924653568
+  },
+  {
+   "symbol": "ADANIENT.NS",
+   "name": "Adani Enterprises Ltd.",
+   "industry": "Thermal Coal",
+   "sector": "Energy",
+   "market_cap": 4150102065152
+  },
+  {
+   "symbol": "ADANIGREEN.NS",
+   "name": "Adani Green Energy Ltd.",
+   "industry": "Utilities - Renewable",
+   "sector": "Utilities",
+   "market_cap": 2135728586752
+  },
+  {
+   "symbol": "ADANIPORTS.NS",
+   "name": "Adani Ports and Special Economic Zone Ltd.",
+   "industry": "Marine Shipping",
+   "sector": "Industrials",
+   "market_cap": 4119478665216
+  },
+  {
+   "symbol": "ADANIPOWER.NS",
+   "name": "Adani Power Ltd.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 3909971869696
+  },
+  {
+   "symbol": "AEGISLOG.NS",
+   "name": "Aegis Logistics Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 479255396352
+  },
+  {
+   "symbol": "AEGISVOPAK.NS",
+   "name": "Aegis Vopak Terminals Ltd.",
+   "industry": "Oil & Gas Equipment & Services",
+   "sector": "Energy",
+   "market_cap": 318547558400
+  },
+  {
+   "symbol": "AFCONS.NS",
+   "name": "Afcons Infrastructure Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 92865617920
+  },
+  {
+   "symbol": "AFFLE.NS",
+   "name": "Affle 3i Ltd.",
+   "industry": "Advertising Agencies",
+   "sector": "Communication Services",
+   "market_cap": 222088429568
+  },
+  {
+   "symbol": "AIAENG.NS",
+   "name": "AIA Engineering Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 365759856640
+  },
+  {
+   "symbol": "AIIL.NS",
+   "name": "Authum Investment & Infrastructure Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 475226537984
+  },
+  {
+   "symbol": "AJANTPHARM.NS",
+   "name": "Ajanta Pharmaceuticals Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 443329642496
+  },
+  {
+   "symbol": "ALKEM.NS",
+   "name": "Alkem Laboratories Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 630585819136
+  },
+  {
+   "symbol": "AMBER.NS",
+   "name": "Amber Enterprises India Ltd.",
+   "industry": "Furnishings, Fixtures & Appliances",
+   "sector": "Consumer Cyclical",
+   "market_cap": 245463662592
+  },
+  {
+   "symbol": "AMBUJACEM.NS",
+   "name": "Ambuja Cements Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 953672794112
+  },
+  {
+   "symbol": "ANANDRATHI.NS",
+   "name": "Anand Rathi Wealth Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 353136574464
+  },
+  {
+   "symbol": "ANANTRAJ.NS",
+   "name": "Anant Raj Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 222188027904
+  },
+  {
+   "symbol": "ANGELONE.NS",
+   "name": "Angel One Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 263403290624
+  },
+  {
+   "symbol": "ANTHEM.NS",
+   "name": "Anthem Biosciences Ltd.",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 490713219072
+  },
+  {
+   "symbol": "ANURAS.NS",
+   "name": "Anupam Rasayan India Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 135754555392
+  },
+  {
+   "symbol": "APARINDS.NS",
+   "name": "Apar Industries Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 744322629632
+  },
+  {
+   "symbol": "APLAPOLLO.NS",
+   "name": "APL Apollo Tubes Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 614930055168
+  },
+  {
+   "symbol": "APOLLOHOSP.NS",
+   "name": "Apollo Hospitals Enterprise Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 1278101815296
+  },
+  {
+   "symbol": "APOLLOTYRE.NS",
+   "name": "Apollo Tyres Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 253095788544
+  },
+  {
+   "symbol": "APTUS.NS",
+   "name": "Aptus Value Housing Finance India Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 122500022272
+  },
+  {
+   "symbol": "ARE&M.NS",
+   "name": "Amara Raja Energy & Mobility Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 144946937856
+  },
+  {
+   "symbol": "ASAHIINDIA.NS",
+   "name": "Asahi India Glass Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 244717371392
+  },
+  {
+   "symbol": "ASHOKLEY.NS",
+   "name": "Ashok Leyland Ltd.",
+   "industry": "Farm & Heavy Construction Machinery",
+   "sector": "Industrials",
+   "market_cap": 934412746752
+  },
+  {
+   "symbol": "ASIANPAINT.NS",
+   "name": "Asian Paints Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 2342926680064
+  },
+  {
+   "symbol": "ASTERDM.NS",
+   "name": "Aster DM Quality Care Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 661948071936
+  },
+  {
+   "symbol": "ASTRAL.NS",
+   "name": "Astral Ltd.",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 375841587200
+  },
+  {
+   "symbol": "ATGL.NS",
+   "name": "Adani Total Gas Ltd.",
+   "industry": "Utilities - Regulated Gas",
+   "sector": "Utilities",
+   "market_cap": 672698859520
+  },
+  {
+   "symbol": "ATHERENERG.NS",
+   "name": "Ather Energy Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 592990437376
+  },
+  {
+   "symbol": "ATUL.NS",
+   "name": "Atul Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 178726174720
+  },
+  {
+   "symbol": "AUBANK.NS",
+   "name": "AU Small Finance Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 762905362432
+  },
+  {
+   "symbol": "AUROPHARMA.NS",
+   "name": "Aurobindo Pharma Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 985046974464
+  },
+  {
+   "symbol": "AWL.NS",
+   "name": "AWL Agri Business Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 238133657600
+  },
+  {
+   "symbol": "AXISBANK.NS",
+   "name": "Axis Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 3806032560128
+  },
+  {
+   "symbol": "BAJAJ-AUTO.NS",
+   "name": "Bajaj Auto Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 3097511329792
+  },
+  {
+   "symbol": "BAJAJFINSV.NS",
+   "name": "Bajaj Finserv Ltd.",
+   "industry": "Financial Conglomerates",
+   "sector": "Financial Services",
+   "market_cap": 2834033541120
+  },
+  {
+   "symbol": "BAJAJHFL.NS",
+   "name": "Bajaj Housing Finance Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 692444987392
+  },
+  {
+   "symbol": "BAJAJHLDNG.NS",
+   "name": "Bajaj Holdings & Investment Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 1217551007744
+  },
+  {
+   "symbol": "BAJFINANCE.NS",
+   "name": "Bajaj Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 6201628688384
+  },
+  {
+   "symbol": "BALKRISIND.NS",
+   "name": "Balkrishna Industries Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 422456066048
+  },
+  {
+   "symbol": "BALRAMCHIN.NS",
+   "name": "Balrampur Chini Mills Ltd.",
+   "industry": "Confectioners",
+   "sector": "Consumer Defensive",
+   "market_cap": 145113563136
+  },
+  {
+   "symbol": "BANDHANBNK.NS",
+   "name": "Bandhan Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 302412365824
+  },
+  {
+   "symbol": "BANKBARODA.NS",
+   "name": "Bank of Baroda",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 1216614629376
+  },
+  {
+   "symbol": "BANKINDIA.NS",
+   "name": "Bank of India",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 627994984448
+  },
+  {
+   "symbol": "BATAINDIA.NS",
+   "name": "Bata India Ltd.",
+   "industry": "Footwear & Accessories",
+   "sector": "Consumer Cyclical",
+   "market_cap": 80946642944
+  },
+  {
+   "symbol": "BAYERCROP.NS",
+   "name": "Bayer Cropscience Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 167076724736
+  },
+  {
+   "symbol": "BBTC.NS",
+   "name": "Bombay Burmah Trading Corporation Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 100136632320
+  },
+  {
+   "symbol": "BDL.NS",
+   "name": "Bharat Dynamics Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 417881260032
+  },
+  {
+   "symbol": "BEL.NS",
+   "name": "Bharat Electronics Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 2876763537408
+  },
+  {
+   "symbol": "BELRISE.NS",
+   "name": "Belrise Industries Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 239776301056
+  },
+  {
+   "symbol": "BEML.NS",
+   "name": "BEML Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 169618046976
+  },
+  {
+   "symbol": "BERGEPAINT.NS",
+   "name": "Berger Paints India Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 534437396480
+  },
+  {
+   "symbol": "BHARATFORG.NS",
+   "name": "Bharat Forge Ltd.",
+   "industry": "Metal Fabrication",
+   "sector": "Industrials",
+   "market_cap": 981250670592
+  },
+  {
+   "symbol": "BHARTIARTL.NS",
+   "name": "Bharti Airtel Ltd.",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 11138500657152
+  },
+  {
+   "symbol": "BHARTIHEXA.NS",
+   "name": "Bharti Hexacom Ltd.",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 740900012032
+  },
+  {
+   "symbol": "BHEL.NS",
+   "name": "Bharat Heavy Electricals Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 1458810519552
+  },
+  {
+   "symbol": "BIKAJI.NS",
+   "name": "Bikaji Foods International Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 143910158336
+  },
+  {
+   "symbol": "BIOCON.NS",
+   "name": "Biocon Ltd.",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 622252457984
+  },
+  {
+   "symbol": "BLS.NS",
+   "name": "BLS International Services Ltd.",
+   "industry": "Specialty Business Services",
+   "sector": "Industrials",
+   "market_cap": 92287975424
+  },
+  {
+   "symbol": "BLUEDART.NS",
+   "name": "Blue Dart Express Ltd.",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 112624640000
+  },
+  {
+   "symbol": "BLUEJET.NS",
+   "name": "Blue Jet Healthcare Ltd.",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 98988048384
+  },
+  {
+   "symbol": "BLUESTARCO.NS",
+   "name": "Blue Star Ltd.",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 321753022464
+  },
+  {
+   "symbol": "BOSCHLTD.NS",
+   "name": "Bosch Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1423186853888
+  },
+  {
+   "symbol": "BPCL.NS",
+   "name": "Bharat Petroleum Corporation Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 1318092406784
+  },
+  {
+   "symbol": "BRIGADE.NS",
+   "name": "Brigade Enterprises Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 195012493312
+  },
+  {
+   "symbol": "BRITANNIA.NS",
+   "name": "Britannia Industries Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 1189287165952
+  },
+  {
+   "symbol": "BSE.NS",
+   "name": "BSE Ltd.",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 1296161046528
+  },
+  {
+   "symbol": "BSOFT.NS",
+   "name": "Birlasoft Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 76637265920
+  },
+  {
+   "symbol": "CAMS.NS",
+   "name": "Computer Age Management Services Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 175633268736
+  },
+  {
+   "symbol": "CANBK.NS",
+   "name": "Canara Bank",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 1133740687360
+  },
+  {
+   "symbol": "CANFINHOME.NS",
+   "name": "Can Fin Homes Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 100298694656
+  },
+  {
+   "symbol": "CANHLIFE.NS",
+   "name": "Canara HSBC Life Insurance Company Ltd.",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 142785970176
+  },
+  {
+   "symbol": "CAPLIPOINT.NS",
+   "name": "Caplin Point Laboratories Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 215500767232
+  },
+  {
+   "symbol": "CARBORUNIV.NS",
+   "name": "Carborundum Universal Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 243561119744
+  },
+  {
+   "symbol": "CARTRADE.NS",
+   "name": "Cartrade Tech Ltd.",
+   "industry": "Auto & Truck Dealerships",
+   "sector": "Consumer Cyclical",
+   "market_cap": 145971052544
+  },
+  {
+   "symbol": "CASTROLIND.NS",
+   "name": "Castrol India Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 199476314112
+  },
+  {
+   "symbol": "CCL.NS",
+   "name": "CCL Products (I) Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 139264704512
+  },
+  {
+   "symbol": "CDSL.NS",
+   "name": "Central Depository Services (India) Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 275461996544
+  },
+  {
+   "symbol": "CEATLTD.NS",
+   "name": "Ceat Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 135596793856
+  },
+  {
+   "symbol": "CEMPRO.NS",
+   "name": "Cemindia Projects Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 215971348480
+  },
+  {
+   "symbol": "CENTRALBK.NS",
+   "name": "Central Bank of India",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 282222690304
+  },
+  {
+   "symbol": "CESC.NS",
+   "name": "CESC Ltd.",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 185394282496
+  },
+  {
+   "symbol": "CGCL.NS",
+   "name": "Capri Global Capital Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 244098465792
+  },
+  {
+   "symbol": "CGPOWER.NS",
+   "name": "CG Power and Industrial Solutions Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 1395864895488
+  },
+  {
+   "symbol": "CHALET.NS",
+   "name": "Chalet Hotels Ltd.",
+   "industry": "Lodging",
+   "sector": "Consumer Cyclical",
+   "market_cap": 193010466816
+  },
+  {
+   "symbol": "CHAMBLFERT.NS",
+   "name": "Chambal Fertilizers & Chemicals Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 167452622848
+  },
+  {
+   "symbol": "CHENNPETRO.NS",
+   "name": "Chennai Petroleum Corporation Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 204961644544
+  },
+  {
+   "symbol": "CHOICEIN.NS",
+   "name": "Choice International Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 167316291584
+  },
+  {
+   "symbol": "CHOLAFIN.NS",
+   "name": "Cholamandalam Investment and Finance Company Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 1420055412736
+  },
+  {
+   "symbol": "CHOLAHLDNG.NS",
+   "name": "Cholamandalam Financial Holdings Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 263001096192
+  },
+  {
+   "symbol": "CIEINDIA.NS",
+   "name": "CIE Automotive India Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 148254801920
+  },
+  {
+   "symbol": "CIPLA.NS",
+   "name": "Cipla Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 1130776363008
+  },
+  {
+   "symbol": "CLEAN.NS",
+   "name": "Clean Science and Technology Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 85797855232
+  },
+  {
+   "symbol": "COALINDIA.NS",
+   "name": "Coal India Ltd.",
+   "industry": "Thermal Coal",
+   "sector": "Energy",
+   "market_cap": 2625938653184
+  },
+  {
+   "symbol": "COCHINSHIP.NS",
+   "name": "Cochin Shipyard Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 362262233088
+  },
+  {
+   "symbol": "COFORGE.NS",
+   "name": "Coforge Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 790380937216
+  },
+  {
+   "symbol": "COHANCE.NS",
+   "name": "Cohance Lifesciences Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 175707832320
+  },
+  {
+   "symbol": "COLPAL.NS",
+   "name": "Colgate Palmolive (India) Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 504750964736
+  },
+  {
+   "symbol": "CONCOR.NS",
+   "name": "Container Corporation of India Ltd.",
+   "industry": "Railroads",
+   "sector": "Industrials",
+   "market_cap": 351486672896
+  },
+  {
+   "symbol": "CONCORDBIO.NS",
+   "name": "Concord Biotech Ltd.",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 152070111232
+  },
+  {
+   "symbol": "COROMANDEL.NS",
+   "name": "Coromandel International Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 578449244160
+  },
+  {
+   "symbol": "CPPLUS.NS",
+   "name": "Aditya Infotech Ltd.",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 452186865664
+  },
+  {
+   "symbol": "CRAFTSMAN.NS",
+   "name": "Craftsman Automation Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 280767823872
+  },
+  {
+   "symbol": "CREDITACC.NS",
+   "name": "CreditAccess Grameen Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 208145088512
+  },
+  {
+   "symbol": "CRISIL.NS",
+   "name": "CRISIL Ltd.",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 330547658752
+  },
+  {
+   "symbol": "CROMPTON.NS",
+   "name": "Crompton Greaves Consumer Electricals Ltd.",
+   "industry": "Furnishings, Fixtures & Appliances",
+   "sector": "Consumer Cyclical",
+   "market_cap": 140759793664
+  },
+  {
+   "symbol": "CUB.NS",
+   "name": "City Union Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 223491883008
+  },
+  {
+   "symbol": "CUMMINSIND.NS",
+   "name": "Cummins India Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 1370753990656
+  },
+  {
+   "symbol": "CYIENT.NS",
+   "name": "Cyient Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 113960058880
+  },
+  {
+   "symbol": "DABUR.NS",
+   "name": "Dabur India Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 684037832704
+  },
+  {
+   "symbol": "DALBHARAT.NS",
+   "name": "Dalmia Bharat Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 319176507392
+  },
+  {
+   "symbol": "DATAPATTNS.NS",
+   "name": "Data Patterns (India) Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 247381950464
+  },
+  {
+   "symbol": "DCMSHRIRAM.NS",
+   "name": "DCM Shriram Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 150875045888
+  },
+  {
+   "symbol": "DEEPAKFERT.NS",
+   "name": "Deepak Fertilisers & Petrochemicals Corp. Ltd.",
+   "industry": "Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 172337037312
+  },
+  {
+   "symbol": "DEEPAKNTR.NS",
+   "name": "Deepak Nitrite Ltd.",
+   "industry": "Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 216469389312
+  },
+  {
+   "symbol": "DELHIVERY.NS",
+   "name": "Delhivery Ltd.",
+   "industry": "Integrated Freight & Logistics",
+   "sector": "Industrials",
+   "market_cap": 316726738944
+  },
+  {
+   "symbol": "DEVYANI.NS",
+   "name": "Devyani International Ltd.",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 166471532544
+  },
+  {
+   "symbol": "DIVISLAB.NS",
+   "name": "Divi's Laboratories Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 2553674989568
+  },
+  {
+   "symbol": "DIXON.NS",
+   "name": "Dixon Technologies (India) Ltd.",
+   "industry": "Consumer Electronics",
+   "sector": "Technology",
+   "market_cap": 814137344000
+  },
+  {
+   "symbol": "DLF.NS",
+   "name": "DLF Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 1690637828096
+  },
+  {
+   "symbol": "DMART.NS",
+   "name": "Avenue Supermarts Ltd.",
+   "industry": "Discount Stores",
+   "sector": "Consumer Defensive",
+   "market_cap": 2500841439232
+  },
+  {
+   "symbol": "DOMS.NS",
+   "name": "DOMS Industries Ltd.",
+   "industry": "Business Equipment & Supplies",
+   "sector": "Industrials",
+   "market_cap": 126413807616
+  },
+  {
+   "symbol": "DRREDDY.NS",
+   "name": "Dr. Reddy's Laboratories Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 1000419295232
+  },
+  {
+   "symbol": "ECLERX.NS",
+   "name": "eClerx Services Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 174737588224
+  },
+  {
+   "symbol": "EICHERMOT.NS",
+   "name": "Eicher Motors Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 2020479729664
+  },
+  {
+   "symbol": "EIDPARRY.NS",
+   "name": "E.I.D. Parry (India) Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 125414277120
+  },
+  {
+   "symbol": "EIHOTEL.NS",
+   "name": "EIH Ltd.",
+   "industry": "Lodging",
+   "sector": "Consumer Cyclical",
+   "market_cap": 184294817792
+  },
+  {
+   "symbol": "ELECON.NS",
+   "name": "Elecon Engineering Co. Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 102831267840
+  },
+  {
+   "symbol": "ELGIEQUIP.NS",
+   "name": "Elgi Equipments Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 190090608640
+  },
+  {
+   "symbol": "EMAMILTD.NS",
+   "name": "Emami Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 168811118592
+  },
+  {
+   "symbol": "EMCURE.NS",
+   "name": "Emcure Pharmaceuticals Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 370049581056
+  },
+  {
+   "symbol": "EMMVEE.NS",
+   "name": "Emmvee Photovoltaic Power Ltd.",
+   "industry": "Solar",
+   "sector": "Technology",
+   "market_cap": 222865866752
+  },
+  {
+   "symbol": "ENDURANCE.NS",
+   "name": "Endurance Technologies Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 372179828736
+  },
+  {
+   "symbol": "ENGINERSIN.NS",
+   "name": "Engineers India Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 177408671744
+  },
+  {
+   "symbol": "ENRIN.NS",
+   "name": "Siemens Energy India Ltd.",
+   "industry": "Utilities - Renewable",
+   "sector": "Utilities",
+   "market_cap": 1179827306496
+  },
+  {
+   "symbol": "ERIS.NS",
+   "name": "Eris Lifesciences Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 174657994752
+  },
+  {
+   "symbol": "ESCORTS.NS",
+   "name": "Escorts Kubota Ltd.",
+   "industry": "Farm & Heavy Construction Machinery",
+   "sector": "Industrials",
+   "market_cap": 314205208576
+  },
+  {
+   "symbol": "ETERNAL.NS",
+   "name": "Eternal Ltd.",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 3083806703616
+  },
+  {
+   "symbol": "EXIDEIND.NS",
+   "name": "Exide Industries Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 360102494208
+  },
+  {
+   "symbol": "FACT.NS",
+   "name": "Fertilisers and Chemicals Travancore Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 503357308928
+  },
+  {
+   "symbol": "FEDERALBNK.NS",
+   "name": "Federal Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 795429502976
+  },
+  {
+   "symbol": "FINCABLES.NS",
+   "name": "Finolex Cables Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 223429099520
+  },
+  {
+   "symbol": "FIRSTCRY.NS",
+   "name": "Brainbees Solutions Ltd.",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 87745298432
+  },
+  {
+   "symbol": "FIVESTAR.NS",
+   "name": "Five-Star Business Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 153782173696
+  },
+  {
+   "symbol": "FLUOROCHEM.NS",
+   "name": "Gujarat Fluorochemicals Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 487887765504
+  },
+  {
+   "symbol": "FORCEMOT.NS",
+   "name": "Force Motors Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 229108842496
+  },
+  {
+   "symbol": "FORTIS.NS",
+   "name": "Fortis Healthcare Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 632541675520
+  },
+  {
+   "symbol": "FSL.NS",
+   "name": "Firstsource Solutions Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 179302072320
+  },
+  {
+   "symbol": "GABRIEL.NS",
+   "name": "Gabriel India Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 265739173888
+  },
+  {
+   "symbol": "GAIL.NS",
+   "name": "GAIL (India) Ltd.",
+   "industry": "Utilities - Regulated Gas",
+   "sector": "Utilities",
+   "market_cap": 1135516188672
+  },
+  {
+   "symbol": "GALLANTT.NS",
+   "name": "Gallantt Ispat Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 131522240512
+  },
+  {
+   "symbol": "GESHIP.NS",
+   "name": "Great Eastern Shipping Co. Ltd.",
+   "industry": "Marine Shipping",
+   "sector": "Industrials",
+   "market_cap": 211053592576
+  },
+  {
+   "symbol": "GICRE.NS",
+   "name": "General Insurance Corporation of India",
+   "industry": "Insurance - Reinsurance",
+   "sector": "Financial Services",
+   "market_cap": 592110026752
+  },
+  {
+   "symbol": "GILLETTE.NS",
+   "name": "Gillette India Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 230442647552
+  },
+  {
+   "symbol": "GLAND.NS",
+   "name": "Gland Pharma Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 481369653248
+  },
+  {
+   "symbol": "GLAXO.NS",
+   "name": "Glaxosmithkline Pharmaceuticals Ltd.",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 476996567040
+  },
+  {
+   "symbol": "GLENMARK.NS",
+   "name": "Glenmark Pharmaceuticals Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 671694716928
+  },
+  {
+   "symbol": "GMDCLTD.NS",
+   "name": "Gujarat Mineral Development Corporation Ltd.",
+   "industry": "Thermal Coal",
+   "sector": "Energy",
+   "market_cap": 171084005376
+  },
+  {
+   "symbol": "GMRAIRPORT.NS",
+   "name": "GMR Airports Ltd.",
+   "industry": "Airports & Air Services",
+   "sector": "Industrials",
+   "market_cap": 1034251665408
+  },
+  {
+   "symbol": "GODFRYPHLP.NS",
+   "name": "Godfrey Phillips India Ltd.",
+   "industry": "Tobacco",
+   "sector": "Consumer Defensive",
+   "market_cap": 307346472960
+  },
+  {
+   "symbol": "GODIGIT.NS",
+   "name": "Go Digit General Insurance Ltd.",
+   "industry": "Insurance - Property & Casualty",
+   "sector": "Financial Services",
+   "market_cap": 234545397760
+  },
+  {
+   "symbol": "GODREJCP.NS",
+   "name": "Godrej Consumer Products Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 900508352512
+  },
+  {
+   "symbol": "GODREJIND.NS",
+   "name": "Godrej Industries Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 372321484800
+  },
+  {
+   "symbol": "GODREJPROP.NS",
+   "name": "Godrej Properties Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 512115146752
+  },
+  {
+   "symbol": "GPIL.NS",
+   "name": "Godawari Power & Ispat Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 149292531712
+  },
+  {
+   "symbol": "GRANULES.NS",
+   "name": "Granules India Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 236950208512
+  },
+  {
+   "symbol": "GRAPHITE.NS",
+   "name": "Graphite India Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 160344752128
+  },
+  {
+   "symbol": "GRASIM.NS",
+   "name": "Grasim Industries Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 2164304510976
+  },
+  {
+   "symbol": "GRAVITA.NS",
+   "name": "Gravita India Ltd.",
+   "industry": "Metal Fabrication",
+   "sector": "Industrials",
+   "market_cap": 108920315904
+  },
+  {
+   "symbol": "GROWW.NS",
+   "name": "Billionbrains Garage Ventures Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 1158196363264
+  },
+  {
+   "symbol": "GRSE.NS",
+   "name": "Garden Reach Shipbuilders & Engineers Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 265646080000
+  },
+  {
+   "symbol": "GVT&D.NS",
+   "name": "GE Vernova T&D India Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 1095879163904
+  },
+  {
+   "symbol": "HAL.NS",
+   "name": "Hindustan Aeronautics Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 3210120003584
+  },
+  {
+   "symbol": "HAVELLS.NS",
+   "name": "Havells India Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 688121380864
+  },
+  {
+   "symbol": "HBLENGINE.NS",
+   "name": "HBL Engineering Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 223419121664
+  },
+  {
+   "symbol": "HCLTECH.NS",
+   "name": "HCL Technologies Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 3403854381056
+  },
+  {
+   "symbol": "HDBFS.NS",
+   "name": "HDB Financial Services Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 536962859008
+  },
+  {
+   "symbol": "HDFCAMC.NS",
+   "name": "HDFC Asset Management Company Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 1020336537600
+  },
+  {
+   "symbol": "HDFCBANK.NS",
+   "name": "HDFC Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 11341831077888
+  },
+  {
+   "symbol": "HDFCLIFE.NS",
+   "name": "HDFC Life Insurance Company Ltd.",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 1153358102528
+  },
+  {
+   "symbol": "HEGAM.NS",
+   "name": "HEG Advanced Materials Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 80586366976
+  },
+  {
+   "symbol": "HEROMOTOCO.NS",
+   "name": "Hero MotoCorp Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1072756817920
+  },
+  {
+   "symbol": "HEXT.NS",
+   "name": "Hexaware Technologies Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 302883700736
+  },
+  {
+   "symbol": "HFCL.NS",
+   "name": "HFCL Ltd.",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 323298820096
+  },
+  {
+   "symbol": "HINDALCO.NS",
+   "name": "Hindalco Industries Ltd.",
+   "industry": "Aluminum",
+   "sector": "Basic Materials",
+   "market_cap": 2168780881920
+  },
+  {
+   "symbol": "HINDCOPPER.NS",
+   "name": "Hindustan Copper Ltd.",
+   "industry": "Copper",
+   "sector": "Basic Materials",
+   "market_cap": 478338416640
+  },
+  {
+   "symbol": "HINDPETRO.NS",
+   "name": "Hindustan Petroleum Corporation Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 746865688576
+  },
+  {
+   "symbol": "HINDUNILVR.NS",
+   "name": "Hindustan Unilever Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 4565021229056
+  },
+  {
+   "symbol": "HINDZINC.NS",
+   "name": "Hindustan Zinc Ltd.",
+   "industry": "Other Industrial Metals & Mining",
+   "sector": "Basic Materials",
+   "market_cap": 2488501534720
+  },
+  {
+   "symbol": "HOMEFIRST.NS",
+   "name": "Home First Finance Company India Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 117434867712
+  },
+  {
+   "symbol": "HONASA.NS",
+   "name": "Honasa Consumer Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 151764271104
+  },
+  {
+   "symbol": "HONAUT.NS",
+   "name": "Honeywell Automation India Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 299615813632
+  },
+  {
+   "symbol": "HSCL.NS",
+   "name": "Himadri Speciality Chemical Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 342479732736
+  },
+  {
+   "symbol": "HUDCO.NS",
+   "name": "Housing & Urban Development Corporation Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 348310601728
+  },
+  {
+   "symbol": "HYUNDAI.NS",
+   "name": "Hyundai Motor India Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1718524444672
+  },
+  {
+   "symbol": "ICICIAMC.NS",
+   "name": "ICICI Prudential Asset Management Company Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 1574015729664
+  },
+  {
+   "symbol": "ICICIBANK.NS",
+   "name": "ICICI Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 9524314374144
+  },
+  {
+   "symbol": "ICICIGI.NS",
+   "name": "ICICI Lombard General Insurance Company Ltd.",
+   "industry": "Insurance - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 776251441152
+  },
+  {
+   "symbol": "ICICIPRULI.NS",
+   "name": "ICICI Prudential Life Insurance Company Ltd.",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 671712083968
+  },
+  {
+   "symbol": "IDBI.NS",
+   "name": "IDBI Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 907502813184
+  },
+  {
+   "symbol": "IDEA.NS",
+   "name": "Vodafone Idea Ltd.",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 1544971747328
+  },
+  {
+   "symbol": "IDFCFIRSTB.NS",
+   "name": "IDFC First Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 722592792576
+  },
+  {
+   "symbol": "IEX.NS",
+   "name": "Indian Energy Exchange Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 100224139264
+  },
+  {
+   "symbol": "IFCI.NS",
+   "name": "IFCI Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 199244529664
+  },
+  {
+   "symbol": "IGIL.NS",
+   "name": "International Gemological Institute Ltd.",
+   "industry": "Other Precious Metals & Mining",
+   "sector": "Basic Materials",
+   "market_cap": 142850375680
+  },
+  {
+   "symbol": "IGL.NS",
+   "name": "Indraprastha Gas Ltd.",
+   "industry": "Utilities - Regulated Gas",
+   "sector": "Utilities",
+   "market_cap": 202930225152
+  },
+  {
+   "symbol": "IIFL.NS",
+   "name": "IIFL Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 262382403584
+  },
+  {
+   "symbol": "IKS.NS",
+   "name": "Inventurus Knowledge Solutions Ltd.",
+   "industry": "Health Information Services",
+   "sector": "Healthcare",
+   "market_cap": 304613982208
+  },
+  {
+   "symbol": "INDGN.NS",
+   "name": "Indegene Ltd.",
+   "industry": "Health Information Services",
+   "sector": "Healthcare",
+   "market_cap": 146640011264
+  },
+  {
+   "symbol": "INDHOTEL.NS",
+   "name": "Indian Hotels Co. Ltd.",
+   "industry": "Lodging",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1051392999424
+  },
+  {
+   "symbol": "INDIACEM.NS",
+   "name": "India Cements Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 150191489024
+  },
+  {
+   "symbol": "INDIAMART.NS",
+   "name": "Indiamart Intermesh Ltd.",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 987603271680
+  },
+  {
+   "symbol": "INDIANB.NS",
+   "name": "Indian Bank",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 1120673988608
+  },
+  {
+   "symbol": "INDIGO.NS",
+   "name": "InterGlobe Aviation Ltd.",
+   "industry": "Airlines",
+   "sector": "Industrials",
+   "market_cap": 1910132965376
+  },
+  {
+   "symbol": "INDUSINDBK.NS",
+   "name": "IndusInd Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 710735822848
+  },
+  {
+   "symbol": "INDUSTOWER.NS",
+   "name": "Indus Towers Ltd.",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 988027879424
+  },
+  {
+   "symbol": "INFY.NS",
+   "name": "Infosys Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 4051153715200
+  },
+  {
+   "symbol": "INOXWIND.NS",
+   "name": "Inox Wind Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 129185775616
+  },
+  {
+   "symbol": "INTELLECT.NS",
+   "name": "Intellect Design Arena Ltd.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 88323702784
+  },
+  {
+   "symbol": "IOB.NS",
+   "name": "Indian Overseas Bank",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 615825735680
+  },
+  {
+   "symbol": "IOC.NS",
+   "name": "Indian Oil Corporation Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 1916252061696
+  },
+  {
+   "symbol": "IPCALAB.NS",
+   "name": "Ipca Laboratories Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 500000292864
+  },
+  {
+   "symbol": "IRB.NS",
+   "name": "IRB Infrastructure Developers Ltd.",
+   "industry": "Infrastructure Operations",
+   "sector": "Industrials",
+   "market_cap": 213539045376
+  },
+  {
+   "symbol": "IRCON.NS",
+   "name": "IRCON International Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 99647635456
+  },
+  {
+   "symbol": "IRCTC.NS",
+   "name": "Indian Railway Catering And Tourism Corporation Ltd.",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 366960017408
+  },
+  {
+   "symbol": "IREDA.NS",
+   "name": "Indian Renewable Energy Development Agency Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 318061182976
+  },
+  {
+   "symbol": "IRFC.NS",
+   "name": "Indian Railway Finance Corporation Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 1044827013120
+  },
+  {
+   "symbol": "ITC.NS",
+   "name": "ITC Ltd.",
+   "industry": "Tobacco",
+   "sector": "Consumer Defensive",
+   "market_cap": 3370709155840
+  },
+  {
+   "symbol": "ITCHOTELS.NS",
+   "name": "ITC Hotels Ltd.",
+   "industry": "Resorts & Casinos",
+   "sector": "Consumer Cyclical",
+   "market_cap": 337248124928
+  },
+  {
+   "symbol": "ITI.NS",
+   "name": "ITI Ltd.",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 243505250304
+  },
+  {
+   "symbol": "J&KBANK.NS",
+   "name": "Jammu & Kashmir Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 160882769920
+  },
+  {
+   "symbol": "JAINREC.NS",
+   "name": "Jain Resource Recycling Ltd.",
+   "industry": "Other Industrial Metals & Mining",
+   "sector": "Basic Materials",
+   "market_cap": 98987868160
+  },
+  {
+   "symbol": "JBMA.NS",
+   "name": "JBM Auto Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 138727538688
+  },
+  {
+   "symbol": "JINDALSAW.NS",
+   "name": "Jindal Saw Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 182040821760
+  },
+  {
+   "symbol": "JINDALSTEL.NS",
+   "name": "Jindal Steel Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 1185170194432
+  },
+  {
+   "symbol": "JIOFIN.NS",
+   "name": "Jio Financial Services Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 1498913177600
+  },
+  {
+   "symbol": "JKCEMENT.NS",
+   "name": "J.K. Cement Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 386341240832
+  },
+  {
+   "symbol": "JKTYRE.NS",
+   "name": "JK Tyre & Industries Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 99704930304
+  },
+  {
+   "symbol": "JMFINANCIL.NS",
+   "name": "JM Financial Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 122190389248
+  },
+  {
+   "symbol": "JPPOWER.NS",
+   "name": "Jaiprakash Power Ventures Ltd.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 108764389376
+  },
+  {
+   "symbol": "JSL.NS",
+   "name": "Jindal Stainless Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 616520482816
+  },
+  {
+   "symbol": "JSWCEMENT.NS",
+   "name": "JSW Cement Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 155924332544
+  },
+  {
+   "symbol": "JSWDULUX.NS",
+   "name": "JSW Dulux Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 145710792704
+  },
+  {
+   "symbol": "JSWENERGY.NS",
+   "name": "JSW Energy Ltd.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 928188530688
+  },
+  {
+   "symbol": "JSWINFRA.NS",
+   "name": "JSW Infrastructure Ltd.",
+   "industry": "Marine Shipping",
+   "sector": "Industrials",
+   "market_cap": 838204325888
+  },
+  {
+   "symbol": "JSWSTEEL.NS",
+   "name": "JSW Steel Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 3117129138176
+  },
+  {
+   "symbol": "JUBLFOOD.NS",
+   "name": "Jubilant Foodworks Ltd.",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 318676205568
+  },
+  {
+   "symbol": "JUBLINGREA.NS",
+   "name": "Jubilant Ingrevia Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 103477821440
+  },
+  {
+   "symbol": "JUBLPHARMA.NS",
+   "name": "Jubilant Pharmova Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 169783115776
+  },
+  {
+   "symbol": "JWL.NS",
+   "name": "Jupiter Wagons Ltd.",
+   "industry": "Railroads",
+   "sector": "Industrials",
+   "market_cap": 96897687552
+  },
+  {
+   "symbol": "JYOTICNC.NS",
+   "name": "Jyoti CNC Automation Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 242228346880
+  },
+  {
+   "symbol": "KAJARIACER.NS",
+   "name": "Kajaria Ceramics Ltd.",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 191415959552
+  },
+  {
+   "symbol": "KALYANKJIL.NS",
+   "name": "Kalyan Jewellers India Ltd.",
+   "industry": "Luxury Goods",
+   "sector": "Consumer Cyclical",
+   "market_cap": 591766290432
+  },
+  {
+   "symbol": "KARURVYSYA.NS",
+   "name": "Karur Vysya Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 317018537984
+  },
+  {
+   "symbol": "KAYNES.NS",
+   "name": "Kaynes Technology India Ltd.",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 245362081792
+  },
+  {
+   "symbol": "KEC.NS",
+   "name": "Kec International Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 105668091904
+  },
+  {
+   "symbol": "KEI.NS",
+   "name": "KEI Industries Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 446789353472
+  },
+  {
+   "symbol": "KFINTECH.NS",
+   "name": "Kfin Technologies Ltd.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 153648709632
+  },
+  {
+   "symbol": "KIMS.NS",
+   "name": "Krishna Institute of Medical Sciences Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 327668072448
+  },
+  {
+   "symbol": "KIRLOSENG.NS",
+   "name": "Kirloskar Oil Eng Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 311005020160
+  },
+  {
+   "symbol": "KOTAKBANK.NS",
+   "name": "Kotak Mahindra Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 4018944081920
+  },
+  {
+   "symbol": "KPIL.NS",
+   "name": "Kalpataru Projects International Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 237578747904
+  },
+  {
+   "symbol": "KPITTECH.NS",
+   "name": "KPIT Technologies Ltd.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 141394837504
+  },
+  {
+   "symbol": "KPRMILL.NS",
+   "name": "K.P.R. Mill Ltd.",
+   "industry": "Textile Manufacturing",
+   "sector": "Consumer Cyclical",
+   "market_cap": 378966966272
+  },
+  {
+   "symbol": "LALPATHLAB.NS",
+   "name": "Dr. Lal Path Labs Ltd.",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 326564282368
+  },
+  {
+   "symbol": "LATENTVIEW.NS",
+   "name": "Latent View Analytics Ltd.",
+   "industry": "Consulting Services",
+   "sector": "Industrials",
+   "market_cap": 50476535808
+  },
+  {
+   "symbol": "LAURUSLABS.NS",
+   "name": "Laurus Labs Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 1084406562816
+  },
+  {
+   "symbol": "LEMONTREE.NS",
+   "name": "Lemon Tree Hotels Ltd.",
+   "industry": "Lodging",
+   "sector": "Consumer Cyclical",
+   "market_cap": 84054622208
+  },
+  {
+   "symbol": "LENSKART.NS",
+   "name": "Lenskart Solutions Ltd.",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 1178210533376
+  },
+  {
+   "symbol": "LGEINDIA.NS",
+   "name": "LG Electronics India Ltd.",
+   "industry": "Consumer Electronics",
+   "sector": "Technology",
+   "market_cap": 1171153879040
+  },
+  {
+   "symbol": "LICHSGFIN.NS",
+   "name": "LIC Housing Finance Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 311335649280
+  },
+  {
+   "symbol": "LICI.NS",
+   "name": "Life Insurance Corporation of India",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 2587240169472
+  },
+  {
+   "symbol": "LINDEINDIA.NS",
+   "name": "Linde India Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 523858345984
+  },
+  {
+   "symbol": "LLOYDSME.NS",
+   "name": "Lloyds Metals And Energy Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 1034300751872
+  },
+  {
+   "symbol": "LODHA.NS",
+   "name": "Lodha Developers Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 1164095127552
+  },
+  {
+   "symbol": "LT.NS",
+   "name": "Larsen & Toubro Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 5333131984896
+  },
+  {
+   "symbol": "LTF.NS",
+   "name": "L&T Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 711716962304
+  },
+  {
+   "symbol": "LTFOODS.NS",
+   "name": "LT Foods Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 146662277120
+  },
+  {
+   "symbol": "LTM.NS",
+   "name": "LTM Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 1210451099648
+  },
+  {
+   "symbol": "LTTS.NS",
+   "name": "L&T Technology Services Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 340123222016
+  },
+  {
+   "symbol": "LUPIN.NS",
+   "name": "Lupin Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 956650618880
+  },
+  {
+   "symbol": "M&M.NS",
+   "name": "Mahindra & Mahindra Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 3644313305088
+  },
+  {
+   "symbol": "M&MFIN.NS",
+   "name": "Mahindra & Mahindra Financial Services Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 462883815424
+  },
+  {
+   "symbol": "MAHABANK.NS",
+   "name": "Bank of Maharashtra",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 652859146240
+  },
+  {
+   "symbol": "MANAPPURAM.NS",
+   "name": "Manappuram Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 313738264576
+  },
+  {
+   "symbol": "MANKIND.NS",
+   "name": "Mankind Pharma Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 1022123704320
+  },
+  {
+   "symbol": "MAPMYINDIA.NS",
+   "name": "C.E. Info Systems Ltd.",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 48293777408
+  },
+  {
+   "symbol": "MARICO.NS",
+   "name": "Marico Ltd.",
+   "industry": "Household & Personal Products",
+   "sector": "Consumer Defensive",
+   "market_cap": 1063056048128
+  },
+  {
+   "symbol": "MARUTI.NS",
+   "name": "Maruti Suzuki India Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 3793266933760
+  },
+  {
+   "symbol": "MAXHEALTH.NS",
+   "name": "Max Healthcare Institute Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 986936639488
+  },
+  {
+   "symbol": "MAZDOCK.NS",
+   "name": "Mazagoan Dock Shipbuilders Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 887274668032
+  },
+  {
+   "symbol": "MCX.NS",
+   "name": "Multi Commodity Exchange of India Ltd.",
+   "industry": "Financial Data & Stock Exchanges",
+   "sector": "Financial Services",
+   "market_cap": 846233862144
+  },
+  {
+   "symbol": "MEDANTA.NS",
+   "name": "Global Health Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 401846632448
+  },
+  {
+   "symbol": "MEESHO.NS",
+   "name": "Meesho Ltd.",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1004400017408
+  },
+  {
+   "symbol": "MFSL.NS",
+   "name": "Max Financial Services Ltd.",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 500529594368
+  },
+  {
+   "symbol": "MGL.NS",
+   "name": "Mahanagar Gas Ltd.",
+   "industry": "Utilities - Regulated Gas",
+   "sector": "Utilities",
+   "market_cap": 105820635136
+  },
+  {
+   "symbol": "MINDACORP.NS",
+   "name": "Minda Corporation Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 159774752768
+  },
+  {
+   "symbol": "MMTC.NS",
+   "name": "MMTC Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 87524999168
+  },
+  {
+   "symbol": "MOTHERSON.NS",
+   "name": "Samvardhana Motherson International Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1745130356736
+  },
+  {
+   "symbol": "MOTILALOFS.NS",
+   "name": "Motilal Oswal Financial Services Ltd.",
+   "industry": "Capital Markets",
+   "sector": "Financial Services",
+   "market_cap": 620463587328
+  },
+  {
+   "symbol": "MPHASIS.NS",
+   "name": "MphasiS Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 426285301760
+  },
+  {
+   "symbol": "MRF.NS",
+   "name": "MRF Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 526050164736
+  },
+  {
+   "symbol": "MRPL.NS",
+   "name": "Mangalore Refinery & Petrochemicals Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 288477773824
+  },
+  {
+   "symbol": "MSUMI.NS",
+   "name": "Motherson Sumi Wiring India Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 227399696384
+  },
+  {
+   "symbol": "MUTHOOTFIN.NS",
+   "name": "Muthoot Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 1138163187712
+  },
+  {
+   "symbol": "NAM-INDIA.NS",
+   "name": "Nippon Life India Asset Management Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 740528553984
+  },
+  {
+   "symbol": "NATCOPHARM.NS",
+   "name": "NATCO Pharma Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 153071534080
+  },
+  {
+   "symbol": "NATIONALUM.NS",
+   "name": "National Aluminium Co. Ltd.",
+   "industry": "Aluminum",
+   "sector": "Basic Materials",
+   "market_cap": 658799853568
+  },
+  {
+   "symbol": "NAUKRI.NS",
+   "name": "Info Edge (India) Ltd.",
+   "industry": "Internet Content & Information",
+   "sector": "Communication Services",
+   "market_cap": 812781142016
+  },
+  {
+   "symbol": "NAVA.NS",
+   "name": "Nava Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 156232744960
+  },
+  {
+   "symbol": "NAVINFLUOR.NS",
+   "name": "Navin Fluorine International Ltd.",
+   "industry": "Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 440454479872
+  },
+  {
+   "symbol": "NBCC.NS",
+   "name": "NBCC (India) Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 223721996288
+  },
+  {
+   "symbol": "NCC.NS",
+   "name": "NCC Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 83390586880
+  },
+  {
+   "symbol": "NESTLEIND.NS",
+   "name": "Nestle India Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 2627521216512
+  },
+  {
+   "symbol": "NETWEB.NS",
+   "name": "Netweb Technologies India Ltd.",
+   "industry": "Computer Hardware",
+   "sector": "Technology",
+   "market_cap": 270189117440
+  },
+  {
+   "symbol": "NEULANDLAB.NS",
+   "name": "Neuland Laboratories Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 280846270464
+  },
+  {
+   "symbol": "NEWGEN.NS",
+   "name": "Newgen Software Technologies Ltd.",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 68504707072
+  },
+  {
+   "symbol": "NH.NS",
+   "name": "Narayana Hrudayalaya Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 378050052096
+  },
+  {
+   "symbol": "NHPC.NS",
+   "name": "NHPC Ltd.",
+   "industry": "Utilities - Renewable",
+   "sector": "Utilities",
+   "market_cap": 763422638080
+  },
+  {
+   "symbol": "NIACL.NS",
+   "name": "The New India Assurance Company Ltd.",
+   "industry": "Insurance - Diversified",
+   "sector": "Financial Services",
+   "market_cap": 291036823552
+  },
+  {
+   "symbol": "NIVABUPA.NS",
+   "name": "Niva Bupa Health Insurance Company Ltd.",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 142774075392
+  },
+  {
+   "symbol": "NLCINDIA.NS",
+   "name": "NLC India Ltd.",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 364061425664
+  },
+  {
+   "symbol": "NMDC.NS",
+   "name": "NMDC Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 702466228224
+  },
+  {
+   "symbol": "NSLNISP.NS",
+   "name": "NMDC Steel Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 123583643648
+  },
+  {
+   "symbol": "NTPC.NS",
+   "name": "NTPC Ltd.",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 3166931255296
+  },
+  {
+   "symbol": "NTPCGREEN.NS",
+   "name": "NTPC Green Energy Ltd.",
+   "industry": "Utilities - Renewable",
+   "sector": "Utilities",
+   "market_cap": 787609026560
+  },
+  {
+   "symbol": "NUVAMA.NS",
+   "name": "Nuvama Wealth Management Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 310244704256
+  },
+  {
+   "symbol": "NUVOCO.NS",
+   "name": "Nuvoco Vistas Corporation Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 119808040960
+  },
+  {
+   "symbol": "NYKAA.NS",
+   "name": "FSN E-Commerce Ventures Ltd.",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 956140879872
+  },
+  {
+   "symbol": "OBEROIRLTY.NS",
+   "name": "Oberoi Realty Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 675754737664
+  },
+  {
+   "symbol": "OFSS.NS",
+   "name": "Oracle Financial Services Software Ltd.",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 938088726528
+  },
+  {
+   "symbol": "OIL.NS",
+   "name": "Oil India Ltd.",
+   "industry": "Oil & Gas Integrated",
+   "sector": "Energy",
+   "market_cap": 772882628608
+  },
+  {
+   "symbol": "OLAELEC.NS",
+   "name": "Ola Electric Mobility Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 170030841856
+  },
+  {
+   "symbol": "OLECTRA.NS",
+   "name": "Olectra Greentech Ltd.",
+   "industry": "Farm & Heavy Construction Machinery",
+   "sector": "Industrials",
+   "market_cap": 99087859712
+  },
+  {
+   "symbol": "ONESOURCE.NS",
+   "name": "Onesource Specialty Pharma Ltd.",
+   "industry": "Biotechnology",
+   "sector": "Healthcare",
+   "market_cap": 183776215040
+  },
+  {
+   "symbol": "ONGC.NS",
+   "name": "Oil & Natural Gas Corporation Ltd.",
+   "industry": "Oil & Gas Integrated",
+   "sector": "Energy",
+   "market_cap": 2967184605184
+  },
+  {
+   "symbol": "PAGEIND.NS",
+   "name": "Page Industries Ltd.",
+   "industry": "Apparel Manufacturing",
+   "sector": "Consumer Cyclical",
+   "market_cap": 420445290496
+  },
+  {
+   "symbol": "PARADEEP.NS",
+   "name": "Paradeep Phosphates Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 161479524352
+  },
+  {
+   "symbol": "PATANJALI.NS",
+   "name": "Patanjali Foods Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 439448993792
+  },
+  {
+   "symbol": "PAYTM.NS",
+   "name": "One 97 Communications Ltd.",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 1070368358400
+  },
+  {
+   "symbol": "PCBL.NS",
+   "name": "PCBL Chemical Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 133619900416
+  },
+  {
+   "symbol": "PERSISTENT.NS",
+   "name": "Persistent Systems Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 839273152512
+  },
+  {
+   "symbol": "PETRONET.NS",
+   "name": "Petronet LNG Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 429750026240
+  },
+  {
+   "symbol": "PFC.NS",
+   "name": "Power Finance Corporation Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 1115434385408
+  },
+  {
+   "symbol": "PFIZER.NS",
+   "name": "Pfizer Ltd.",
+   "industry": "Drug Manufacturers - General",
+   "sector": "Healthcare",
+   "market_cap": 183027531776
+  },
+  {
+   "symbol": "PFOCUS.NS",
+   "name": "Prime Focus Ltd.",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 245664235520
+  },
+  {
+   "symbol": "PGEL.NS",
+   "name": "PG Electroplast Ltd.",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 148548534272
+  },
+  {
+   "symbol": "PHOENIXLTD.NS",
+   "name": "Phoenix Mills Ltd.",
+   "industry": "Real Estate - Diversified",
+   "sector": "Real Estate",
+   "market_cap": 707629875200
+  },
+  {
+   "symbol": "PIDILITIND.NS",
+   "name": "Pidilite Industries Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 1545329049600
+  },
+  {
+   "symbol": "PIIND.NS",
+   "name": "PI Industries Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 364094750720
+  },
+  {
+   "symbol": "PINELABS.NS",
+   "name": "Pine Labs Ltd.",
+   "industry": "Software - Infrastructure",
+   "sector": "Technology",
+   "market_cap": 203893997568
+  },
+  {
+   "symbol": "PIRAMALFIN.NS",
+   "name": "Piramal Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 505990414336
+  },
+  {
+   "symbol": "PNB.NS",
+   "name": "Punjab National Bank",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 1340077113344
+  },
+  {
+   "symbol": "PNBHOUSING.NS",
+   "name": "PNB Housing Finance Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 285554212864
+  },
+  {
+   "symbol": "POLICYBZR.NS",
+   "name": "PB Fintech Ltd.",
+   "industry": "Insurance Brokers",
+   "sector": "Financial Services",
+   "market_cap": 538808451072
+  },
+  {
+   "symbol": "POLYCAB.NS",
+   "name": "Polycab India Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 1266614927360
+  },
+  {
+   "symbol": "POLYMED.NS",
+   "name": "Poly Medicure Ltd.",
+   "industry": "Medical Instruments & Supplies",
+   "sector": "Healthcare",
+   "market_cap": 174787706880
+  },
+  {
+   "symbol": "POONAWALLA.NS",
+   "name": "Poonawalla Fincorp Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 404268384256
+  },
+  {
+   "symbol": "POWERGRID.NS",
+   "name": "Power Grid Corporation of India Ltd.",
+   "industry": "Utilities - Regulated Electric",
+   "sector": "Utilities",
+   "market_cap": 2506512662528
+  },
+  {
+   "symbol": "POWERINDIA.NS",
+   "name": "Hitachi Energy India Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 1383303348224
+  },
+  {
+   "symbol": "PPLPHARMA.NS",
+   "name": "Piramal Pharma Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 278664642560
+  },
+  {
+   "symbol": "PREMIERENE.NS",
+   "name": "Premier Energies Ltd.",
+   "industry": "Solar",
+   "sector": "Technology",
+   "market_cap": 404676673536
+  },
+  {
+   "symbol": "PRESTIGE.NS",
+   "name": "Prestige Estates Projects Ltd.",
+   "industry": "Real Estate - Diversified",
+   "sector": "Real Estate",
+   "market_cap": 636533145600
+  },
+  {
+   "symbol": "PTCIL.NS",
+   "name": "PTC Industries Ltd.",
+   "industry": "Metal Fabrication",
+   "sector": "Industrials",
+   "market_cap": 326987481088
+  },
+  {
+   "symbol": "PVRINOX.NS",
+   "name": "PVR INOX Ltd.",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 123201667072
+  },
+  {
+   "symbol": "PWL.NS",
+   "name": "Physicswallah Ltd.",
+   "industry": "Education & Training Services",
+   "sector": "Consumer Defensive",
+   "market_cap": 389764939776
+  },
+  {
+   "symbol": "RADICO.NS",
+   "name": "Radico Khaitan Ltd",
+   "industry": "Beverages - Wineries & Distilleries",
+   "sector": "Consumer Defensive",
+   "market_cap": 610601598976
+  },
+  {
+   "symbol": "RAILTEL.NS",
+   "name": "Railtel Corporation Of India Ltd.",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 83492126720
+  },
+  {
+   "symbol": "RAINBOW.NS",
+   "name": "Rainbow Childrens Medicare Ltd.",
+   "industry": "Medical Care Facilities",
+   "sector": "Healthcare",
+   "market_cap": 139412783104
+  },
+  {
+   "symbol": "RAMCOCEM.NS",
+   "name": "The Ramco Cements Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 204995461120
+  },
+  {
+   "symbol": "RBLBANK.NS",
+   "name": "RBL Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 644009230336
+  },
+  {
+   "symbol": "RECLTD.NS",
+   "name": "REC Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 824067489792
+  },
+  {
+   "symbol": "REDINGTON.NS",
+   "name": "Redington Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 318377623552
+  },
+  {
+   "symbol": "RELIANCE.NS",
+   "name": "Reliance Industries Ltd.",
+   "industry": "Oil & Gas Refining & Marketing",
+   "sector": "Energy",
+   "market_cap": 16590810644480
+  },
+  {
+   "symbol": "RHIM.NS",
+   "name": "RHI MAGNESITA INDIA LTD.",
+   "industry": "Metal Fabrication",
+   "sector": "Industrials",
+   "market_cap": 79802474496
+  },
+  {
+   "symbol": "RITES.NS",
+   "name": "RITES Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 95789137920
+  },
+  {
+   "symbol": "RKFORGE.NS",
+   "name": "Ramkrishna Forgings Ltd.",
+   "industry": "Metal Fabrication",
+   "sector": "Industrials",
+   "market_cap": 130480087040
+  },
+  {
+   "symbol": "RPOWER.NS",
+   "name": "Reliance Power Ltd.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 85072805888
+  },
+  {
+   "symbol": "RRKABEL.NS",
+   "name": "R R Kabel Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 285964664832
+  },
+  {
+   "symbol": "RVNL.NS",
+   "name": "Rail Vikas Nigam Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 431599157248
+  },
+  {
+   "symbol": "SAGILITY.NS",
+   "name": "Sagility Ltd.",
+   "industry": "Health Information Services",
+   "sector": "Healthcare",
+   "market_cap": 209208573952
+  },
+  {
+   "symbol": "SAIL.NS",
+   "name": "Steel Authority of India Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 764147138560
+  },
+  {
+   "symbol": "SAILIFE.NS",
+   "name": "Sai Life Sciences Ltd.",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 338212257792
+  },
+  {
+   "symbol": "SAMMAANCAP.NS",
+   "name": "Sammaan Capital Ltd.",
+   "industry": "Mortgage Finance",
+   "sector": "Financial Services",
+   "market_cap": 161516863488
+  },
+  {
+   "symbol": "SAPPHIRE.NS",
+   "name": "Sapphire Foods India Ltd.",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 71948304384
+  },
+  {
+   "symbol": "SARDAEN.NS",
+   "name": "Sarda Energy and Minerals Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 173776830464
+  },
+  {
+   "symbol": "SAREGAMA.NS",
+   "name": "Saregama India Ltd",
+   "industry": "Entertainment",
+   "sector": "Communication Services",
+   "market_cap": 95384666112
+  },
+  {
+   "symbol": "SBFC.NS",
+   "name": "SBFC Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 98484699136
+  },
+  {
+   "symbol": "SBICARD.NS",
+   "name": "SBI Cards and Payment Services Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 581644713984
+  },
+  {
+   "symbol": "SBILIFE.NS",
+   "name": "SBI Life Insurance Company Ltd.",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 1747931627520
+  },
+  {
+   "symbol": "SBIN.NS",
+   "name": "State Bank of India",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 9073697226752
+  },
+  {
+   "symbol": "SCHAEFFLER.NS",
+   "name": "Schaeffler India Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 626418188288
+  },
+  {
+   "symbol": "SCHNEIDER.NS",
+   "name": "Schneider Electric Infrastructure Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 289196310528
+  },
+  {
+   "symbol": "SCI.NS",
+   "name": "Shipping Corporation of India Ltd.",
+   "industry": "Marine Shipping",
+   "sector": "Industrials",
+   "market_cap": 127815245824
+  },
+  {
+   "symbol": "SHREECEM.NS",
+   "name": "Shree Cement Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 812538462208
+  },
+  {
+   "symbol": "SHRIRAMFIN.NS",
+   "name": "Shriram Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 2339162030080
+  },
+  {
+   "symbol": "SHYAMMETL.NS",
+   "name": "Shyam Metalics and Energy Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 302151303168
+  },
+  {
+   "symbol": "SIEMENS.NS",
+   "name": "Siemens Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 1380679286784
+  },
+  {
+   "symbol": "SIGNATURE.NS",
+   "name": "Signatureglobal (India) Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 110980169728
+  },
+  {
+   "symbol": "SJVN.NS",
+   "name": "SJVN Ltd.",
+   "industry": "Utilities - Renewable",
+   "sector": "Utilities",
+   "market_cap": 242704138240
+  },
+  {
+   "symbol": "SOBHA.NS",
+   "name": "Sobha Ltd.",
+   "industry": "Real Estate - Development",
+   "sector": "Real Estate",
+   "market_cap": 131189571584
+  },
+  {
+   "symbol": "SOLARINDS.NS",
+   "name": "Solar Industries India Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 1786726187008
+  },
+  {
+   "symbol": "SONACOMS.NS",
+   "name": "Sona BLW Precision Forgings Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 514593914880
+  },
+  {
+   "symbol": "SONATSOFTW.NS",
+   "name": "Sonata Software Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 77474766848
+  },
+  {
+   "symbol": "SPLPETRO.NS",
+   "name": "Supreme Petrochem Ltd.",
+   "industry": "Specialty Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 165476384768
+  },
+  {
+   "symbol": "SRF.NS",
+   "name": "SRF Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 752871276544
+  },
+  {
+   "symbol": "STARHEALTH.NS",
+   "name": "Star Health and Allied Insurance Company Ltd.",
+   "industry": "Insurance - Life",
+   "sector": "Financial Services",
+   "market_cap": 328417443840
+  },
+  {
+   "symbol": "SUMICHEM.NS",
+   "name": "Sumitomo Chemical India Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 222793695232
+  },
+  {
+   "symbol": "SUNDARMFIN.NS",
+   "name": "Sundaram Finance Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 496860790784
+  },
+  {
+   "symbol": "SUNPHARMA.NS",
+   "name": "Sun Pharmaceutical Industries Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 4444048064512
+  },
+  {
+   "symbol": "SUNTV.NS",
+   "name": "Sun TV Network Ltd.",
+   "industry": "Broadcasting",
+   "sector": "Communication Services",
+   "market_cap": 202244227072
+  },
+  {
+   "symbol": "SUPREMEIND.NS",
+   "name": "Supreme Industries Ltd.",
+   "industry": "Building Products & Equipment",
+   "sector": "Industrials",
+   "market_cap": 451140354048
+  },
+  {
+   "symbol": "SUZLON.NS",
+   "name": "Suzlon Energy Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 560854007808
+  },
+  {
+   "symbol": "SWANCORP.NS",
+   "name": "Swan Corp Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 92422766592
+  },
+  {
+   "symbol": "SWIGGY.NS",
+   "name": "Swiggy Ltd.",
+   "industry": "Internet Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 693907488768
+  },
+  {
+   "symbol": "SYNGENE.NS",
+   "name": "Syngene International Ltd.",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 152427954176
+  },
+  {
+   "symbol": "SYRMA.NS",
+   "name": "Syrma SGS Technology Ltd.",
+   "industry": "Electronic Components",
+   "sector": "Technology",
+   "market_cap": 333742014464
+  },
+  {
+   "symbol": "TARIL.NS",
+   "name": "Transformers And Rectifiers (India) Ltd.",
+   "industry": "Electrical Equipment & Parts",
+   "sector": "Industrials",
+   "market_cap": 83341041664
+  },
+  {
+   "symbol": "TATACAP.NS",
+   "name": "Tata Capital Ltd.",
+   "industry": "Credit Services",
+   "sector": "Financial Services",
+   "market_cap": 1430091333632
+  },
+  {
+   "symbol": "TATACHEM.NS",
+   "name": "Tata Chemicals Ltd.",
+   "industry": "Chemicals",
+   "sector": "Basic Materials",
+   "market_cap": 163999350784
+  },
+  {
+   "symbol": "TATACOMM.NS",
+   "name": "Tata Communications Ltd.",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 475095203840
+  },
+  {
+   "symbol": "TATACONSUM.NS",
+   "name": "Tata Consumer Products Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 973063192576
+  },
+  {
+   "symbol": "TATAELXSI.NS",
+   "name": "Tata Elxsi Ltd.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 198542458880
+  },
+  {
+   "symbol": "TATAINVEST.NS",
+   "name": "Tata Investment Corporation Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 329678946304
+  },
+  {
+   "symbol": "TATAPOWER.NS",
+   "name": "Tata Power Co. Ltd.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 1174287286272
+  },
+  {
+   "symbol": "TATASTEEL.NS",
+   "name": "Tata Steel Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 2344797077504
+  },
+  {
+   "symbol": "TATATECH.NS",
+   "name": "Tata Technologies Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 285474750464
+  },
+  {
+   "symbol": "TBOTEK.NS",
+   "name": "TBO Tek Ltd.",
+   "industry": "Travel Services",
+   "sector": "Consumer Cyclical",
+   "market_cap": 181201747968
+  },
+  {
+   "symbol": "TCS.NS",
+   "name": "Tata Consultancy Services Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 7532857786368
+  },
+  {
+   "symbol": "TECHM.NS",
+   "name": "Tech Mahindra Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 1371409481728
+  },
+  {
+   "symbol": "TECHNOE.NS",
+   "name": "Techno Electric & Engineering Company Ltd.",
+   "industry": "Engineering & Construction",
+   "sector": "Industrials",
+   "market_cap": 117020631040
+  },
+  {
+   "symbol": "TEGA.NS",
+   "name": "Tega Industries Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 157137092608
+  },
+  {
+   "symbol": "TEJASNET.NS",
+   "name": "Tejas Networks Ltd.",
+   "industry": "Communication Equipment",
+   "sector": "Technology",
+   "market_cap": 89639714816
+  },
+  {
+   "symbol": "TENNIND.NS",
+   "name": "Tenneco Clean Air India Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 207957131264
+  },
+  {
+   "symbol": "THELEELA.NS",
+   "name": "Leela Palaces Hotels & Resorts Ltd.",
+   "industry": "Lodging",
+   "sector": "Consumer Cyclical",
+   "market_cap": 182391111680
+  },
+  {
+   "symbol": "THERMAX.NS",
+   "name": "Thermax Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 388322492416
+  },
+  {
+   "symbol": "TIINDIA.NS",
+   "name": "Tube Investments of India Ltd.",
+   "industry": "Conglomerates",
+   "sector": "Industrials",
+   "market_cap": 486079463424
+  },
+  {
+   "symbol": "TIMKEN.NS",
+   "name": "Timken India Ltd.",
+   "industry": "Tools & Accessories",
+   "sector": "Industrials",
+   "market_cap": 241158799360
+  },
+  {
+   "symbol": "TITAGARH.NS",
+   "name": "Titagarh Rail Systems Ltd.",
+   "industry": "Railroads",
+   "sector": "Industrials",
+   "market_cap": 98614108160
+  },
+  {
+   "symbol": "TITAN.NS",
+   "name": "Titan Company Ltd.",
+   "industry": "Luxury Goods",
+   "sector": "Consumer Cyclical",
+   "market_cap": 4333633273856
+  },
+  {
+   "symbol": "TMCV.NS",
+   "name": "Tata Motors Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1625951567872
+  },
+  {
+   "symbol": "TMPV.NS",
+   "name": "Tata Motors Passenger Vehicles Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1069725122560
+  },
+  {
+   "symbol": "TORNTPHARM.NS",
+   "name": "Torrent Pharmaceuticals Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 1897465118720
+  },
+  {
+   "symbol": "TORNTPOWER.NS",
+   "name": "Torrent Power Ltd.",
+   "industry": "Utilities - Independent Power Producers",
+   "sector": "Utilities",
+   "market_cap": 632197414912
+  },
+  {
+   "symbol": "TRAVELFOOD.NS",
+   "name": "Travel Food Services Ltd.",
+   "industry": "Restaurants",
+   "sector": "Consumer Cyclical",
+   "market_cap": 159803932672
+  },
+  {
+   "symbol": "TRENT.NS",
+   "name": "Trent Ltd.",
+   "industry": "Apparel Retail",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1423356985344
+  },
+  {
+   "symbol": "TRIDENT.NS",
+   "name": "Trident Ltd.",
+   "industry": "Textile Manufacturing",
+   "sector": "Consumer Cyclical",
+   "market_cap": 117809913856
+  },
+  {
+   "symbol": "TRITURBINE.NS",
+   "name": "Triveni Turbine Ltd.",
+   "industry": "Specialty Industrial Machinery",
+   "sector": "Industrials",
+   "market_cap": 176180428800
+  },
+  {
+   "symbol": "TTML.NS",
+   "name": "Tata Teleservices (Maharashtra) Ltd.",
+   "industry": "Telecom Services",
+   "sector": "Communication Services",
+   "market_cap": 67327709184
+  },
+  {
+   "symbol": "TVSMOTOR.NS",
+   "name": "TVS Motor Company Ltd.",
+   "industry": "Auto Manufacturers",
+   "sector": "Consumer Cyclical",
+   "market_cap": 1975657955328
+  },
+  {
+   "symbol": "UBL.NS",
+   "name": "United Breweries Ltd.",
+   "industry": "Beverages - Brewers",
+   "sector": "Consumer Defensive",
+   "market_cap": 330850172928
+  },
+  {
+   "symbol": "UCOBANK.NS",
+   "name": "UCO Bank",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 299695439872
+  },
+  {
+   "symbol": "ULTRACEMCO.NS",
+   "name": "UltraTech Cement Ltd.",
+   "industry": "Building Materials",
+   "sector": "Basic Materials",
+   "market_cap": 3281462231040
+  },
+  {
+   "symbol": "UNIONBANK.NS",
+   "name": "Union Bank of India",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 1375575736320
+  },
+  {
+   "symbol": "UNITDSPR.NS",
+   "name": "United Spirits Ltd.",
+   "industry": "Beverages - Wineries & Distilleries",
+   "sector": "Consumer Defensive",
+   "market_cap": 1010976948224
+  },
+  {
+   "symbol": "UNOMINDA.NS",
+   "name": "UNO Minda Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 703342444544
+  },
+  {
+   "symbol": "UPL.NS",
+   "name": "UPL Ltd.",
+   "industry": "Agricultural Inputs",
+   "sector": "Basic Materials",
+   "market_cap": 464948527104
+  },
+  {
+   "symbol": "URBANCO.NS",
+   "name": "Urban Company Ltd.",
+   "industry": "Software - Application",
+   "sector": "Technology",
+   "market_cap": 248844566528
+  },
+  {
+   "symbol": "USHAMART.NS",
+   "name": "Usha Martin Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 157922869248
+  },
+  {
+   "symbol": "UTIAMC.NS",
+   "name": "UTI Asset Management Company Ltd.",
+   "industry": "Asset Management",
+   "sector": "Financial Services",
+   "market_cap": 115924000768
+  },
+  {
+   "symbol": "VBL.NS",
+   "name": "Varun Beverages Ltd.",
+   "industry": "Beverages - Non-Alcoholic",
+   "sector": "Consumer Defensive",
+   "market_cap": 1470708711424
+  },
+  {
+   "symbol": "VEDL.NS",
+   "name": "Vedanta Ltd.",
+   "industry": "Other Industrial Metals & Mining",
+   "sector": "Basic Materials",
+   "market_cap": 1040043999232
+  },
+  {
+   "symbol": "VIJAYA.NS",
+   "name": "Vijaya Diagnostic Centre Ltd.",
+   "industry": "Diagnostics & Research",
+   "sector": "Healthcare",
+   "market_cap": 155897331712
+  },
+  {
+   "symbol": "VMM.NS",
+   "name": "Vishal Mega Mart Ltd.",
+   "industry": "Department Stores",
+   "sector": "Consumer Cyclical",
+   "market_cap": 484825923584
+  },
+  {
+   "symbol": "VOLTAS.NS",
+   "name": "Voltas Ltd.",
+   "industry": "Furnishings, Fixtures & Appliances",
+   "sector": "Consumer Cyclical",
+   "market_cap": 369995284480
+  },
+  {
+   "symbol": "VTL.NS",
+   "name": "Vardhman Textiles Ltd.",
+   "industry": "Textile Manufacturing",
+   "sector": "Consumer Cyclical",
+   "market_cap": 160369590272
+  },
+  {
+   "symbol": "WAAREEENER.NS",
+   "name": "Waaree Energies Ltd.",
+   "industry": "Solar",
+   "sector": "Technology",
+   "market_cap": 717690044416
+  },
+  {
+   "symbol": "WELCORP.NS",
+   "name": "Welspun Corp Ltd.",
+   "industry": "Steel",
+   "sector": "Basic Materials",
+   "market_cap": 746914971648
+  },
+  {
+   "symbol": "WELSPUNLIV.NS",
+   "name": "Welspun Living Ltd.",
+   "industry": "Textile Manufacturing",
+   "sector": "Consumer Cyclical",
+   "market_cap": 211523846144
+  },
+  {
+   "symbol": "WHIRLPOOL.NS",
+   "name": "Whirlpool of India Ltd.",
+   "industry": "Furnishings, Fixtures & Appliances",
+   "sector": "Consumer Cyclical",
+   "market_cap": 116627103744
+  },
+  {
+   "symbol": "WIPRO.NS",
+   "name": "Wipro Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 1622705700864
+  },
+  {
+   "symbol": "WOCKPHARMA.NS",
+   "name": "Wockhardt Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 368142286848
+  },
+  {
+   "symbol": "YESBANK.NS",
+   "name": "Yes Bank Ltd.",
+   "industry": "Banks - Regional",
+   "sector": "Financial Services",
+   "market_cap": 706254012416
+  },
+  {
+   "symbol": "ZEEL.NS",
+   "name": "Zee Entertainment Enterprises Ltd.",
+   "industry": "Broadcasting",
+   "sector": "Communication Services",
+   "market_cap": 73835126784
+  },
+  {
+   "symbol": "ZENSARTECH.NS",
+   "name": "Zensar Technolgies Ltd.",
+   "industry": "Information Technology Services",
+   "sector": "Technology",
+   "market_cap": 98635079680
+  },
+  {
+   "symbol": "ZENTEC.NS",
+   "name": "Zen Technologies Ltd.",
+   "industry": "Aerospace & Defense",
+   "sector": "Industrials",
+   "market_cap": 151319494656
+  },
+  {
+   "symbol": "ZFCVINDIA.NS",
+   "name": "ZF Commercial Vehicle Control Systems India Ltd.",
+   "industry": "Auto Parts",
+   "sector": "Consumer Cyclical",
+   "market_cap": 267920916480
+  },
+  {
+   "symbol": "ZYDUSLIFE.NS",
+   "name": "Zydus Lifesciences Ltd.",
+   "industry": "Drug Manufacturers - Specialty & Generic",
+   "sector": "Healthcare",
+   "market_cap": 1200894902272
+  },
+  {
+   "symbol": "ZYDUSWELL.NS",
+   "name": "Zydus Wellness Ltd.",
+   "industry": "Packaged Foods",
+   "sector": "Consumer Defensive",
+   "market_cap": 165634457600
+  }
+ ]
+}

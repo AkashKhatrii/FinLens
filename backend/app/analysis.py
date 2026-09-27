@@ -17,6 +17,7 @@ from .config import MARKETS
 from .engine import (
     business_context,
     fundamentals,
+    peers,
     percentile,
     qualitative,
     scoring,
@@ -116,6 +117,9 @@ def analyse(
     earn_facts, earn_p = qualitative.earnings_analyse(bundle)
     sent_p = qualitative.sentiment_analyse(bundle, val_facts.analyst_upside_pct)
     biz_ctx = business_context.analyse(bundle)
+    # Peer comparison: same-industry peers from the S&P 500 / Nifty 500 map,
+    # snapshotted with the same fundamentals/valuation engines as the subject.
+    peer_ctx = peers.analyse_peers(bundle, provider, fund_facts, val_facts)
 
     pillars = {
         p.key: p for p in (growth_p, profit_p, health_p, val_p,
@@ -182,6 +186,7 @@ def analyse(
         },
         "news": bundle.news[:8],
         "business_context": biz_ctx.to_dict(),
+        "peers": peer_ctx,
         "as_of": {
             "analysis_date": date.today().isoformat(),
             "price_date": _last_history_date(bundle.history),
@@ -198,6 +203,8 @@ def analyse(
         result["bank_metrics"] = public_banks
     elif profile == PROFILE_BANK:
         result["data_gaps"] = sorted(set(result["data_gaps"] + ["bank fundamentals"]))
+    if peer_ctx.get("n", 0) < 2:
+        result["data_gaps"] = sorted(set(result["data_gaps"] + ["peer comparison"]))
 
     result["deterministic_accumulation"] = accumulation_from_analysis(result)
 
@@ -373,6 +380,27 @@ def _fact_pack(r: dict[str, Any]) -> dict[str, Any]:
     bank_pack = fact_pack_bank_fundamentals(r.get("bank_metrics"))
     if bank_pack is not None:
         pack["bank_fundamentals"] = bank_pack
+    # Peer comparison: per-peer snapshots are small and directly comparable;
+    # keep the full table plus medians so the model can make relative claims
+    # that are actually grounded. Withheld when the peer set is too thin.
+    peer_ctx = r.get("peers") or {}
+    if peer_ctx.get("n", 0) >= 2:
+        pack["peers"] = {
+            "as_of": peer_ctx.get("as_of"),
+            "industry": peer_ctx.get("industry"),
+            "match_level": peer_ctx.get("match_level"),
+            "n": peer_ctx.get("n"),
+            "peers": [
+                {"ticker": p.get("ticker"), "name": p.get("name"),
+                 **{m: p.get(m) for m in (
+                     "market_cap", "pe", "pb", "ev_ebitda",
+                     "dividend_yield", "revenue_cagr_3y", "net_margin", "roe")}}
+                for p in peer_ctx.get("peers", [])
+            ],
+            "medians": peer_ctx.get("medians"),
+            "subject": peer_ctx.get("subject"),
+            "note": peer_ctx.get("note"),
+        }
     next_earnings = (r.get("earnings") or {}).get("next_date")
     if next_earnings:
         pack["upcoming_events"] = {
