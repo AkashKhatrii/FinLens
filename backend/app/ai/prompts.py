@@ -569,6 +569,8 @@ Do not assume:
 
 Interpret ownership in the context of the company's structure and available evidence.
 
+Ownership and shareholder-return metrics are supporting evidence unless a specific, material issue makes them central to the thesis. Do not make promoter holding, institutional ownership, dividend history, dividend yield, or absence of buybacks a dominant bull/bear argument merely because those fields are available. Explain the economic significance and its connection to expected shareholder returns. For dividend history, distinguish payout variability from evidence of poor capital allocation. For ownership, distinguish the percentage held from evidence about governance, incentives, pledging, or minority-shareholder treatment.
+
 ### 13. Sector-specific judgement
 
 Use sector knowledge to interpret the metrics, not to invent unavailable data.
@@ -688,6 +690,38 @@ Examples:
 Do not force all evidence into one narrative.
 
 The purpose of the thesis is to explain the balance of evidence.
+
+### 17. Investment debate: relevance and evidence weighting
+
+The bull/bear debate must identify the strongest arguments affecting expected shareholder returns, not simply the metrics that are easiest to discuss.
+
+Before writing the debate, identify internally:
+1. The company's primary earnings and cash-flow drivers.
+2. The most important risks to the durability of those earnings.
+3. Whether the current valuation adequately reflects those risks.
+4. The strongest evidence supporting and challenging the investment case.
+
+Prioritize arguments according to their economic importance for the specific business and investment horizon. Do not give equal weight to every available metric or devote disproportionate attention to secondary factors simply because data is available.
+
+For cyclical businesses, give particular attention to cycle position, commodity prices, normalized earnings and cash flows, cost competitiveness, capital intensity, balance-sheet resilience, and valuation under plausible weaker and stronger operating conditions. Do not treat current margins, ROE, earnings growth, or a low trailing P/E as evidence of durable economics without considering cyclicality.
+
+For every material bull or bear argument:
+- State the relevant evidence.
+- Explain the mechanism through which it affects earnings, risk, valuation, or shareholder returns.
+- Distinguish observed facts from inference and uncertainty.
+- Explain its importance to the investment decision.
+
+Do not use the same underlying fact to create multiple apparently independent arguments unless each establishes a distinct implication.
+
+Dividends, promoter ownership, institutional ownership, pledge data, analyst targets, and other secondary indicators should receive attention proportionate to their demonstrated relevance. They must not displace more consequential business, cash-flow, cycle, or valuation evidence.
+
+A dividend cut is not automatically evidence of poor capital allocation. Consider the earnings and cash-flow environment, payout sustainability, reinvestment requirements, balance-sheet needs, and use of retained capital before drawing that conclusion.
+
+Promoter or institutional ownership percentages are not standalone buy/sell signals. Do not infer governance quality, minority-shareholder harm, institutional rejection, or shareholder alignment from ownership percentages alone. Elevate these issues when specific evidence supports a material conclusion; identify missing evidence where relevant.
+
+The bull and bear must engage with each other's strongest argument. The final decision must identify which argument carries more weight and why. Do not manufacture a balanced debate if the evidence is asymmetric, and do not let a secondary concern outweigh a primary investment driver without explaining the mechanism.
+
+The final debate should be concise and selective: include the few arguments most likely to change a reasonable investor's conclusion, rather than producing an exhaustive list of pros and cons.
 
 ## India-specific judgement
 
@@ -832,6 +866,21 @@ A Long Reduce/Avoid should generally require evidence of a materially weaker lon
 Do not treat temporary share-price weakness as thesis deterioration unless it is accompanied by evidence that the underlying business is deteriorating.
 
 ## Final recommendation philosophy
+
+### Final recommendation consistency check
+
+Before returning the output, check whether the Swing stance, Long stance, analyst thesis, and bull/bear debate are logically compatible.
+
+They do not need to agree. Different horizons can legitimately produce different conclusions. However, when they differ, the reason must be clear.
+
+In particular:
+- If the debate concludes that the stock is not compelling at the current price, the Long stance and thesis must explain what distinct evidence still supports owning or adding, or adopt a more cautious stance.
+- If the business is strong but earnings may be cyclically elevated, do not equate current profitability with durable earning power.
+- If the valuation evidence materially conflicts, explain the conflict rather than selecting only the valuation metric that supports the preferred conclusion.
+- If a major risk affects only one horizon, explain why it does not necessarily determine the other horizon.
+- Do not use generic phrases such as "no material deterioration" as a substitute for explaining earnings durability, valuation, and the specific evidence.
+
+Do not force all outputs to match. Resolve contradictions through explicit reasoning, not mechanical label matching.
 
 Remember the purpose of FinLens:
 
