@@ -9,7 +9,8 @@ the long view. DeepSeek writes the thesis by default; Claude is optional.
 
 The SPA also has a **Tradebook** (immutable recommendation journal), **quant
 screeners** (Nifty 50 / Nifty 100 / Nifty 500 low-score for India, S&P 500 for
-the US), and a Terms glossary. Layout works on a phone and on a desktop.
+the US, plus a Growth Leaders overlay on Nifty 100), and a Terms glossary.
+Layout works on a phone and on a desktop.
 
 ```bash
 ./run.sh          # http://127.0.0.1:8000
@@ -83,7 +84,9 @@ Each score also gets a **percentile** against a stored NIFTY-grade universe so
   Quantity is a journal field; P&L is quantity-weighted, not a ranking input.
 - **Screener** — Overall / Swing / Long for a whole index at once, quant only, no
   AI. India: Nifty 50, Nifty 100, or the 50 lowest Overall scores from the
-  current Nifty 500. US: the full S&P 500. Shares the same engine as Analysis
+  current Nifty 500. **Growth Leaders** is a separate CAN SLIM-inspired checklist
+  on Nifty 100 using existing metrics (Market/M skipped; not IBD, not a third
+  verdict). US: the full S&P 500. Shares the same engine as Analysis
   (`market` is threaded through, not a fork).
 - **Terms** — in-app glossary for the dotted labels on a report.
 
@@ -211,7 +214,7 @@ backend/app/
     accumulation.py    qualitative accumulate / watch / do-not layer
     percentile.py      rank vs stored NIFTY-grade universe
   tradebook/           JSON journal under FINLENS_DATA_DIR/tradebook
-  screener/            quant rows from analyse(); never calls the AI
+  screener/            quant rows from analyse(); leaders overlay; never calls AI
   ai/
     schemas.py         Pydantic thesis schema
     prompts.py         frozen (cacheable) analyst system prompt

@@ -8,6 +8,8 @@ from typing import Any, Callable, Iterable
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from .leaders import empty_leaders, leaders_from_analysis, sort_leader_rows
+
 log = logging.getLogger(__name__)
 
 DEFAULT_CONCURRENCY = 4
@@ -45,6 +47,7 @@ def quant_row_from_analysis(result: dict[str, Any], *, analyzed_at: str | None =
         "analyzed_at": analyzed_at or datetime.now(timezone.utc).isoformat(),
         "error": None,
         "href": href,
+        "leaders": leaders_from_analysis(result),
     }
 
 
@@ -74,6 +77,7 @@ def failed_row(
         "analyzed_at": None,
         "error": error,
         "href": href,
+        "leaders": empty_leaders(),
     }
 
 
@@ -163,6 +167,9 @@ def sort_rows(
     key: str = "overall",
     descending: bool = True,
 ) -> list[dict[str, Any]]:
+    if key == "leaders":
+        return sort_leader_rows(rows, descending=descending)
+
     field = {
         "overall": "overall_score",
         "swing": "swing_score",

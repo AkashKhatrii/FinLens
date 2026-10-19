@@ -986,9 +986,10 @@ tailwind.config = {
   <section v-if="view === 'nifty'" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-4 min-w-0">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
-        <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">{{ niftyIndexName }} Quant</h1>
+        <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">{{ niftyHeading }}</h1>
         <div class="text-[11px] text-muted mt-1">
-          <span v-if="niftyLowestN">50 lowest Overall scores from the current Nifty 500 universe.</span>
+          <span v-if="niftyIsLeaders">Nifty 100 · CAN SLIM-inspired checklist on existing metrics · Market (M) skipped, not IBD</span>
+          <span v-else-if="niftyLowestN">50 lowest Overall scores from the current Nifty 500 universe.</span>
           <span v-else>{{ niftyRows.length || niftyExpected }} current constituents · Quantitative analysis only</span>
         </div>
         <div class="text-[11px] text-faint mt-1">Updated: {{ niftyUpdatedLabel }}</div>
@@ -1001,6 +1002,9 @@ tailwind.config = {
                 :class="niftyIndex === 'NIFTY100' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
                 v-on:click="selectNiftyIndex('NIFTY100')">Nifty 100</button>
         <button type="button" class="px-2 py-1 rounded-md border border-edge"
+                :class="niftyIndex === 'LEADERS' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
+                v-on:click="selectNiftyIndex('LEADERS')">Growth Leaders</button>
+        <button type="button" class="px-2 py-1 rounded-md border border-edge"
                 :class="niftyIndex === 'SP500' ? 'tab-on' : 'hover:text-fg hover:border-muted'"
                 v-on:click="selectNiftyIndex('SP500')">S&P 500</button>
         <button type="button" class="px-2 py-1 rounded-md border border-edge"
@@ -1011,8 +1015,14 @@ tailwind.config = {
     <div class="flex flex-wrap items-baseline justify-between gap-2 text-[12px] text-muted">
       <div>
         {{ niftySummary.total }} stocks
-        <span v-if="niftySummary.analyzed"> · {{ niftySummary.buy }} Buy · {{ niftySummary.hold }} Hold · {{ niftySummary.reduce_avoid }} Reduce/Avoid</span>
-        <span v-if="niftySummary.median_overall != null"> · Median overall {{ niftyMedianLabel }}</span>
+        <template v-if="niftyIsLeaders">
+          <span v-if="niftySummary.analyzed"> · {{ niftySummary.leaders_passing }} passing 4+/6</span>
+          <span v-if="niftySummary.median_fit != null"> · Median fit {{ niftyFitMedianLabel }}</span>
+        </template>
+        <template v-else>
+          <span v-if="niftySummary.analyzed"> · {{ niftySummary.buy }} Buy · {{ niftySummary.hold }} Hold · {{ niftySummary.reduce_avoid }} Reduce/Avoid</span>
+          <span v-if="niftySummary.median_overall != null"> · Median overall {{ niftyMedianLabel }}</span>
+        </template>
       </div>
       <div class="text-[11px] text-faint">
         <span v-if="niftyLoading">Analyzing {{ niftyUniverseName }} · {{ niftyDone }} / {{ niftyRows.length || niftyExpected }}</span>
@@ -1021,18 +1031,25 @@ tailwind.config = {
     </div>
     <div v-if="niftyError" class="text-xs text-amber-400">{{ niftyError }}</div>
     <div class="panel rounded-xl overflow-auto table-scroll" style="max-height: calc(100vh - 14rem)">
-      <table class="w-full text-left min-w-[28rem]">
+      <table class="w-full text-left" :class="niftyIsLeaders ? 'min-w-[40rem]' : 'min-w-[28rem]'">
         <thead class="text-[10px] uppercase tracking-wider text-faint border-b border-edge bg-panel sticky top-0 z-10">
           <tr>
             <th class="px-3 py-2 font-medium">Company</th>
             <th class="px-3 py-2 font-medium text-right">Price</th>
+            <th v-if="niftyIsLeaders" class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('leaders')">
+              Pass <span class="text-faint">{{ niftySortMark('leaders') }}</span>
+            </th>
+            <th v-if="niftyIsLeaders" class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('fit')">
+              Fit <span class="text-faint">{{ niftySortMark('fit') }}</span>
+            </th>
+            <th v-if="niftyIsLeaders" class="px-3 py-2 font-medium">C A N S L I</th>
             <th class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('overall')">
               Overall <span class="text-faint">{{ niftySortMark('overall') }}</span>
             </th>
-            <th class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('swing')">
+            <th v-if="!niftyIsLeaders" class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('swing')">
               Swing <span class="text-faint">{{ niftySortMark('swing') }}</span>
             </th>
-            <th class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('long')">
+            <th v-if="!niftyIsLeaders" class="px-3 py-2 font-medium text-right cursor-pointer select-none" v-on:click="setNiftySort('long')">
               Long <span class="text-faint">{{ niftySortMark('long') }}</span>
             </th>
           </tr>
@@ -1047,13 +1064,21 @@ tailwind.config = {
               </button>
             </td>
             <td class="px-3 py-1 text-right text-[12px] font-mono whitespace-nowrap">{{ niftyPrice(row) }}</td>
+            <td v-if="niftyIsLeaders" class="px-3 py-1 text-right text-[12px] font-mono whitespace-nowrap">{{ niftyPassCell(row) }}</td>
+            <td v-if="niftyIsLeaders" class="px-3 py-1 text-right text-[12px] font-mono whitespace-nowrap">{{ niftyFitCell(row) }}</td>
+            <td v-if="niftyIsLeaders" class="px-3 py-1 whitespace-nowrap">
+              <span v-for="k in leaderLetters" :key="row.symbol + k"
+                    class="inline-block text-[10px] font-mono px-1 py-0.5 rounded mr-0.5"
+                    :class="leaderChipClass(row, k)"
+                    :title="leaderChipTitle(row, k)">{{ k }}</span>
+            </td>
             <td class="px-3 py-1 text-right whitespace-nowrap">
               <span class="text-[11px] px-1.5 py-0.5 rounded" :class="verdictClass(row.overall_verdict_class)">{{ niftyScoreCell(row.overall_score, row.overall_verdict) }}</span>
             </td>
-            <td class="px-3 py-1 text-right whitespace-nowrap">
+            <td v-if="!niftyIsLeaders" class="px-3 py-1 text-right whitespace-nowrap">
               <span class="text-[11px] px-1.5 py-0.5 rounded" :class="verdictClass(row.swing_verdict_class)">{{ niftyScoreCell(row.swing_score, row.swing_verdict) }}</span>
             </td>
-            <td class="px-3 py-1 text-right whitespace-nowrap">
+            <td v-if="!niftyIsLeaders" class="px-3 py-1 text-right whitespace-nowrap">
               <span class="text-[11px] px-1.5 py-0.5 rounded" :class="verdictClass(row.long_verdict_class)">{{ niftyScoreCell(row.long_score, row.long_verdict) }}</span>
             </td>
           </tr>
@@ -1613,6 +1638,7 @@ createApp({
       niftyRows: [], niftyLoading: false, niftyError: '', niftyDone: 0,
       niftySortKey: 'overall', niftySortDesc: true, niftyToken: 0, niftyAsOf: null,
       niftyIndex: 'NIFTY50',
+      leaderLetters: ['C', 'A', 'N', 'S', 'L', 'I'],
       tradebookSaving: false, tradebookMessage: '',
       tradebookRows: [], tradebookSummary: { total: 0, swing_buys: 0, swing_holds: 0, swing_reduces: 0, ai_aligned: 0, ai_disagreed: 0, invested: 0, current_value: 0, pnl: 0, pnl_pct: null },
       tradebookFilterQ: '', tradebookFilterSwing: '', tradebookFilterAgreement: '',
@@ -1695,6 +1721,8 @@ createApp({
       );
     },
     niftyViewSpec() { return this.niftyViewFor(this.niftyIndex); },
+    niftyIsLeaders() { return this.niftyViewSpec.mode === 'leaders'; },
+    niftyHeading() { return this.niftyViewSpec.heading || (this.niftyIndexName + ' Quant'); },
     // Currency symbol of the loaded analysis (₹ for India, $ for US).
     cs() { return (this.result && this.result.currency_symbol) || '₹'; },
     marketLabel() { return this.market === 'US' ? 'NYSE / NASDAQ' : 'NSE / BSE'; },
@@ -1718,11 +1746,15 @@ createApp({
       const buy = analyzed.filter(r => r.overall_verdict === 'Buy' || r.overall_verdict === 'Strong Buy').length;
       const hold = analyzed.filter(r => r.overall_verdict === 'Hold').length;
       const reduce_avoid = analyzed.filter(r => r.overall_verdict === 'Reduce' || r.overall_verdict === 'Avoid').length;
+      const leaderRows = analyzed.filter(r => r.leaders && r.leaders.letters_scored);
+      const fits = leaderRows.map(r => Number(r.leaders.leader_score)).filter(n => !Number.isNaN(n));
       return {
         total: analyzed.length || rows.length,
         analyzed: analyzed.length,
         buy, hold, reduce_avoid,
         median_overall: this.niftyMedian(scores),
+        leaders_passing: leaderRows.filter(r => (r.leaders.letters_passed || 0) >= 4).length,
+        median_fit: this.niftyMedian(fits),
       };
     },
     niftyUpdatedLabel() {
@@ -1735,6 +1767,11 @@ createApp({
     },
     niftyMedianLabel() {
       const m = this.niftySummary.median_overall;
+      if (m == null) return '';
+      return Number.isInteger(m) ? String(m) : (Math.round(m * 10) / 10).toFixed(1);
+    },
+    niftyFitMedianLabel() {
+      const m = this.niftySummary.median_fit;
       if (m == null) return '';
       return Number.isInteger(m) ? String(m) : (Math.round(m * 10) / 10).toFixed(1);
     },
@@ -1768,6 +1805,8 @@ createApp({
       else this.openTradebook();
     } else if (params.has('lowscore')) {
       this.openNifty('LOW_SCORE');
+    } else if (params.has('leaders')) {
+      this.openNifty('LEADERS');
     } else if (params.has('nifty100')) {
       this.openNifty('NIFTY100');
     } else if (params.has('nifty50')) {
@@ -1815,6 +1854,7 @@ createApp({
       const views = {
         NIFTY50: { id: 'NIFTY50', indexId: 'NIFTY50', name: 'Nifty 50', universeName: 'Nifty 50', param: 'nifty50', expected: 50, lowest: 0, sortDesc: true, market: 'IN' },
         NIFTY100: { id: 'NIFTY100', indexId: 'NIFTY100', name: 'Nifty 100', universeName: 'Nifty 100', param: 'nifty100', expected: 100, lowest: 0, sortDesc: true, market: 'IN' },
+        LEADERS: { id: 'LEADERS', indexId: 'NIFTY100', name: 'Growth Leaders', universeName: 'Nifty 100', heading: 'Growth Leaders', param: 'leaders', expected: 100, lowest: 0, sortDesc: true, market: 'IN', sortKey: 'leaders', mode: 'leaders' },
         SP500: { id: 'SP500', indexId: 'SP500', name: 'S&P 500', universeName: 'S&P 500', param: 'sp500', expected: 500, lowest: 0, sortDesc: true, market: 'US' },
         LOW_SCORE: { id: 'LOW_SCORE', indexId: 'NIFTY500', name: 'Low-Score Validation', universeName: 'Nifty 500', param: 'lowscore', expected: 500, lowest: 50, sortDesc: false, market: 'IN' },
       };
@@ -1829,11 +1869,17 @@ createApp({
     },
     async openNifty(indexId) {
       const spec = this.niftyViewFor(indexId);
+      const keep = this.view === 'nifty'
+        && this.niftyViewFor(this.niftyIndex).indexId === spec.indexId
+        && (this.niftyLoading || (this.niftyRows && this.niftyRows.length));
       this.view = 'nifty';
       this.niftyIndex = spec.id;
       this.snapshot = null;
       this.error = '';
+      this.niftySortKey = spec.sortKey || 'overall';
+      this.niftySortDesc = spec.sortDesc;
       history.replaceState(null, '', '?' + spec.param);
+      if (keep) return;
       await this.loadNifty(spec.indexId);
     },
     async loadNifty(indexId) {
@@ -1844,7 +1890,7 @@ createApp({
       this.niftyError = '';
       this.niftyDone = 0;
       this.niftyRows = [];
-      this.niftySortKey = 'overall';
+      this.niftySortKey = spec.sortKey || 'overall';
       this.niftySortDesc = spec.sortDesc;
       this.niftyAsOf = null;
       try {
@@ -1875,6 +1921,7 @@ createApp({
           analyzed_at: null,
           error: null,
           href: '/?q=' + encodeURIComponent(c.symbol),
+          leaders: this.emptyLeaders(),
         }));
         const limit = 4;
         let cursor = 0;
@@ -1922,6 +1969,7 @@ createApp({
         analyzed_at: row.analyzed_at || null,
         error: row.error || null,
         href: row.href || ('/?q=' + encodeURIComponent(constituent.symbol)),
+        leaders: row.leaders || this.emptyLeaders(),
       };
       this.niftyRows.splice(idx, 1, next);
     },
@@ -1968,9 +2016,56 @@ createApp({
         return (a.symbol || '').localeCompare(b.symbol || '');
       }).slice(0, n);
     },
+    emptyLeaders() {
+      const letters = {};
+      this.leaderLetters.forEach(k => { letters[k] = { pass: null, value: null }; });
+      return { letters, letters_passed: 0, letters_scored: 0, leader_score: null };
+    },
+    niftyPassCell(row) {
+      const view = row && row.leaders;
+      if (!view || !view.letters_scored) return '—';
+      return (view.letters_passed || 0) + '/6';
+    },
+    niftyFitCell(row) {
+      const score = row && row.leaders && row.leaders.leader_score;
+      if (score == null) return '—';
+      const n = Number(score);
+      return Number.isInteger(n) ? String(n) : n.toFixed(1);
+    },
+    leaderChipClass(row, key) {
+      const letter = row && row.leaders && row.leaders.letters && row.leaders.letters[key];
+      if (!letter || letter.pass == null) return 'text-faint';
+      return letter.pass ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/10 text-red-400/80';
+    },
+    leaderChipTitle(row, key) {
+      const letter = row && row.leaders && row.leaders.letters && row.leaders.letters[key];
+      if (!letter) return key;
+      const value = letter.value == null ? '—' : letter.value;
+      const pass = letter.pass == null ? 'no data' : (letter.pass ? 'pass' : 'fail');
+      return (letter.label || key) + ': ' + value + ' (' + pass + ')';
+    },
     sortNiftyRows(rows) {
-      const field = { overall: 'overall_score', swing: 'swing_score', long: 'long_score' }[this.niftySortKey] || 'overall_score';
       const desc = this.niftySortDesc;
+      if (this.niftySortKey === 'leaders' || this.niftySortKey === 'fit') {
+        const byFit = this.niftySortKey === 'fit';
+        return (rows || []).slice().sort((a, b) => {
+          const al = a.leaders || {}, bl = b.leaders || {};
+          const am = !al.letters_scored, bm = !bl.letters_scored;
+          if (am !== bm) return am ? 1 : -1;
+          if (am) return (a.symbol || '').localeCompare(b.symbol || '');
+          if (!byFit) {
+            const passed = desc
+              ? ((bl.letters_passed || 0) - (al.letters_passed || 0))
+              : ((al.letters_passed || 0) - (bl.letters_passed || 0));
+            if (passed !== 0) return passed;
+          }
+          const av = al.leader_score, bv = bl.leader_score;
+          const fit = desc ? (Number(bv) - Number(av)) : (Number(av) - Number(bv));
+          if (fit !== 0) return fit;
+          return (a.symbol || '').localeCompare(b.symbol || '');
+        });
+      }
+      const field = { overall: 'overall_score', swing: 'swing_score', long: 'long_score' }[this.niftySortKey] || 'overall_score';
       return (rows || []).slice().sort((a, b) => {
         const av = a[field], bv = b[field];
         const am = av == null, bm = bv == null;

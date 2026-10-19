@@ -259,7 +259,8 @@ class TestScoringUnchangedAndBankPathIntact(unittest.TestCase):
         self.assertIn("viewNiftyStock", html)
         self.assertIn("/api/screener/quant", html)
         self.assertIn("ai=false", html)
-        self.assertIn("`/api/screener/quant?q=${encodeURIComponent(c.symbol)}`", html)
+        self.assertIn("/api/screener/quant?q=${encodeURIComponent(c.symbol)}", html)
+        self.assertIn("&market=${encodeURIComponent(spec.market || 'IN')}", html)
         nifty_js = html[html.find("async loadNifty"): html.find("viewNiftyStock")]
         self.assertNotIn("ai=true", nifty_js)
         self.assertNotIn("runThesis", nifty_js)
@@ -293,7 +294,7 @@ class TestScoringUnchangedAndBankPathIntact(unittest.TestCase):
         self.assertIn("viewNiftyStock(row.symbol)", html)
         start = html.find("viewNiftyStock(symbol)")
         self.assertGreater(start, 0)
-        self.assertIn("this.run()", html[start:start + 250])
+        self.assertIn("this.run()", html[start:start + 400])
 
     def test_bank_quantitative_path_still_runs_when_ai_is_off(self):
         analysis_src = (
