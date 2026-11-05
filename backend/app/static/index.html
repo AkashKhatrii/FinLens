@@ -7,20 +7,24 @@
 <script>
 (function () {
   try {
-    var t = localStorage.getItem('finlens-theme');
-    if (t !== 'light' && t !== 'dark') t = 'dark';
+    var stored = localStorage.getItem('finlens-theme');
+    var t = stored;
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
     document.documentElement.setAttribute('data-theme', t);
   } catch (_) {}
 })();
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script>
 tailwind.config = {
   theme: { extend: {
-    fontFamily: { sans: ['Inter','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+    fontFamily: {
+      sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Segoe UI', 'system-ui', 'sans-serif'],
+      mono: ['ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+    },
     colors: {
       ink: 'rgb(var(--ink) / <alpha-value>)',
       panel: 'rgb(var(--panel) / <alpha-value>)',
@@ -29,47 +33,95 @@ tailwind.config = {
       muted: 'rgb(var(--muted) / <alpha-value>)',
       faint: 'rgb(var(--faint) / <alpha-value>)',
       inset: 'rgb(var(--inset) / <alpha-value>)',
+      blue: {
+        400: 'rgb(var(--accent-text) / <alpha-value>)',
+        500: 'rgb(var(--accent) / <alpha-value>)',
+        600: 'rgb(var(--accent) / <alpha-value>)',
+      },
+      emerald: {
+        400: 'rgb(var(--up-text) / <alpha-value>)',
+        500: 'rgb(var(--up) / <alpha-value>)',
+        600: 'rgb(var(--up-text) / <alpha-value>)',
+      },
+      red: {
+        400: 'rgb(var(--down-text) / <alpha-value>)',
+        500: 'rgb(var(--down) / <alpha-value>)',
+        600: 'rgb(var(--down-text) / <alpha-value>)',
+        900: 'rgb(var(--down) / <alpha-value>)',
+      },
+      amber: {
+        400: 'rgb(var(--warn-text) / <alpha-value>)',
+        500: 'rgb(var(--warn) / <alpha-value>)',
+        900: 'rgb(var(--warn) / <alpha-value>)',
+      },
+      violet: {
+        300: 'rgb(var(--indigo-text) / <alpha-value>)',
+        400: 'rgb(var(--indigo-text) / <alpha-value>)',
+        500: 'rgb(var(--indigo) / <alpha-value>)',
+        600: 'rgb(var(--indigo) / <alpha-value>)',
+      },
+      sky: {
+        400: 'rgb(var(--teal-text) / <alpha-value>)',
+        600: 'rgb(var(--teal-text) / <alpha-value>)',
+      },
     },
   }}
 }
 </script>
 <style>
+  /* Apple system colors. Text tokens are the nearest system gray that still clears 4.5:1. */
   html[data-theme="dark"] {
     color-scheme: dark;
-    --ink: 7 7 10;
-    --panel: 14 14 19;
-    --edge: 28 28 38;
-    --fg: 232 232 237;
-    --muted: 139 139 154;
-    --faint: 92 92 106;
-    --inset: 10 10 14;
-    --track: 28 28 38;
-    --scrim: rgb(0 0 0 / 0.58);
-    --lift: 0 1px 0 rgb(255 255 255 / 0.03);
+    --ink: 0 0 0;
+    --panel: 28 28 30;
+    --inset: 44 44 46;
+    --edge: 56 56 58;
+    --fg: 255 255 255;
+    --muted: 174 174 178;
+    --faint: 142 142 147;
+    --track: 58 58 60;
+    --accent: 0 113 227;
+    --accent-text: 10 132 255;
+    --up: 48 209 88;
+    --up-text: 48 209 88;
+    --down: 255 69 58;
+    --down-text: 255 105 97;
+    --warn: 255 159 10;
+    --warn-text: 255 159 10;
+    --indigo: 88 86 214;
+    --indigo-text: 165 164 255;
+    --teal: 100 210 255;
+    --teal-text: 100 210 255;
+    --scrim: rgb(0 0 0 / 0.5);
   }
   html[data-theme="light"] {
     color-scheme: light;
-    /* Classic white / grey / black clay. Page is near-white grey so #fff can highlight. */
-    --ink: 238 238 238;
-    --panel: 238 238 238;
-    --edge: 220 220 220;
-    --fg: 17 17 17;
-    --muted: 92 92 92;
-    --faint: 140 140 140;
-    --inset: 238 238 238;
-    --track: 220 220 220;
-    --scrim: rgb(0 0 0 / 0.42);
-    --neu-hi: #ffffff;
-    --neu-lo: #c8c8c8;
-    --neu-out: 9px 9px 18px var(--neu-lo), -9px -9px 18px var(--neu-hi);
-    --neu-out-sm: 5px 5px 10px var(--neu-lo), -5px -5px 10px var(--neu-hi);
-    --neu-in: inset 6px 6px 12px var(--neu-lo), inset -6px -6px 12px var(--neu-hi);
-    --lift: 9px 9px 18px var(--neu-lo), -9px -9px 18px var(--neu-hi);
+    --ink: 242 242 247;
+    --panel: 255 255 255;
+    --inset: 242 242 247;
+    --edge: 198 198 200;
+    --fg: 0 0 0;
+    --muted: 72 72 74;
+    --faint: 99 99 102;
+    --track: 229 229 234;
+    --accent: 0 113 227;
+    --accent-text: 0 64 221;
+    --up: 52 199 89;
+    --up-text: 27 122 50;
+    --down: 255 59 48;
+    --down-text: 196 30 22;
+    --warn: 255 149 0;
+    --warn-text: 201 52 0;
+    --indigo: 88 86 214;
+    --indigo-text: 88 86 214;
+    --teal: 48 176 199;
+    --teal-text: 12 110 128;
+    --scrim: rgb(0 0 0 / 0.4);
   }
 
   html { scroll-behavior: smooth; overflow-x: hidden; }
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
     background: rgb(var(--ink));
     color: rgb(var(--fg));
     overflow-x: hidden;
@@ -86,13 +138,6 @@ tailwind.config = {
   ::-webkit-scrollbar-thumb { background: rgb(var(--edge)); border-radius: 9px; }
   ::-webkit-scrollbar-thumb:hover { background: rgb(var(--faint)); }
 
-  .letter-pullup span, .morph .item, .ring-arc {
-    will-change: transform, opacity; backface-visibility: hidden;
-  }
-
-  .letter-pullup span { display: inline-block; opacity: 0; transform: translateY(100%); animation: pullUp .55s cubic-bezier(.22,1,.36,1) forwards; }
-  @keyframes pullUp { to { opacity: 1; transform: translateY(0); } }
-
   .morph { position: relative; display: block; height: 1.6rem; }
   .morph .item { position: absolute; inset: 0; opacity: 0; transform: translateY(8px);
     transition: opacity .6s ease, transform .6s ease; white-space: nowrap; }
@@ -108,25 +153,27 @@ tailwind.config = {
     background: rgb(var(--inset));
     color: rgb(var(--fg));
   }
-  .halo input:focus { border-color: rgb(59 130 246 / 0.7); outline: none; }
+  .halo input:focus { border-color: rgb(var(--accent)); }
+  .halo input:focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; }
 
   .ticker-drop {
     position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 40;
     background: rgb(var(--panel)); border: 1px solid rgb(var(--edge)); border-radius: .75rem;
-    overflow: hidden; box-shadow: var(--lift);
+    overflow: hidden; box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
     text-align: left;
   }
-  .ticker-drop button.active, .ticker-drop button:hover { background: rgb(37 99 235 / 0.12); }
+  .ticker-drop button.active, .ticker-drop button:hover { background: rgb(var(--accent) / 0.12); }
 
   .term { position: relative; display: inline; border-bottom: 1px dotted rgb(var(--faint)); cursor: help; }
-  .term:hover, .term:focus { color: rgb(var(--fg)); border-bottom-color: #93c5fd; outline: none; }
+  .term:hover, .term:focus-visible { color: rgb(var(--fg)); border-bottom-color: rgb(var(--accent)); }
+  .term:focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; }
   .term-pop {
     position: fixed; z-index: 80; width: min(18rem, 72vw);
     background: rgb(var(--panel)); border: 1px solid rgb(var(--edge)); border-radius: .75rem; padding: .85rem .95rem;
-    box-shadow: var(--lift); text-align: left; font-weight: 400;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12); text-align: left; font-weight: 400;
     white-space: normal; letter-spacing: 0; text-transform: none;
   }
-  .term-pop .kicker { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: rgb(var(--faint)); margin-bottom: .2rem; }
+  .term-pop .kicker { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: rgb(var(--muted)); margin-bottom: .2rem; }
   .glossary-scrim { background: var(--scrim); }
   .glossary-sheet { background: rgb(var(--panel)); }
 
@@ -135,6 +182,14 @@ tailwind.config = {
     color: rgb(var(--fg));
   }
   .cta:hover { background: rgb(var(--inset)); }
+  .btn-primary {
+    background: rgb(var(--accent));
+    color: #fff;
+    border-color: transparent;
+    min-height: 44px;
+  }
+  .btn-primary:hover { background: #0066cc; }
+  .btn-primary:disabled { opacity: 0.45; }
 
   .rise { opacity: 0; transform: translateY(14px); animation: rise .6s cubic-bezier(.22,1,.36,1) forwards; }
   @keyframes rise { to { opacity: 1; transform: translateY(0); } }
@@ -145,7 +200,6 @@ tailwind.config = {
   .panel {
     background: rgb(var(--panel));
     border: 1px solid rgb(var(--edge));
-    box-shadow: var(--lift);
   }
   .skeleton {
     background: rgb(var(--inset));
@@ -159,7 +213,7 @@ tailwind.config = {
   @keyframes sk { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
   .theme-toggle {
-    width: 2rem; height: 2rem; border-radius: .5rem;
+    width: 44px; height: 44px; border-radius: .5rem;
     border: 1px solid rgb(var(--edge));
     background: rgb(var(--panel));
     color: rgb(var(--muted));
@@ -168,97 +222,47 @@ tailwind.config = {
   .theme-toggle:hover { color: rgb(var(--fg)); border-color: rgb(var(--muted)); }
   .theme-toggle svg { width: 15px; height: 15px; }
 
-  .v-strong-buy { background: rgb(16 185 129 / 0.14); color: #34d399; border: 1px solid rgb(16 185 129 / 0.32); }
-  .v-buy { background: rgb(16 185 129 / 0.10); color: #34d399; border: 1px solid rgb(16 185 129 / 0.26); }
-  .v-hold { background: rgb(245 158 11 / 0.12); color: #fbbf24; border: 1px solid rgb(245 158 11 / 0.28); }
-  .v-reduce { background: rgb(251 146 60 / 0.12); color: #fb923c; border: 1px solid rgb(251 146 60 / 0.28); }
-  .v-avoid { background: rgb(239 68 68 / 0.12); color: #f87171; border: 1px solid rgb(239 68 68 / 0.28); }
-  .v-early { background: rgb(56 189 248 / 0.12); color: #38bdf8; border: 1px solid rgb(56 189 248 / 0.30); }
+  .v-strong-buy, .v-buy { background: rgb(var(--up) / 0.14); color: rgb(var(--up-text)); border: 1px solid rgb(var(--up) / 0.32); }
+  .v-hold { background: rgb(var(--warn) / 0.14); color: rgb(var(--warn-text)); border: 1px solid rgb(var(--warn) / 0.32); }
+  .v-reduce { background: rgb(var(--warn) / 0.14); color: rgb(var(--warn-text)); border: 1px solid rgb(var(--warn) / 0.32); }
+  .v-avoid { background: rgb(var(--down) / 0.14); color: rgb(var(--down-text)); border: 1px solid rgb(var(--down) / 0.32); }
+  .v-early { background: rgb(var(--teal) / 0.14); color: rgb(var(--teal-text)); border: 1px solid rgb(var(--teal) / 0.32); }
   .v-neutral { background: rgb(var(--inset)); color: rgb(var(--muted)); border: 1px solid rgb(var(--edge)); }
-  html[data-theme="light"] .v-strong-buy, html[data-theme="light"] .v-buy { color: #047857; }
-  html[data-theme="light"] .v-hold { color: #b45309; }
-  html[data-theme="light"] .v-reduce { color: #c2410c; }
-  html[data-theme="light"] .v-avoid { color: #b91c1c; }
-  html[data-theme="light"] .v-early { color: #0369a1; }
 
-  .pill-good { background: rgb(16 185 129 / 0.14); color: #34d399; }
-  .pill-ok { background: rgb(245 158 11 / 0.14); color: #fbbf24; }
-  .pill-bad { background: rgb(239 68 68 / 0.14); color: #f87171; }
+  .pill-good { background: rgb(var(--up) / 0.14); color: rgb(var(--up-text)); }
+  .pill-ok { background: rgb(var(--warn) / 0.14); color: rgb(var(--warn-text)); }
+  .pill-bad { background: rgb(var(--down) / 0.14); color: rgb(var(--down-text)); }
   .pill-na { background: rgb(var(--inset)); color: rgb(var(--muted)); }
-  html[data-theme="light"] .pill-good { color: #047857; }
-  html[data-theme="light"] .pill-ok { color: #b45309; }
-  html[data-theme="light"] .pill-bad { color: #b91c1c; }
 
-  .flag-high { background: rgb(239 68 68 / 0.10); border-color: rgb(239 68 68 / 0.28); color: #fca5a5; }
-  .flag-med { background: rgb(245 158 11 / 0.10); border-color: rgb(245 158 11 / 0.28); color: #fcd34d; }
-  html[data-theme="light"] .flag-high { color: #b91c1c; }
-  html[data-theme="light"] .flag-med { color: #b45309; }
+  .flag-high { background: rgb(var(--down) / 0.12); border-color: rgb(var(--down) / 0.32); color: rgb(var(--down-text)); }
+  .flag-med { background: rgb(var(--warn) / 0.12); border-color: rgb(var(--warn) / 0.32); color: rgb(var(--warn-text)); }
 
-  .note-violet { background: rgb(139 92 246 / 0.10); border: 1px solid rgb(139 92 246 / 0.28); }
-  .tab-on { border-color: rgb(37 99 235 / 0.7); background: rgb(37 99 235 / 0.12); color: #93c5fd; }
-  html[data-theme="light"] .tab-on { color: #1d4ed8; }
+  .note-violet { background: rgb(var(--indigo) / 0.10); border: 1px solid rgb(var(--indigo) / 0.28); }
+  .tab-on { border-color: transparent; background: rgb(var(--accent)); color: #fff; }
 
-  /* Light-only neumorphism: raised chrome, inset fields. Dark is unchanged. */
-  html[data-theme="light"] header {
-    border-bottom-color: transparent;
+  header button, header select,
+  button.rounded-md, button.rounded-lg, button.rounded-full, button.rounded-xl,
+  select { min-height: 44px; }
+  header button { min-width: 44px; }
+  .tab-on, .tab-on:hover { color: #fff; background: rgb(var(--accent)); border-color: transparent; }
+  .text-xs, .text-\[9px\], .text-\[10px\], .text-\[11px\], .text-\[12px\] {
+    font-size: 13px !important;
+    line-height: 1.45 !important;
   }
-  html[data-theme="light"] .panel,
-  html[data-theme="light"] .cta,
-  html[data-theme="light"] .theme-toggle,
-  html[data-theme="light"] .ticker-drop,
-  html[data-theme="light"] .term-pop,
-  html[data-theme="light"] .glossary-sheet {
-    border-color: transparent;
-    background: rgb(var(--panel));
-    box-shadow: var(--neu-out);
-  }
-  html[data-theme="light"] .cta:hover,
-  html[data-theme="light"] .cta:active,
-  html[data-theme="light"] .theme-toggle:hover,
-  html[data-theme="light"] .theme-toggle:active {
-    background: rgb(var(--panel));
-    box-shadow: var(--neu-in);
-  }
-  html[data-theme="light"] .halo input,
-  html[data-theme="light"] .bg-inset,
-  html[data-theme="light"] .glossary-sheet input {
-    border-color: transparent;
-    background: rgb(var(--panel));
-    box-shadow: var(--neu-in);
-  }
-  html[data-theme="light"] .halo input:focus,
-  html[data-theme="light"] .glossary-sheet input:focus {
-    border-color: transparent;
-    box-shadow: var(--neu-in), 0 0 0 3px rgb(59 130 246 / 0.16);
-  }
-  html[data-theme="light"] header span.rounded-full.border,
-  html[data-theme="light"] header button.rounded-md,
-  html[data-theme="light"] section button.rounded-full {
-    border-color: transparent;
-    background: rgb(var(--panel));
-    box-shadow: var(--neu-out-sm);
-  }
-  html[data-theme="light"] section button.rounded-full:hover {
-    box-shadow: var(--neu-in);
-  }
-  html[data-theme="light"] .tab-on {
-    border-color: transparent;
-    box-shadow: var(--neu-in);
-  }
-  html[data-theme="light"] .h-1.bg-edge,
-  html[data-theme="light"] .h-1\.5.bg-edge,
-  html[data-theme="light"] .h-0\.5.bg-edge {
-    box-shadow: var(--neu-in);
-    background: rgb(var(--panel));
-  }
-  html[data-theme="light"] .skeleton {
-    box-shadow: var(--neu-in);
-    background: rgb(var(--panel));
-  }
+
+  :focus-visible { outline: 2px solid rgb(var(--accent)); outline-offset: 2px; }
 
   .table-scroll { -webkit-overflow-scrolling: touch; }
-  @media (max-width: 767px) {
-    .theme-toggle { width: 1.85rem; height: 1.85rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .rise, .morph .item, .letter-pullup span { opacity: 1; transform: none; }
+    .skeleton::after { animation: none; }
   }
 </style>
 </head>
@@ -267,21 +271,18 @@ tailwind.config = {
 <div id="app" class="relative z-10 min-h-screen">
 
   <!-- ============ HEADER ============ -->
-  <header class="border-b border-edge sticky top-0 z-30 bg-ink">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:h-16 sm:py-0 flex flex-wrap items-center gap-x-3 gap-y-2">
-      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+  <header class="border-b border-edge sticky top-0 z-30 bg-panel">
+    <div class="w-full px-4 sm:px-6 py-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+      <div class="flex items-center gap-3 shrink-0">
         <button type="button" class="flex items-center gap-2 sm:gap-3" v-on:click="openHome()">
           <div class="w-8 h-8 rounded-lg bg-blue-600 grid place-items-center text-sm font-bold text-white">F</div>
-          <span class="hidden sm:inline-flex text-[17px] font-semibold tracking-tight letter-pullup">
-            <span v-for="(ch,i) in 'FinLens'" :key="i" :style="{ animationDelay: (i*0.05)+'s' }"
-                  :class="i>=3 ? 'text-blue-400 font-normal' : ''">{{ ch }}</span>
-          </span>
+          <span class="hidden sm:inline text-[17px] font-semibold tracking-tight">Fin<span class="text-blue-400 font-normal">Lens</span></span>
         </button>
-        <div class="flex items-center gap-1 text-[11px] px-1 py-0.5 rounded-full border border-edge" role="group" aria-label="Market">
-          <button type="button" class="px-2 py-0.5 rounded-full"
+        <div class="flex items-center gap-2" role="group" aria-label="Market">
+          <button type="button" class="px-3 rounded-full"
                   :class="market === 'IN' ? 'tab-on' : 'text-muted hover:text-fg'"
                   v-on:click="setMarket('IN')" title="India — NSE / BSE">IN</button>
-          <button type="button" class="px-2 py-0.5 rounded-full"
+          <button type="button" class="px-3 rounded-full"
                   :class="market === 'US' ? 'tab-on' : 'text-muted hover:text-fg'"
                   v-on:click="setMarket('US')" title="United States — NYSE / NASDAQ">US</button>
         </div>
@@ -294,18 +295,18 @@ tailwind.config = {
                        @submit="run()" @pick="pickTicker"></ticker-search>
       </form>
 
-      <div class="flex items-center gap-1.5 sm:gap-3 text-[11px] text-muted ml-auto shrink-0">
-        <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+      <div class="flex items-center gap-3 text-muted ml-auto shrink-0">
+        <button type="button" class="px-3 rounded-md border border-edge hover:text-fg hover:border-muted"
                 :class="view === 'nifty' ? 'tab-on' : ''"
                 v-on:click="openNifty50()">Screener</button>
-        <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+        <button type="button" class="px-3 rounded-md border border-edge hover:text-fg hover:border-muted"
                 :class="(view === 'tradebook' || view === 'snapshot') ? 'tab-on' : ''"
                 v-on:click="openTradebook()">Tradebook</button>
-        <button type="button" class="px-1.5 sm:px-2 py-1 rounded-md border border-edge hover:text-fg hover:border-muted"
+        <button type="button" class="px-3 rounded-md border border-edge hover:text-fg hover:border-muted"
                 v-on:click="glossaryOpen = true">Terms</button>
         <label class="flex items-center gap-2">
           <select v-model="aiProvider" aria-label="AI provider"
-                  class="bg-inset border border-edge rounded-md px-1.5 sm:px-2 py-1 text-[11px] text-fg outline-none max-w-[6.75rem] sm:max-w-none">
+                  class="bg-inset border border-edge rounded-md px-3 text-fg max-w-[6.75rem] sm:max-w-none">
             <option v-for="p in aiProviders" :key="p.key" :value="p.key" :disabled="!p.available">
               {{ p.label }}{{ p.available ? '' : ' (no key)' }}
             </option>
@@ -331,7 +332,8 @@ tailwind.config = {
   </header>
 
   <!-- ============ HERO / SEARCH ============ -->
-  <section v-if="view === 'analyse' && !result && !loading && !error" class="max-w-3xl mx-auto px-4 sm:px-6 pt-12 sm:pt-24 pb-16 text-center">
+  <section v-if="view === 'analyse' && !result && !loading && !error" class="w-full px-4 sm:px-6 lg:px-8 pt-12 sm:pt-24 pb-16">
+    <div class="max-w-2xl mx-auto text-center">
     <h1 class="text-[1.75rem] sm:text-5xl font-bold tracking-tight mb-4 sm:mb-5 leading-tight">
       Know what a stock is<br>
       <span class="text-blue-400">actually worth</span>
@@ -341,10 +343,10 @@ tailwind.config = {
     </div>
 
     <form v-on:submit.prevent="run()" class="space-y-3">
-      <ticker-search v-model="query" :placeholder="market === 'US' ? 'Try AAPL, NVDA, or \'berkshire hathaway\'' : 'Try RELIANCE, TCS, or \'tata motors\'\''" :market="market"
+      <ticker-search v-model="query" :placeholder="market === 'US' ? 'Try AAPL, NVDA, or berkshire hathaway' : 'Try RELIANCE, TCS, or tata motors'" :market="market"
                      @submit="run()" @pick="pickTicker"></ticker-search>
       <button type="submit" :disabled="loading"
-              class="cta w-full rounded-xl px-5 py-3.5 text-sm font-semibold border border-edge disabled:opacity-50">
+              class="btn-primary w-full rounded-xl px-5 py-3.5 text-sm font-semibold border disabled:opacity-50">
         Run full analysis
       </button>
     </form>
@@ -353,6 +355,7 @@ tailwind.config = {
       <button v-for="s in suggestions" :key="s" v-on:click="query=s; run()"
               class="text-xs px-3 py-1.5 rounded-full border border-edge text-muted hover:text-fg hover:border-muted transition">{{ s }}</button>
     </div>
+    </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-10 sm:mt-16 text-left">
       <div v-for="f in features" :key="f.t" class="panel rounded-xl p-4">
@@ -360,12 +363,12 @@ tailwind.config = {
         <div class="text-xs text-muted leading-relaxed">{{ f.d }}</div>
       </div>
     </div>
-    <p class="text-[11px] text-faint mt-10 leading-relaxed">{{ disclaimerText }}
+    <p class="text-sm text-muted mt-10 leading-relaxed text-center max-w-3xl mx-auto">{{ disclaimerText }}
       Dotted labels on a report explain the term and how FinLens uses it — or open <button type="button" class="underline hover:text-muted" v-on:click="glossaryOpen = true">Terms</button>.</p>
   </section>
 
   <!-- ============ LOADING ============ -->
-  <section v-if="view === 'analyse' && loading" class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+  <section v-if="view === 'analyse' && loading" class="w-full px-4 sm:px-6 py-16">
     <div class="text-center mb-10">
       <div class="text-sm text-muted mb-2">{{ loadingStep }}</div>
       <div class="w-56 h-0.5 bg-edge rounded-full mx-auto overflow-hidden">
@@ -397,7 +400,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ RESULTS ============ -->
-  <main v-if="view === 'analyse' && result" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
+  <main v-if="view === 'analyse' && result" class="w-full px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
 
     <!-- Company header -->
     <div class="rise panel rounded-2xl p-4 sm:p-6" style="animation-delay:.02s">
@@ -420,7 +423,7 @@ tailwind.config = {
           <div class="text-[11px] text-faint mt-1" v-if="result.price.off_52w_high_pct != null">
             {{ num(result.price.off_52w_high_pct) }}% from <term-tip id="52whigh" label="52W high"></term-tip>
           </div>
-          <button type="button" class="mt-3 cta rounded-lg px-3 py-1.5 text-[11px] font-semibold border border-edge disabled:opacity-40"
+          <button type="button" class="mt-3 btn-primary rounded-lg px-3 py-1.5 text-[13px] font-semibold border disabled:opacity-40"
                   :disabled="tradebookSaving" v-on:click="addToTradebook()">
             {{ tradebookSaving ? 'Recording…' : 'Add to Tradebook' }}
           </button>
@@ -625,7 +628,7 @@ tailwind.config = {
         </ul>
       </div>
       <div class="rise panel rounded-2xl p-5" style="animation-delay:.34s">
-        <div class="text-sm font-semibold mb-3 text-red-400">What's not</div>
+        <div class="text-sm font-semibold mb-3 text-red-400">What's not working</div>
         <ul class="space-y-2">
           <li v-for="(c,i) in result.cons" :key="i" class="flex gap-2.5 text-xs text-fg leading-relaxed">
             <span class="text-red-500 mt-0.5 shrink-0">▸</span><span>{{ c }}</span>
@@ -639,7 +642,7 @@ tailwind.config = {
     <div class="rise panel rounded-2xl p-6" style="animation-delay:.38s"
          :class="ai ? 'border-blue-500/30' : ''">
       <div class="flex items-center gap-2 mb-4">
-        <div class="w-5 h-5 rounded bg-blue-600 grid place-items-center text-[10px] font-bold text-white">AI</div>
+        <div class="w-7 h-7 rounded-md bg-blue-600 grid place-items-center text-[13px] font-bold text-white">AI</div>
         <div class="text-sm font-semibold">Analyst Thesis</div>
         <span v-if="result.ai && result.ai.model" class="text-[10px] text-faint font-mono">{{ result.ai.model }}</span>
       </div>
@@ -650,15 +653,16 @@ tailwind.config = {
       <div v-else-if="!ai" class="text-xs text-muted bg-inset rounded-lg p-4 border border-edge">
         <div v-if="result.ai && result.ai.error" class="text-amber-400/90 mb-2">{{ result.ai.error }}</div>
         <div v-else>Quant is done. Generate a written thesis from these numbers only if you want one.</div>
-        <div class="mt-2 text-faint">The scores above are computed from filings and price data, and do not depend on the AI layer.</div>
+        <div class="mt-2 text-muted">The scores above are computed from filings and price data, and do not depend on the AI layer. A model wrote any thesis from those numbers. It can be wrong, and it is not a recommendation.</div>
         <button type="button" v-on:click="runThesis()" :disabled="!aiReady || aiLoading"
-                class="mt-4 cta rounded-lg px-4 py-2 text-xs font-semibold border border-edge disabled:opacity-40">
+                class="mt-4 btn-primary rounded-lg px-4 py-2 text-[13px] font-semibold border disabled:opacity-40">
           {{ aiReady ? 'Generate thesis' : 'AI not configured' }}
         </button>
       </div>
 
       <div v-else-if="ai" class="space-y-5">
         <div class="text-base font-medium text-fg leading-relaxed">{{ ai.headline }}</div>
+        <p class="text-sm text-muted leading-relaxed">A model wrote this from the numbers above. It can be wrong, and it is not a recommendation.</p>
 
         <div class="space-y-3">
           <div class="text-[11px] font-semibold uppercase tracking-wider text-muted">Investment View</div>
@@ -753,7 +757,7 @@ tailwind.config = {
     <div class="rise panel rounded-2xl p-6" style="animation-delay:.40s"
          :class="debate && debate.debate ? 'border-violet-500/30' : ''">
       <div class="flex items-center gap-2 mb-4">
-        <div class="w-5 h-5 rounded bg-violet-600 grid place-items-center text-[10px] font-bold text-white">VS</div>
+        <div class="w-7 h-7 rounded-md bg-violet-600 grid place-items-center text-[13px] font-bold text-white">VS</div>
         <div class="text-sm font-semibold">Bull / Bear debate</div>
         <span v-if="debate && debate.model" class="text-[10px] text-faint font-mono">{{ debate.model }}</span>
       </div>
@@ -975,7 +979,7 @@ tailwind.config = {
       </div>
     </div>
 
-    <footer class="text-[11px] text-faint leading-relaxed pt-4 pb-10 text-center">
+    <footer class="text-sm text-muted leading-relaxed pt-4 pb-10 text-center">
       {{ result.disclaimer }}
       <span v-if="result.data_gaps.length" class="block mt-1">Data gaps: {{ result.data_gaps.join(', ') }}.</span>
       <span class="block mt-1">Computed in {{ result.elapsed_ms }} ms.</span>
@@ -983,7 +987,7 @@ tailwind.config = {
   </main>
 
   <!-- ============ SCREENER (index quant) ============ -->
-  <section v-if="view === 'nifty'" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-4 min-w-0">
+  <section v-if="view === 'nifty'" class="w-full px-4 sm:px-6 py-6 space-y-4 min-w-0">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
         <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">{{ niftyHeading }}</h1>
@@ -1088,7 +1092,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ TRADEBOOK LIST ============ -->
-  <section v-if="view === 'tradebook'" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
+  <section v-if="view === 'tradebook'" class="w-full px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div>
         <div class="text-xl sm:text-2xl font-bold tracking-tight">Tradebook</div>
@@ -1253,7 +1257,7 @@ tailwind.config = {
   </section>
 
   <!-- ============ TRADEBOOK DETAIL ============ -->
-  <section v-if="view === 'snapshot' && snapshot" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
+  <section v-if="view === 'snapshot' && snapshot" class="w-full px-4 sm:px-6 py-6 sm:py-8 space-y-5 min-w-0">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <button type="button" class="text-[11px] text-muted hover:text-fg" v-on:click="openTradebook()">← Tradebook</button>
       <div class="flex flex-wrap gap-2">
@@ -1652,7 +1656,7 @@ createApp({
         { key: 'deepseek', label: 'DeepSeek', available: false, model: '', reason: '' },
         { key: 'claude', label: 'Claude', available: false, model: '', reason: '' },
       ],
-      theme: 'dark',
+      theme: document.documentElement.getAttribute('data-theme') || 'light',
       taglines: [
         'Fundamentals, valuation, technicals and filings — in one pass.',
         'Separate verdicts for swing and long-term horizons.',
@@ -1784,8 +1788,21 @@ createApp({
   },
   mounted() {
     this.mounted = true;
-    this.theme = document.documentElement.getAttribute('data-theme') || 'dark';
-    setInterval(() => { this.morphIndex = (this.morphIndex + 1) % this.taglines.length; }, 3200);
+    this.theme = document.documentElement.getAttribute('data-theme') || 'light';
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!motion.matches) {
+      setInterval(() => { this.morphIndex = (this.morphIndex + 1) % this.taglines.length; }, 3200);
+    }
+    const scheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const followScheme = () => {
+      let stored = null;
+      try { stored = localStorage.getItem('finlens-theme'); } catch (_) {}
+      if (stored === 'light' || stored === 'dark') return;
+      const next = scheme.matches ? 'dark' : 'light';
+      this.theme = next;
+      document.documentElement.setAttribute('data-theme', next);
+    };
+    if (scheme.addEventListener) scheme.addEventListener('change', followScheme);
 
     fetch('/api/health').then(r => r.json()).then(d => {
       const catalog = (d.ai && d.ai.providers) || [];
