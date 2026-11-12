@@ -52,6 +52,22 @@ app.add_middleware(
 app.add_middleware(PasswordGateMiddleware)
 
 
+@app.on_event("startup")
+def _import_tradebook_json() -> None:
+    """One-time copy of on-disk snapshots when MongoDB is configured."""
+    from .tradebook.store import import_json_snapshots, mongo_enabled
+
+    if not mongo_enabled():
+        return
+    try:
+        copied = import_json_snapshots()
+    except Exception:
+        log.exception("Tradebook import into MongoDB failed")
+        return
+    if copied:
+        log.info("Imported %s tradebook snapshots into MongoDB", copied)
+
+
 def jsonable(obj: Any) -> Any:
     """Recursively make a payload JSON-safe.
 

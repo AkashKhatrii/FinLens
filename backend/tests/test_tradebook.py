@@ -123,7 +123,10 @@ def _analysis(**overrides) -> dict:
 class TradebookApiTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.env = patch.dict(os.environ, {"FINLENS_DATA_DIR": self.tmp.name})
+        self.env = patch.dict(
+            os.environ,
+            {"FINLENS_DATA_DIR": self.tmp.name, "FINLENS_MONGODB_URI": ""},
+        )
         self.env.start()
         self.analyse_patch = patch("app.analysis.analyse")
         self.analyse = self.analyse_patch.start()
@@ -337,7 +340,10 @@ class TradebookIsolationTest(unittest.TestCase):
 class TradebookPricesAndCloseTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.env = patch.dict(os.environ, {"FINLENS_DATA_DIR": self.tmp.name})
+        self.env = patch.dict(
+            os.environ,
+            {"FINLENS_DATA_DIR": self.tmp.name, "FINLENS_MONGODB_URI": ""},
+        )
         self.env.start()
         self.analyse_patch = patch("app.analysis.analyse")
         self.analyse = self.analyse_patch.start()
@@ -472,7 +478,10 @@ class TradebookPricesAndCloseTest(unittest.TestCase):
 class TradebookQuantityAndPnlTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.env = patch.dict(os.environ, {"FINLENS_DATA_DIR": self.tmp.name})
+        self.env = patch.dict(
+            os.environ,
+            {"FINLENS_DATA_DIR": self.tmp.name, "FINLENS_MONGODB_URI": ""},
+        )
         self.env.start()
         self.analyse_patch = patch("app.analysis.analyse")
         self.analyse = self.analyse_patch.start()
